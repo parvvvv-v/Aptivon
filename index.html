@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ConsultMesh: A tech talent network</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<style>
+/* ============ Tokens ============ */
+:root {
+  --navy: #1F3A5F;
+  --navy2: #16293f;
+  --brand: #2a78d6;
+  --brandl: #cde2fb;
+  --gold: #B8860B;
+  --ink: #14161f;
+  --ink2: #52514e;
+  --mut: #6b7080;
+  --line: #e1e0d9;
+  --bd: rgba(11, 11, 11, .10);
+  --bg: #f9f9f7;
+  --surf: #fcfcfb;
+  --good: #0ca30c;
+  --goodbg: #e6f6e6;
+  --warn: #c98500;
+  --crit: #d03b3b;
+  --red: #d03b3b;
+}
+
+/* ============ Base ============ */
+* { box-sizing: border-box; }
+body { margin: 0; font: 15px/1.55 'Plus Jakarta Sans', system-ui, sans-serif; color: var(--ink); background: var(--bg); }
+a { color: inherit; text-decoration: none; }
+button, input, select, textarea { font: inherit; }
+h2 { font-size: 26px; margin: 0 0 6px; letter-spacing: -.5px; color: var(--navy); }
+h3 { margin: 0 0 4px; font-size: 16.5px; }
+h5 { margin: 0; }
+p { margin: 8px 0; }
+.mut { color: var(--mut); font-size: 13px; }
+.lnk { color: var(--brand); cursor: pointer; font-weight: 600; }
+.lnk:hover { text-decoration: underline; }
+
+/* ============ Header ============ */
+header { position: sticky; top: 0; z-index: 20; background: var(--navy); color: #fff; display: flex; align-items: center; gap: 24px; padding: 0 28px; height: 66px; }
+.logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; letter-spacing: -.4px; }
+.logo .mark { width: 30px; height: 30px; border-radius: 8px; background: linear-gradient(135deg, var(--brand), var(--gold)); display: flex; align-items: center; justify-content: center; font-size: 13px; }
+.logo i { font-style: normal; color: #9cc4f5; }
+nav { display: flex; gap: 4px; flex: 1; }
+.dd { position: relative; }
+.dd > a, nav > a { padding: 22px 12px; display: block; font-weight: 600; font-size: 14px; color: #dbe5f1; }
+.dd > a:hover { color: #fff; }
+.dd > a:after { content: " ▾"; font-size: 10px; }
+.dd div { display: none; position: absolute; top: 60px; left: 0; background: #fff; color: var(--ink); border: 1px solid var(--line); border-radius: 10px; min-width: 220px; padding: 8px; box-shadow: 0 12px 30px rgba(16, 26, 51, .18); }
+.dd:hover div, .dd:focus-within div { display: block; }
+.dd div a { display: block; padding: 9px 12px; border-radius: 6px; font-size: 14px; }
+.dd div a:hover { background: var(--bg); color: var(--brand); }
+#auth { display: flex; align-items: center; gap: 10px; }
+.me { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 13.5px; color: #fff; }
+.me .av { width: 32px; height: 32px; border-radius: 50%; background: var(--brand); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+
+/* ============ Buttons ============ */
+.btn { background: var(--brand); color: #fff; border: 0; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; display: inline-block; }
+.btn:hover { filter: brightness(.92); }
+.btn.gold { background: var(--gold); }
+.btn.o { background: #fff; color: var(--navy); border: 1px solid var(--navy); }
+.btn.s { padding: 6px 14px; font-size: 13px; }
+.ib { background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px; cursor: pointer; }
+.ib:hover { border-color: var(--brand); }
+
+/* ============ Hero / bands ============ */
+.hero { background: linear-gradient(135deg, var(--navy), var(--navy2)); color: #fff; padding: 84px 28px 64px; position: relative; overflow: hidden; }
+.hero:before, .hero:after { content: ""; position: absolute; border-radius: 50%; background: var(--brand); opacity: .2; animation: fl 9s ease-in-out infinite alternate; }
+.hero:before { width: 420px; height: 420px; right: -90px; top: -120px; }
+.hero:after { width: 260px; height: 260px; right: 240px; bottom: -130px; background: var(--gold); animation-delay: -4s; }
+@keyframes fl { to { transform: translate(-40px, 30px) scale(1.12); } }
+@media (prefers-reduced-motion: reduce) { .hero:before, .hero:after { animation: none; } }
+.wrap { max-width: 1160px; margin: 0 auto; position: relative; }
+.hero h1 { font-size: 44px; line-height: 1.12; margin: 0 0 14px; max-width: 720px; letter-spacing: -1px; }
+.hero p { color: #cfd9e6; max-width: 580px; margin: 0 0 26px; }
+.sbar { display: flex; gap: 8px; background: #fff; padding: 8px; border-radius: 12px; max-width: 640px; }
+.sbar input { flex: 1; border: 0; outline: 0; padding: 0 16px; color: var(--ink); }
+.stats { display: flex; gap: 44px; margin-top: 44px; }
+.stats b { display: block; font-size: 30px; }
+.stats span { color: #b4c3d8; font-size: 13px; }
+.band { background: linear-gradient(135deg, var(--navy), var(--navy2)); color: #fff; padding: 34px 28px 28px; }
+.band h2 { color: #fff; font-size: 26px; }
+.band p { color: #cfd9e6; margin: 0 0 18px; max-width: 700px; font-size: 14px; }
+
+/* ============ Layout ============ */
+section.b { padding: 56px 28px; }
+.page { max-width: 1160px; margin: 0 auto; padding: 30px 24px 70px; }
+.grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px; margin-top: 18px; }
+.card { background: var(--surf); border: 1px solid var(--bd); border-radius: 10px; padding: 20px; }
+.card + .card { margin-top: 16px; }
+.grid3 .card + .card { margin-top: 0; }
+.form { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.full { grid-column: 1 / -1; }
+.sec-label { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--mut); margin: 14px 0 8px; }
+
+/* ============ Forms & filters ============ */
+label { display: block; font-size: 12px; font-weight: 700; color: var(--ink2); margin-bottom: 3px; }
+input, select, textarea { width: 100%; border: 1px solid var(--line); border-radius: 7px; padding: 9px 10px; background: #fff; color: var(--ink); }
+input:focus, select:focus, textarea:focus { outline: 2px solid rgba(42, 120, 214, .35); border-color: var(--brand); }
+.fgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; background: #fff; padding: 12px; border-radius: 10px; border: 1px solid var(--bd); }
+.ff label { font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: var(--mut); }
+.ff .ck { display: flex; gap: 6px; align-items: center; font-size: 13px; font-weight: 500; color: var(--ink); text-transform: none; letter-spacing: 0; padding: 9px 0; }
+.ff .ck input { width: auto; }
+.srow { display: flex; gap: 8px; margin-top: 10px; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; margin: 4px 0 14px; font-size: 11.5px; color: var(--ink2); }
+.legend span { display: flex; align-items: center; gap: 5px; }
+.dot { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+.toggle { display: flex; gap: 6px; margin: 6px 0 12px; }
+.toggle button { border: 1px solid var(--line); background: #fff; padding: 7px 14px; border-radius: 20px; font-size: 12.5px; font-weight: 600; cursor: pointer; color: var(--ink2); }
+.toggle button.on { background: var(--navy); color: #fff; border-color: var(--navy); }
+.count { font-size: 12.5px; color: var(--mut); margin-bottom: 12px; }
+
+/* ============ Tags & chips ============ */
+.tr { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.tag { font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 600; background: var(--line); color: var(--ink2); display: inline-block; }
+.tag.role { background: #eef2fb; color: var(--navy); }
+.tag.hard { background: var(--brandl); color: var(--brand); }
+.tag.soft { background: #fbeee0; color: var(--gold); }
+.tag.loc { background: var(--line); color: var(--ink2); }
+.tag.jobtype { background: #f1e9fb; color: #6a4aa7; }
+.tag.industry { background: #eef7ee; color: var(--good); }
+.tag.st { background: var(--goodbg); color: var(--good); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.chip { border: 1px solid var(--line); border-radius: 16px; padding: 5px 12px; font-size: 12px; cursor: pointer; color: var(--ink2); background: #fff; user-select: none; }
+.chip.sel { background: var(--brand); border-color: var(--brand); color: #fff; }
+.addc { display: flex; gap: 8px; margin-bottom: 14px; }
+
+/* ============ Result cards ============ */
+.pc { display: grid; grid-template-columns: 52px 1fr auto; gap: 14px; align-items: start; padding: 16px; border: 1px solid var(--bd); border-radius: 10px; background: var(--surf); margin-bottom: 10px; }
+.ini { width: 52px; height: 52px; border-radius: 50%; background: var(--brandl); color: var(--brand); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; }
+.ini.sq { border-radius: 12px; background: var(--navy); color: #fff; }
+.ini.lg { width: 84px; height: 84px; font-size: 26px; }
+.pc .meta { font-size: 13px; color: var(--ink2); }
+.act { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
+.match { font-size: 12px; color: var(--good); font-weight: 700; }
+.pod { font-size: 10.5px; background: var(--navy); color: #fff; padding: 2px 8px; border-radius: 10px; font-weight: 700; margin-left: 6px; vertical-align: middle; }
+
+/* ============ Profile (LinkedIn-style) ============ */
+.pl { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; align-items: start; }
+.cover { height: 90px; margin: -20px -20px 0; border-radius: 10px 10px 0 0; background: linear-gradient(120deg, var(--navy), var(--brand)); }
+.hd { display: flex; gap: 18px; align-items: flex-end; margin-top: -42px; flex-wrap: wrap; }
+.hd .ini { border: 4px solid #fff; background: var(--brandl); }
+.hd h2 { margin: 0; }
+.hd-top { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+.sh { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.sh h3 { margin: 0; font-size: 17px; color: var(--navy); }
+.ent { display: grid; grid-template-columns: 44px 1fr auto; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.ent:last-child { border-bottom: 0; }
+.ent .ico { width: 44px; height: 44px; border-radius: 8px; background: #eef2fb; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.ent p { margin: 4px 0 0; font-size: 13.5px; white-space: pre-line; }
+.ea { display: flex; gap: 6px; }
+.tiles { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+.tile { border: 1px solid var(--bd); border-radius: 8px; padding: 10px 16px; min-width: 110px; background: #fff; }
+.tile .l { font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: var(--mut); }
+.tile .v { font-size: 20px; font-weight: 700; color: var(--navy); }
+.meter { height: 10px; background: var(--line); border-radius: 8px; overflow: hidden; }
+.meter div { height: 100%; background: var(--brand); transition: width .8s; }
+.side h4 { margin: 0 0 10px; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--mut); }
+.empty { color: var(--mut); font-size: 13.5px; padding: 6px 0; }
+
+/* ============ Dashboard ============ */
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 20px; overflow-x: auto; }
+.tabs button { background: none; border: 0; padding: 10px 16px; font-weight: 600; font-size: 13.5px; color: var(--ink2); cursor: pointer; border-bottom: 3px solid transparent; white-space: nowrap; }
+.tabs .on { color: var(--navy); border-color: var(--brand); }
+table.rt { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.rt th { text-align: left; color: var(--mut); text-transform: uppercase; font-size: 10.5px; padding: 8px; border-bottom: 2px solid var(--line); }
+table.rt td { padding: 10px 8px; border-bottom: 1px solid var(--line); }
+.cy { color: var(--good); font-weight: 700; font-size: 12px; }
+.cp { color: var(--warn); font-weight: 700; font-size: 12px; }
+.pipe { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+.pcol { background: #fff; border: 1px solid var(--bd); border-radius: 10px; padding: 10px; }
+.pcol h5 { font-size: 11.5px; text-transform: uppercase; color: var(--mut); display: flex; justify-content: space-between; margin-bottom: 10px; }
+.pcard { background: var(--bg); border: 1px solid var(--bd); border-radius: 8px; padding: 8px 10px; margin-bottom: 8px; font-size: 12.5px; }
+.pcard select { margin-top: 6px; padding: 5px 8px; font-size: 12px; }
+.podc { border: 1px solid var(--bd); border-radius: 10px; padding: 16px; background: var(--surf); margin-bottom: 12px; display: flex; justify-content: space-between; gap: 12px; }
+.ohead { display: flex; gap: 16px; align-items: center; }
+.ohead .ini { width: 64px; height: 64px; font-size: 20px; }
+
+/* ============ Modal & toast ============ */
+.modal { position: fixed; inset: 0; background: rgba(10, 15, 32, .65); display: none; align-items: center; justify-content: center; z-index: 50; }
+.modal.on { display: flex; }
+.modal .card { width: min(430px, 92vw); max-height: 90vh; overflow: auto; animation: pop .25s; }
+.modal .card.wide { width: min(760px, 94vw); }
+@keyframes pop { from { transform: scale(.94); opacity: 0; } }
+.toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 10px 20px; border-radius: 24px; display: none; z-index: 60; }
+footer { background: var(--navy2); color: #9fb0c8; padding: 36px 28px; font-size: 13px; }
+
+/* ============ Responsive ============ */
+@media (max-width: 860px) {
+  header { flex-wrap: wrap; height: auto; padding: 10px 16px; gap: 6px 14px; }
+  nav { order: 3; width: 100%; overflow-x: auto; flex: none; }
+  .dd > a, nav > a { padding: 8px 10px; white-space: nowrap; }
+  .dd div { display: none !important; }
+  #auth { margin-left: auto; }
+  .me span { display: none; }
+  .form, .pl { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 30px; }
+  .stats { gap: 22px; }
+  .pc { grid-template-columns: 44px 1fr; }
+  .pc .act { grid-column: 1 / -1; flex-direction: row; align-items: center; }
+  .podc { flex-direction: column; }
+}
+
+/* ============ v2: landing, photos, groups ============ */
+.lh{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+.lh h1{font-size:50px}
+.mesh{width:100%;height:auto}
+.mesh .ln{stroke:rgba(156,196,245,.45);stroke-width:1.2;stroke-dasharray:4 6;animation:flow 3s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-20}}
+.mesh .nd{animation:pulse 3.2s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes pulse{50%{transform:scale(1.3)}}
+.mlg{display:flex;gap:16px;justify-content:center;font-size:12px;color:#b4c3d8;margin-top:6px;flex-wrap:wrap}
+.mlg i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center}
+.ph{border-radius:14px;min-height:320px;background:linear-gradient(135deg,var(--navy),var(--brand));overflow:hidden;position:relative}
+.ph img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.aud{display:flex;flex-direction:column;gap:10px}
+.aud ul{margin:0;padding-left:18px;color:var(--ink2);font-size:13.5px;flex:1}
+.demo{background:var(--navy);color:#fff;border-radius:14px;padding:24px}
+.demo .big{font-size:58px;font-weight:800;line-height:1}
+.demo .meter{background:rgba(255,255,255,.15);height:8px}
+.demo .meter div{width:0;transition:width 1.6s cubic-bezier(.2,.7,.2,1)}
+.demo.go .meter div{width:var(--w)}
+.demo .jr{padding:10px 0;border-top:1px solid rgba(255,255,255,.12);font-size:13.5px}
+.demo .jr b{float:right;color:#8fe08f}
+.ctab{position:relative;color:#fff;text-align:center;padding:76px 28px;background:var(--navy);overflow:hidden}
+.ctab img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.22}
+.ctab .wrap{z-index:1}
+.ctab h2{color:#fff;font-size:32px}
+video.vid{width:100%;border-radius:14px;background:#000;max-height:520px}
+.cover{position:relative;height:150px;background-size:cover}
+.avw{position:relative}
+img.ini{object-fit:cover;background:#fff}
+.camb{position:absolute;right:12px;bottom:12px;border:0;background:#fff;border-radius:20px;padding:6px 10px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.camb.sm{right:-4px;bottom:-4px;padding:4px 7px;font-size:13px}
+.me img.av{object-fit:cover}
+@media (max-width:860px){.lh,.two{grid-template-columns:1fr}.lh h1{font-size:32px}}
+@media (prefers-reduced-motion:reduce){.mesh .ln,.mesh .nd{animation:none}.demo .meter div{transition:none}}
+.vbar{background:#fff4d6;color:#5c4300;padding:10px 28px;font-size:13.5px;border-bottom:1px solid #ecd48a}
+.vbar .lnk{color:#5c4300;text-decoration:underline;cursor:pointer}
+</style>
+</head>
+
+<body>
+
+<header>
+  <a class="logo" href="#/"><span class="mark">CM</span><span>Consult<i>Mesh</i></span></a>
+  <nav id="nav"></nav>
+  <div id="auth"></div>
+</header>
+
+<div id="vbar"></div>
+
+<main id="app"></main>
+
+<footer>© 2026 ConsultMesh — SAP-first global consultant network. Illustrative starter project.</footer>
+
+<div class="modal" id="modal"><div class="card" id="mbox"></div></div>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, addDoc, deleteDoc, updateDoc, collection, getDocs, query, where, limit, serverTimestamp, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* 1) PASTE YOUR FIREBASE WEB CONFIG HERE (Console > Project settings > Your apps) */
+const CONFIG = {
+  apiKey: "AIzaSyC8AD1OQ3n1ihCUHATiNLgRbEMqw_Gehpk",
+  authDomain: "consultmesh-4654b.firebaseapp.com",
+  projectId: "consultmesh-4654b",
+  storageBucket: "consultmesh-4654b.firebasestorage.app",
+  messagingSenderId: "131527471252",
+  appId: "1:131527471252:web:df45bddc4c49271cc44481",
+  measurementId: "G-Q9P4X2VGBL"
+};
+
+const auth = getAuth(initializeApp(CONFIG)), db = getFirestore();
+
+/* ---------- taxonomy ---------- */
+const ROLES = ["Program Manager", "Project Manager", "Transformation Manager", "Solution Architect", "Functional Consultant", "Developer", "Data Analyst", "Security Engineer"];
+const TYPES = ["Contract", "Permanent", "Freelance", "Part-time", "Internship"];
+const INDS = ["Manufacturing", "Retail & CPG", "BFSI", "Life Sciences", "Technology", "Public Sector"];
+const TECH = ["Business Applications", "Cloud & Infrastructure", "Cyber Security", "Data & Analytics", "SAP", "Software Development"];
+const SKILLS = ["SAP S/4HANA", "SAP FICO", "SAP MM", "SAP SD", "SAP ABAP", "SAP BASIS", "SAP BTP", "SuccessFactors", "Workday", "Python", "Java", "JavaScript", "React", "SQL", "AWS", "Azure", "Power BI", "Stakeholder Management", "Agile", "Change Management"];
+const SOFT = ["Stakeholder Management", "Executive Communication", "Negotiation", "Mentoring", "Change Leadership", "Cross-cultural Teams", "Problem Solving", "Facilitation"];
+const AVAIL = ["Immediately", "Within 2 weeks", "Within 1 month", "1–3 months", "Not looking"];
+const KINDS = ["Company", "Consultancy", "Firm / Group", "Staffing agency"];
+const ST = ["Applied", "Screened", "Interview", "Offer", "Rejected"];
+const SEL = { role: ROLES, type: TYPES, ind: INDS, avail: AVAIL, kind: KINDS, consent: ["Confirmed", "Pending"], pods: ["Yes — individuals or pods", "Individuals only"] };
+const CSVK = ["skills", "softSkills", "roles"];
+
+let me = null, P = null, mode = "ind", redraw = () => {};
+const U = {}, MJ = {}, JOBS = {};
+
+/* ---------- utilities ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const csv = s => String(s || "").split(",").map(x => x.trim()).filter(Boolean);
+const opts = (a, v, any) => (any ? `<option value="">${any}</option>` : "") + a.map(x => `<option ${x == v ? "selected" : ""}>${esc(x)}</option>`).join("");
+const toast = m => { const t = $("#toast"); t.textContent = m; t.style.display = "block"; setTimeout(() => t.style.display = "none", 2600); };
+const ini = n => String(n || "?").split(/\s+/).map(w => w[0]).slice(0, 2).join("").toUpperCase();
+const isOrg = () => P?.type === "org";
+const isGrp = () => P?.type === "group";
+const isCand = () => P?.type === "candidate";
+const isHire = () => !!P && P.type !== "candidate";
+const homeHash = () => P?.type === "org" ? "#/dashboard" : P?.type === "group" ? "#/groups" : "#/profile";
+const av = (u, c = "") => u.photo ? `<img class="ini ${c}" src="${esc(u.photo)}" alt="">` : `<div class="ini ${c}">${esc(ini(u.name))}</div>`;
+const url = u => /^https?:\/\//i.test(u) ? u : "https://" + u;
+const tg = (c, x) => x ? `<span class="tag ${c}">${esc(x)}</span>` : "";
+const tags = u => tg("role", u.role)
+  + (u.skills || []).map(x => tg("hard", x)).join("")
+  + (u.softSkills || []).map(x => tg("soft", x)).join("")
+  + tg("loc", u.location) + tg("jobtype", u.jobType) + tg("industry", u.industry);
+
+$("#techs")?.remove();
+
+/* ---------- modal ---------- */
+function modal(h, w) {
+  $("#mbox").className = "card" + (w ? " wide" : "");
+  $("#mbox").innerHTML = h;
+  $("#modal").classList.add("on");
+}
+function closeM() { $("#modal").classList.remove("on"); }
+let MD = false;
+$("#modal").onmousedown = e => { MD = e.target.id === "modal"; };
+$("#modal").onclick = e => { if (e.target.id === "modal" && MD && !PEND) closeM(); MD = false; };
+window.closeM = closeM;
+
+/* ---------- header / nav (role aware) ---------- */
+function nav() {
+  if (!me) { $("#nav").innerHTML = ""; return; }
+  const cand = isCand(), emp = isOrg(), grp = isGrp();
+  $("#nav").innerHTML =
+    (cand ? `<div class="dd"><a href="#/jobs" tabindex="0">Candidates</a><div>
+      <a href="#/jobs">Find jobs</a><a href="#/profile">My profile &amp; ATS score</a><a href="#/applications">My applications</a></div></div>` : "")
+    + (emp ? `<div class="dd"><a href="#/talent" tabindex="0">Employers</a><div>
+      <a href="#/talent">Search talent</a><a href="#/dashboard">Employer dashboard</a><a href="#/dashboard?tab=post">Post a job</a>
+      <a href="#/dashboard?tab=co">Company details</a></div></div>` : "")
+    + (grp ? `<div class="dd"><a href="#/talent" tabindex="0">Consultancy / Group</a><div>
+      <a href="#/talent">Search talent &amp; companies</a><a href="#/groups">My groups</a></div></div>` : "")
+    + `<div class="dd"><a href="#/jobs" tabindex="0">Technologies</a><div>${TECH.map(t => `<a href="#/jobs?q=${encodeURIComponent(t)}">${t}</a>`).join("")}</div></div>`;
+}
+function authBox() {
+  $("#auth").innerHTML = me
+    ? `<a class="me" href="${homeHash()}">${P?.photo ? `<img class="av" src="${esc(P.photo)}" alt="">` : `<span class="av">${esc(ini(P?.name))}</span>`}<span>${esc(P?.name || "")}</span></a>
+       <button class="btn o s" style="background:transparent;color:#fff;border-color:#8fa6c4" onclick="logout()">Log out</button>`
+    : `<button class="btn o s" style="background:transparent;color:#fff;border-color:#8fa6c4" onclick="authUI('login')">Log in</button>
+       <button class="btn gold s" onclick="authUI('signup')">Sign up</button>`;
+}
+
+/* ---------- auth ---------- */
+/* signup questions (important details asked once, at registration) */
+const SU = {
+  candidate: [["headline", "Headline (e.g. SAP FICO consultant)"], ["role", "Primary role", "role"], ["years", "Years of experience"], ["location", "Location (city, country)"], ["availability", "Availability", "avail"], ["jobType", "Preferred job type", "type"], ["industry", "Industry", "ind"]],
+  org: [["orgKind", "Organisation type", "kind"], ["website", "Website"], ["location", "HQ location"], ["industry", "Industry", "ind"], ["size", "Team size (number of people)"], ["contactEmail", "Hiring contact email"]],
+  group: [["designation", "Your designation / title"], ["website", "Firm website"], ["location", "Firm location"], ["industry", "Primary industry", "ind"]]
+};
+const LAND = { candidate: "#/profile", org: "#/dashboard?tab=co", group: "#/groups" };
+let SIGNUP = false;
+const authMsg = x => ({
+  "auth/invalid-credential": "Incorrect email or password.",
+  "auth/wrong-password": "Incorrect email or password.",
+  "auth/user-not-found": "Incorrect email or password.",
+  "auth/invalid-email": "That email address is not valid.",
+  "auth/email-already-in-use": "An account with this email already exists. Try logging in.",
+  "auth/weak-password": "Password must be at least 6 characters.",
+  "auth/too-many-requests": "Too many attempts. Please wait a moment and try again.",
+  "auth/network-request-failed": "Network problem. Check your connection and try again."
+}[x.code] || String(x.message || x).replace("Firebase: ", ""));
+
+window.authUI = (mode = "login", t = "") => {
+  const T = {
+    candidate: ["Individual", "Candidate or student who wants to get hired", "Full name"],
+    org: ["Employer", "A company that is hiring", "Company name"],
+    group: ["Consultancy / Group", "People from one firm who review talent and companies together", "Your full name"]
+  };
+  const sw = `<p class="mut" style="text-align:center"><a href="#" onclick="authUI('${mode == "login" ? "signup" : "login"}');return false" class="lnk">${mode == "login" ? "New here? Create an account" : "Have an account? Log in"}</a></p>`;
+  if (mode == "signup" && !T[t]) return modal(`<h2>Join ConsultMesh</h2><p class="mut">Choose how you will use the platform.</p>
+    ${Object.entries(T).map(([k, v]) => `<div class="pc" style="grid-template-columns:1fr;cursor:pointer" onclick="authUI('signup','${k}')"><div><h3>${v[0]}</h3><div class="meta">${v[1]}</div></div></div>`).join("")}${sw}`);
+  if (mode == "login") return modal(`<h2>Welcome back</h2><p class="mut">Log in to continue.</p>
+    <label>Email</label><input id="a_e" type="email">
+    <label style="margin-top:10px">Password</label><input id="a_p" type="password" onkeydown="if(event.key=='Enter')doAuth('login')">
+    <p id="a_err" class="mut" style="color:var(--red)"></p>
+    <button class="btn" style="width:100%" onclick="doAuth('login')">Log in</button>${sw}`);
+  modal(`<h2>Sign up as ${T[t][0]}</h2>
+    <p class="mut">${T[t][1]}. All fields are required. We will email you a link to verify your address.</p>
+    <input type="hidden" id="a_t" value="${t}">
+    <div class="form">
+      <div class="full"><label>${T[t][2]}</label><input id="a_n"></div>
+      ${t == "group" ? `<div class="full"><label>Firm / company name</label><input id="a_f"></div>` : ""}
+      ${fields(SU[t], {})}
+      <div class="full"><label>Email</label><input id="a_e" type="email"></div>
+      <div class="full"><label>Password (min 6)</label><input id="a_p" type="password"></div>
+    </div>
+    <p id="a_err" class="mut" style="color:var(--red)"></p>
+    <button class="btn" style="width:100%" onclick="doAuth('signup')">Create account</button>
+    <p class="mut" style="text-align:center"><a href="#" class="lnk" onclick="authUI('signup');return false">← Choose a different account type</a></p>${sw}`, 1);
+};
+
+let PEND = null, PTIMER = null;
+const stopPoll = () => { clearInterval(PTIMER); PTIMER = null; };
+function showVerify(email) {
+  modal(`<h2>Verify your email</h2>
+    <p class="mut">We sent a verification link to <b>${esc(email)}</b>. Open it, then come back here. Your account is created only after your email is verified. Check your spam folder if you can't find it.</p>
+    <p id="v_err" class="mut" style="color:var(--red)"></p>
+    <button class="btn" style="width:100%" onclick="finishSignup()">I've verified my email</button>
+    <div class="srow"><button class="btn o s" onclick="resendSignup()">Resend email</button><button class="btn o s" onclick="cancelSignup()">Cancel</button></div>`);
+  stopPoll(); PTIMER = setInterval(() => finishSignup(true), 3000);
+}
+window.finishSignup = async silent => {
+  if (!PEND) return;
+  const ve = $("#v_err");
+  try {
+    await PEND.user.reload();
+    if (!PEND.user.emailVerified) { if (silent !== true && ve) ve.textContent = "Not verified yet. Open the link in your email first."; return; }
+    stopPoll();
+    const { user, d } = PEND;
+    await user.getIdToken(true);
+    await setDoc(doc(db, "users", user.uid), { ...d, created: serverTimestamp() });
+    try { localStorage.removeItem("cm_pending_" + user.uid); } catch {}
+    me = user; P = d; PEND = null; SIGNUP = false;
+    closeM();
+    location.hash = LAND[d.type];
+    shell();
+    toast("Email verified. Welcome to ConsultMesh!");
+  } catch (x) { if (ve) ve.textContent = authMsg(x); }
+};
+window.resendSignup = async () => { try { await sendEmailVerification(PEND.user); toast("Verification email sent"); } catch (x) { toast(authMsg(x)); } };
+window.cancelSignup = async () => { stopPoll(); PEND = null; SIGNUP = false; closeM(); await signOut(auth); };
+
+window.doAuth = async mode => {
+  const err = m => { const x = $("#a_err"); if (x) x.textContent = m; };
+  try {
+    const e = $("#a_e").value.trim(), p = $("#a_p").value;
+    if (!/^\S+@\S+\.\S+$/.test(e)) throw { message: "Enter a valid email address." };
+    if (!p) throw { message: "Enter your password." };
+    if (mode == "login") {
+      SIGNUP = true;
+      await signInWithEmailAndPassword(auth, e, p);
+      const u = auth.currentUser; SIGNUP = false;
+      if (!u.emailVerified) {
+        try { await sendEmailVerification(u); } catch {}
+        await signOut(auth);
+        throw { message: "Please verify your email first. We've sent you a new verification link." };
+      }
+      await loadUser(u);
+      closeM();
+      toast("Signed in");
+      return;
+    }
+    const n = $("#a_n").value.trim(), t = $("#a_t").value, f = $("#a_f")?.value.trim() || "";
+    if (!n) throw { message: "Enter a name." };
+    if (t == "group" && !f) throw { message: "Enter your firm name." };
+    const extra = read(SU[t]);
+    const miss = SU[t].filter(([k]) => !String(extra[k] || "").trim());
+    if (miss.length) throw { message: "Please fill in: " + miss.map(m => m[1].replace(/ \(.*\)/, "")).join(", ") + "." };
+    if (t == "candidate" && (isNaN(+extra.years) || +extra.years < 0)) throw { message: "Years of experience must be a number." };
+    if (t == "org" && !/^\S+@\S+\.\S+$/.test(extra.contactEmail)) throw { message: "Enter a valid hiring contact email." };
+    if (p.length < 6) throw { message: "Password must be at least 6 characters." };
+    SIGNUP = true;
+    const c = await createUserWithEmailAndPassword(auth, e, p);
+    const d = { type: t, name: n, email: e.toLowerCase(), ...extra, ...(t == "group" ? { firm: f } : {}) };
+    try { localStorage.setItem("cm_pending_" + c.user.uid, JSON.stringify(d)); } catch {}
+    PEND = { user: c.user, d };
+    try { await sendEmailVerification(c.user); } catch {}
+    showVerify(e);
+  } catch (x) {
+    SIGNUP = false;
+    err(authMsg(x));
+  }
+};
+
+window.logout = () => signOut(auth);
+
+async function loadUser(u) {
+  let prof = null;
+  for (let i = 0; i < 3 && !prof; i++) {
+    try { prof = (await getDoc(doc(db, "users", u.uid))).data(); } catch {}
+    if (!prof) await new Promise(r => setTimeout(r, 600));
+  }
+  if (!prof && u.emailVerified) {
+    try {
+      const raw = localStorage.getItem("cm_pending_" + u.uid);
+      if (raw) {
+        const d = JSON.parse(raw);
+        await u.getIdToken(true);
+        await setDoc(doc(db, "users", u.uid), { ...d, created: serverTimestamp() });
+        localStorage.removeItem("cm_pending_" + u.uid);
+        prof = d;
+      }
+    } catch {}
+  }
+  if (!prof) { toast("Could not load your profile. Please sign up again."); await signOut(auth); return; }
+  me = u; P = prof;
+  if (P.type == "group") try { await loadG(); } catch {}
+  shell();
+}
+
+onAuthStateChanged(auth, async u => {
+  if (SIGNUP) return;               /* signup / login flow handles itself */
+  if (!u) { me = null; P = null; shell(); return; }
+  if (!u.emailVerified) { await signOut(auth); return; }
+  await loadUser(u);
+});
+
+function shell() { nav(); authBox(); vbar(); route(); }
+
+/* ---------- shared helpers ---------- */
+const need = t => {
+  if (!me) { authUI("login"); $("#app").innerHTML = `<div class="page"><h2>Please log in</h2></div>`; return false; }
+  const ty = P?.type;
+  if (t && !(t == "hire" ? ty != "candidate" : ty == t)) {
+    location.hash = homeHash();
+    return false;
+  }
+  return true;
+};
+
+const fields = (o, d) => o.map(([k, l, t, full]) => `<div class="${full ? "full" : ""}"><label>${l}</label>${
+  t == "area" ? `<textarea id="f_${k}" rows="4">${esc(d[k])}</textarea>`
+  : SEL[t] ? `<select id="f_${k}">${opts(SEL[t], d[k], "Select…")}</select>`
+  : `<input id="f_${k}" value="${esc(Array.isArray(d[k]) ? d[k].join(", ") : d[k])}">`}</div>`).join("");
+
+const read = o => Object.fromEntries(o.map(([k]) => {
+  const v = $("#f_" + k).value;
+  return [k, CSVK.includes(k) ? csv(v) : v];
+}));
+
+const chips = (id, all, sel = []) => {
+  const s = [...new Set([...all, ...sel])];
+  return `<div class="chips" id="${id}">${s.map(x => `<span class="chip ${sel.includes(x) ? "sel" : ""}" onclick="this.classList.toggle('sel')">${esc(x)}</span>`).join("")}</div>
+    <div class="addc"><input id="${id}_x" placeholder="Add another…" onkeydown="if(event.key=='Enter'){addChip('${id}');return false}"><button class="btn o s" onclick="addChip('${id}')">Add</button></div>`;
+};
+const picked = id => [...document.querySelectorAll(`#${id} .chip.sel`)].map(e => e.textContent);
+window.addChip = id => {
+  const i = $("#" + id + "_x"), v = i.value.trim();
+  if (!v) return;
+  const c = document.createElement("span");
+  c.className = "chip sel"; c.textContent = v; c.onclick = () => c.classList.toggle("sel");
+  $("#" + id).append(c); i.value = "";
+};
+
+const upd = async o => {
+  await setDoc(doc(db, "users", me.uid), o, { merge: true });
+  P = { ...P, ...o };
+  toast("Saved");
+};
+window.upd = upd;
+
+const myText = () => new Set([...(P?.skills || []), ...(P?.softSkills || []), ...(P?.resumeSkills || [])].map(s => s.toLowerCase()));
+const match = j => {
+  const s = myText(), js = [...(j.skills || []), ...(j.softSkills || [])];
+  return !js.length || !s.size ? null : Math.round(100 * js.filter(x => s.has(x.toLowerCase())).length / js.length);
+};
+
+const legend = () => `<div class="legend">${[["#eef2fb", "Role"], ["var(--brandl)", "Hard skill"], ["#fbeee0", "Soft skill"], ["var(--line)", "Location"], ["#f1e9fb", "Job type"], ["#eef7ee", "Industry"]]
+  .map(([c, l]) => `<span><i class="dot" style="background:${c}"></i>${l}</span>`).join("")}</div>`;
+
+function filterBar(v = {}, extra = "") {
+  const f = ([id, l, o, any]) => `<div class="ff"><label>${l}</label>${o
+    ? `<select id="${id}">${opts(o, v[id] || "", any)}</select>`
+    : `<input id="${id}" value="${esc(v[id] || "")}" placeholder="${any || ""}">`}</div>`;
+  return `<div class="fgrid" id="fg">${[
+    ["k", "Keyword", 0, "Title, name or text"], ["r", "Role", ROLES, "Any role"], ["s", "Hard skill", SKILLS, "Any hard skill"],
+    ["ss", "Soft skill", SOFT, "Any soft skill"], ["l", "Location", 0, "City or country"], ["t", "Job type", TYPES, "Any type"], ["i", "Industry", INDS, "Any industry"]
+  ].map(f).join("")}${extra}</div>
+  <div class="srow"><button class="btn s" style="background:#fff;color:var(--navy)" onclick="clearF()">Clear filters</button></div>`;
+}
+window.clearF = () => {
+  document.querySelectorAll("#fg input:not([type=checkbox]),#fg select").forEach(e => e.value = "");
+  document.querySelectorAll("#fg input[type=checkbox]").forEach(e => e.checked = false);
+  $("#fg").dispatchEvent(new Event("input"));
+};
+const gv = id => ($("#" + id)?.value || "").toLowerCase();
+const has = (a, v) => (a || []).some(x => String(x).toLowerCase() == v);
+
+/* ---------- views ---------- */
+const V = {};
+
+/* ----- jobs ----- */
+const jobCard = j => {
+  const m = j.m;
+  return `<div class="pc"><div class="ini sq">${esc(ini(j.orgName))}</div>
+    <div><h3><a class="lnk" onclick="viewJob('${j.id}')" style="color:var(--navy)">${esc(j.title)}</a></h3>
+      <div class="meta"><a class="lnk" onclick="viewOrg('${j.orgId}')">${esc(j.orgName)}</a> · ${esc(j.location)}</div>
+      <div class="tr">${tags({ ...j, location: "" })}</div>
+      <p class="mut">${esc((j.desc || "").slice(0, 200))}</p></div>
+    <div class="act">${m != null ? `<span class="match">${m}% match</span>` : ""}${!isCand() ? "" : `<button class="btn s" onclick="apply('${j.id}')">Apply</button>`}</div></div>`;
+};
+
+V.jobs = async () => {
+  const p = new URLSearchParams(location.hash.split("?")[1] || "");
+  $("#app").innerHTML = `<div class="band"><div class="wrap"><h2>Find jobs</h2><p>Search by role, hard skill, soft skill, location, job type and industry independently.</p>
+    ${filterBar({ k: p.get("q") || "", r: p.get("r") || "", s: p.get("s") || "" })}</div></div>
+    <div class="page">${legend()}<div id="res" class="mut">Loading…</div></div>`;
+  let all;
+  try { all = (await getDocs(query(collection(db, "jobs"), limit(300)))).docs.map(d => ({ id: d.id, ...d.data() })); }
+  catch (e) { return $("#res").textContent = "Could not load jobs: " + e.message; }
+  all.forEach(j => JOBS[j.id] = j);
+  const draw = () => {
+    let r = all.filter(j => (!gv("k") || JSON.stringify(j).toLowerCase().includes(gv("k")))
+      && (!gv("r") || j.role?.toLowerCase() == gv("r"))
+      && (!gv("s") || has(j.skills, gv("s")))
+      && (!gv("ss") || has(j.softSkills, gv("ss")))
+      && (!gv("l") || (j.location || "").toLowerCase().includes(gv("l")))
+      && (!gv("t") || j.jobType?.toLowerCase() == gv("t"))
+      && (!gv("i") || j.industry?.toLowerCase() == gv("i")));
+    r = r.map(j => ({ ...j, m: match(j) })).sort((a, b) => (b.m || 0) - (a.m || 0) || (b.created?.seconds || 0) - (a.created?.seconds || 0));
+    $("#res").innerHTML = `<div class="count">${r.length} job${r.length == 1 ? "" : "s"}${me && isCand() && myText().size ? " — ranked by match to your CV" : ""}</div>`
+      + (r.map(jobCard).join("") || "<p>No jobs match these filters yet.</p>");
+  };
+  $("#fg").oninput = draw;
+  draw();
+};
+
+window.viewJob = id => {
+  const j = JOBS[id]; if (!j) return;
+  modal(`<h2>${esc(j.title)}</h2><div class="mut"><a class="lnk" onclick="viewOrg('${j.orgId}')">${esc(j.orgName)}</a> · ${esc(j.location)}</div>
+    <div class="tr">${tags({ ...j, location: "" })}</div>
+    ${j.exp ? `<p class="mut">Minimum experience: ${esc(j.exp)} years</p>` : ""}
+    <p style="white-space:pre-line">${esc(j.desc)}</p>
+    <div class="srow">${!isCand() ? "" : `<button class="btn" onclick="apply('${id}')">Apply now</button>`}<button class="btn o" onclick="closeM()">Close</button></div>`, 1);
+};
+
+window.apply = async id => {
+  if (!need("candidate")) return;
+  const j = (await getDoc(doc(db, "jobs", id))).data();
+  await setDoc(doc(db, "applications", id + "_" + me.uid), { jobId: id, jobTitle: j.title, orgId: j.orgId, candidateId: me.uid, candidateName: P.name, status: "Applied", created: serverTimestamp() });
+  closeM();
+  toast("Application sent");
+};
+
+V.applications = async () => {
+  if (!need("candidate")) return;
+  const a = (await getDocs(query(collection(db, "applications"), where("candidateId", "==", me.uid)))).docs.map(d => d.data());
+  $("#app").innerHTML = `<div class="page"><h2>My applications</h2>
+    ${a.map(x => `<div class="pc" style="grid-template-columns:1fr auto"><div><h3>${esc(x.jobTitle)}</h3></div><span class="tag st">${esc(x.status)}</span></div>`).join("") || "<p class='mut'>You haven't applied yet.</p>"}</div>`;
+};
+
+/* ----- candidate profile (LinkedIn-style, fully editable) ----- */
+const IF = [
+  ["name", "Full name"], ["headline", "Headline (e.g. SAP FICO consultant)"], ["role", "Primary role", "role"], ["years", "Years of experience"],
+  ["location", "Location"], ["availability", "Availability", "avail"], ["jobType", "Preferred job type", "type"], ["industry", "Industry", "ind"]
+];
+const SECT = {
+  experience: { t: "experience", ico: "💼", f: [["title", "Title"], ["company", "Company"], ["from", "From (e.g. Jan 2020)"], ["to", "To (blank = present)"], ["desc", "Description", "area", 1]] },
+  education: { t: "education", ico: "🎓", f: [["degree", "Degree / course"], ["school", "School / university"], ["year", "Years (e.g. 2012–2016)"], ["desc", "Notes", "area", 1]] },
+  certs: { t: "certification", ico: "📜", f: [["name", "Certification"], ["issuer", "Issuer"], ["year", "Year"]] },
+  roster: { t: "team member", f: [["name", "Name"], ["role", "Role", "role"], ["skills", "Hard skills (comma separated)"], ["avail", "Availability", "avail"], ["consent", "Consent status", "consent"]] },
+  podList: { t: "pod", f: [["name", "Pod name"], ["size", "Members (number)"], ["avail", "Availability", "avail"], ["roles", "Roles in pod (comma separated)"], ["skills", "Hard skills (comma separated)"], ["jobType", "Job type", "type"], ["industry", "Industry", "ind"], ["location", "Location"], ["desc", "Description / scope", "area", 1]] }
+};
+const list = (u, k) => Array.isArray(u[k]) ? u[k]
+  : u[k] ? [k == "experience" ? { title: "Experience", desc: u[k] } : { degree: "Education", desc: u[k] }] : [];
+
+const strength = u => {
+  const c = [u.name, u.headline, u.role, u.location, u.about, list(u, "experience").length, list(u, "education").length, (u.skills || []).length >= 3, (u.softSkills || []).length, u.atsScore != null, u.availability];
+  return Math.round(100 * c.filter(Boolean).length / c.length);
+};
+
+const entry = (sec, x, i, ed) => {
+  const t = sec == "experience" ? x.title : sec == "education" ? x.degree : x.name;
+  const sub = sec == "experience" ? [x.company, x.from ? x.from + " – " + (x.to || "Present") : x.to] : sec == "education" ? [x.school, x.year] : [x.issuer, x.year];
+  return `<div class="ent"><div class="ico">${SECT[sec].ico}</div><div><b>${esc(t)}</b><div class="mut">${sub.filter(Boolean).map(esc).join(" · ")}</div>${x.desc ? `<p>${esc(x.desc)}</p>` : ""}</div>
+    ${ed ? `<div class="ea"><button class="ib" title="Edit" onclick="editSec('${sec}',${i})">✎</button><button class="ib" title="Delete" onclick="delSec('${sec}',${i})">🗑</button></div>` : ""}</div>`;
+};
+const block = (title, sec, u, ed) => {
+  const L = list(u, sec);
+  return `<div class="card"><div class="sh"><h3>${title}</h3>${ed ? `<button class="btn o s" onclick="editSec('${sec}',-1)">+ Add</button>` : ""}</div>
+    ${L.map((x, i) => entry(sec, x, i, ed)).join("") || `<div class="empty">${ed ? "Nothing added yet." : "Not provided."}</div>`}</div>`;
+};
+
+function profileMain(u, ed) {
+  const head = `<div class="card"><div class="cover">${ed ? `<button class="camb" title="Change background photo" onclick="photoUI('cover')">📷 Edit background</button>` : ""}</div>
+    <div class="hd-top"><div class="hd"><div class="avw">${av(u, "lg")}${ed ? `<button class="camb sm" title="Change profile photo" onclick="photoUI('photo')">📷</button>` : ""}</div></div>${ed ? `<button class="btn o s" style="margin-top:14px" onclick="editIntro()">✎ Edit intro</button>` : ""}</div>
+    <h2 style="margin-top:10px">${esc(u.name)}</h2>
+    <div style="font-size:15px">${esc(u.headline || (ed ? "Add a headline" : ""))}</div>
+    <div class="mut">${[u.role, u.location, u.years ? u.years + " yrs experience" : "", u.availability ? "Available: " + u.availability : ""].filter(Boolean).map(esc).join(" · ")}</div>
+    <div class="tr">${tg("jobtype", u.jobType)}${tg("industry", u.industry)}</div>
+    <div class="tiles"><div class="tile"><div class="l">Profile strength</div><div class="v">${strength(u)}%</div></div>
+      ${u.atsScore != null ? `<div class="tile"><div class="l">ATS score</div><div class="v">${u.atsScore}</div></div>` : ""}
+      <div class="tile"><div class="l">Skills</div><div class="v">${(u.skills || []).length + (u.softSkills || []).length}</div></div></div></div>`;
+  const about = `<div class="card"><div class="sh"><h3>About</h3>${ed ? `<button class="btn o s" onclick="editAbout()">✎ Edit</button>` : ""}</div>
+    ${u.about ? `<p style="white-space:pre-line;margin:0">${esc(u.about)}</p>` : `<div class="empty">${ed ? "Tell employers about yourself." : "Not provided."}</div>`}</div>`;
+  const skills = `<div class="card"><div class="sh"><h3>Skills</h3>${ed ? `<button class="btn o s" onclick="editSkills()">✎ Edit</button>` : ""}</div>
+    <div class="sec-label" style="margin-top:0">Hard skills</div><div class="tr" style="margin-top:0">${(u.skills || []).map(x => tg("hard", x)).join("") || '<span class="empty">None added.</span>'}</div>
+    <div class="sec-label">Soft skills</div><div class="tr" style="margin-top:0">${(u.softSkills || []).map(x => tg("soft", x)).join("") || '<span class="empty">None added.</span>'}</div>
+    ${(u.resumeSkills || []).length ? `<div class="sec-label">Detected from resume</div><div class="tr" style="margin-top:0">${u.resumeSkills.map(x => tg("hard", x)).join("")}</div>` : ""}</div>`;
+  return head + about + block("Experience", "experience", u, ed) + block("Education", "education", u, ed) + skills + block("Certifications", "certs", u, ed);
+}
+
+V.profile = () => {
+  if (!need("candidate")) return;
+  const s = P.atsScore, st = strength(P);
+  $("#app").innerHTML = `<div class="page"><div class="pl"><div>${profileMain(P, true)}</div>
+    <div class="side">
+      <div class="card"><h4>Profile strength</h4><b style="font-size:26px;color:var(--navy)">${st}%</b><div class="meter"><div style="width:${st}%"></div></div>
+        <p class="mut">Add an about section, experience, education and at least 3 skills to reach 100%.</p></div>
+      <div class="card"><h4>Resume ATS score</h4>
+        <p class="mut">Upload a PDF resume. It is read in your browser; only the score, tips and detected skills are saved.</p>
+        <input type="file" accept="application/pdf" onchange="resume(this.files[0])">
+        <p id="ares">${s == null ? "" : `<b style="font-size:28px;color:var(--brand)">${s}</b>/100`}</p>
+        ${s != null ? `<div class="meter"><div style="width:${s}%"></div></div>${(P.atsTips || []).map(t => `<div class="mut">• ${esc(t)}</div>`).join("")}
+          <p class="mut">Detected skills: ${(P.resumeSkills || []).map(x => tg("hard", x)).join("") || "none"}</p>
+          <a class="btn s" href="#/jobs">See all matching jobs</a>` : ""}<div id="tm"></div></div>
+      <div class="card"><h4>Visibility</h4>
+        <label style="display:flex;gap:8px;align-items:center;font-weight:500;color:var(--ink)"><input type="checkbox" style="width:auto" ${P.visible !== false ? "checked" : ""} onchange="upd({visible:this.checked})"> Visible to employers in talent search</label>
+        <p class="mut">Employers can contact you at your sign-up email.</p></div>
+    </div></div></div>`;
+  setCover(me.uid, "#app"); topMatches();
+};
+
+window.editIntro = () => modal(`<h2>Edit intro</h2><div class="form">${fields(IF, P)}</div>
+  <div class="srow"><button class="btn" onclick="saveIntro()">Save</button><button class="btn o" onclick="closeM()">Cancel</button></div>`, 1);
+window.saveIntro = async () => { await upd(read(IF)); closeM(); route(); };
+window.editAbout = () => modal(`<h2>About</h2><textarea id="f_about" rows="8">${esc(P.about)}</textarea>
+  <div class="srow"><button class="btn" onclick="saveAbout()">Save</button><button class="btn o" onclick="closeM()">Cancel</button></div>`);
+window.saveAbout = async () => { await upd({ about: $("#f_about").value }); closeM(); route(); };
+window.editSkills = () => modal(`<h2>Skills</h2><label>Hard skills</label>${chips("c_h", SKILLS, P.skills)}<label>Soft skills</label>${chips("c_s", SOFT, P.softSkills)}
+  <div class="srow"><button class="btn" onclick="saveSkills()">Save</button><button class="btn o" onclick="closeM()">Cancel</button></div>`, 1);
+window.saveSkills = async () => { await upd({ skills: picked("c_h"), softSkills: picked("c_s") }); closeM(); route(); };
+
+window.editSec = (sec, i) => {
+  const d = list(P, sec)[i] || {};
+  modal(`<h2>${i < 0 ? "Add" : "Edit"} ${SECT[sec].t}</h2><div class="form">${fields(SECT[sec].f, d)}</div>
+    <div class="srow"><button class="btn" onclick="saveSec('${sec}',${i})">Save</button><button class="btn o" onclick="closeM()">Cancel</button></div>`, 1);
+};
+window.saveSec = async (sec, i) => {
+  const L = [...list(P, sec)], d = read(SECT[sec].f);
+  if (i < 0) L.push(d); else L[i] = d;
+  await upd({ [sec]: L }); closeM(); route();
+};
+window.delSec = async (sec, i) => {
+  if (!confirm("Delete this entry?")) return;
+  await upd({ [sec]: list(P, sec).filter((_, j) => j != i) }); route();
+};
+
+/* ----- ATS ----- */
+function ats(t) {
+  const l = t.toLowerCase(), w = l.split(/\s+/).length, tips = [];
+  const sec = [["experience", "experience"], ["education", "education"], ["skills", "skills"], ["summary", "summary|profile|objective"]]
+    .filter(([n, r]) => new RegExp(r).test(l) || (tips.push("Add a clear “" + n + "” section"), 0)).length * 10;
+  const em = /[\w.-]+@[\w.-]+\.\w+/.test(l), ph = /\+?\d[\d\s()-]{8,}/.test(l);
+  if (!em) tips.push("Add an email address");
+  if (!ph) tips.push("Add a phone number");
+  const nums = (l.match(/\d+%|\$\s?\d|\b\d{2,}\b/g) || []).length;
+  if (nums < 6) tips.push("Quantify achievements (%, €, team size)");
+  const len = w >= 300 && w <= 900 ? 20 : w >= 150 && w <= 1300 ? 12 : 5;
+  if (len < 20) tips.push("Aim for 300–900 words");
+  return { score: Math.min(100, sec + (em ? 10 : 0) + (ph ? 10 : 0) + Math.min(nums, 10) * 2 + len), skills: [...new Set([...SKILLS, ...SOFT])].filter(s => l.includes(s.toLowerCase())), tips };
+}
+async function pdfText(f) {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  const d = await pdfjsLib.getDocument({ data: await f.arrayBuffer() }).promise;
+  let t = "";
+  for (let i = 1; i <= d.numPages; i++) t += (await (await d.getPage(i)).getTextContent()).items.map(x => x.str).join(" ") + " ";
+  return t;
+}
+window.resume = async f => {
+  if (!f) return;
+  $("#ares").textContent = "Analysing…";
+  try {
+    const r = ats(await pdfText(f));
+    P = { ...P, atsScore: r.score, resumeSkills: r.skills, atsTips: r.tips };
+    await setDoc(doc(db, "users", me.uid), { atsScore: r.score, resumeSkills: r.skills, atsTips: r.tips, resumeName: f.name }, { merge: true });
+    V.profile();
+  } catch (e) { $("#ares").textContent = "Could not read this PDF: " + e.message; }
+};
+
+/* ----- employer: company, roster, pods, jobs ----- */
+const OF = [
+  ["name", "Organisation name"], ["orgKind", "Type", "kind"], ["tagline", "Tagline"], ["website", "Website"],
+  ["location", "HQ location"], ["industry", "Industry", "ind"], ["size", "Team size"], ["founded", "Founded (year)"],
+  ["contactEmail", "Contact email"], ["linkedin", "LinkedIn / social link"],
+  ["about", "About us", "area", 1]
+];
+const JF = [
+  ["title", "Job title"], ["role", "Role", "role"], ["location", "Location"], ["jobType", "Job type", "type"],
+  ["industry", "Industry", "ind"], ["exp", "Minimum years of experience"]
+];
+const jobForm = d => `<div class="form">${fields(JF, d)}
+  <div class="full"><label>Required hard skills</label>${chips("c_h", SKILLS, d.skills)}</div>
+  <div class="full"><label>Soft skills</label>${chips("c_s", SOFT, d.softSkills)}</div>
+  <div class="full"><label>Description</label><textarea id="f_desc" rows="5">${esc(d.desc)}</textarea></div></div>`;
+const readJob = () => ({ ...read(JF), skills: picked("c_h"), softSkills: picked("c_s"), desc: $("#f_desc").value });
+
+const podCard = (p, org, ed, i) => `<div class="podc"><div><h3>${esc(p.name)} <span class="pod">POD · ${esc(p.size || "?")} members</span></h3>
+  <div class="mut">${[org, p.avail ? "Available: " + p.avail : ""].filter(Boolean).map(esc).join(" · ")}</div>
+  <div class="tr">${(p.roles || []).map(x => tg("role", x)).join("")}${(p.skills || []).map(x => tg("hard", x)).join("")}${tg("loc", p.location)}${tg("jobtype", p.jobType)}${tg("industry", p.industry)}</div>
+  ${p.desc ? `<p class="mut">${esc(p.desc)}</p>` : ""}</div>
+  ${ed ? `<div class="ea"><button class="ib" onclick="editSec('podList',${i})">✎</button><button class="ib" onclick="delSec('podList',${i})">🗑</button></div>` : ""}</div>`;
+
+V.dashboard = async () => {
+  if (!need("org")) return;
+  const tab = new URLSearchParams(location.hash.split("?")[1] || "").get("tab") || "ov";
+  const mine = (await getDocs(query(collection(db, "jobs"), where("orgId", "==", me.uid)))).docs.map(d => ({ id: d.id, ...d.data() }));
+  const apps = (await getDocs(query(collection(db, "applications"), where("orgId", "==", me.uid)))).docs.map(d => ({ id: d.id, ...d.data() }));
+  mine.forEach(j => MJ[j.id] = j);
+  const T = {};
+
+  T.ov = `<div class="tiles" style="margin-top:0">
+      ${[["Open jobs", mine.length], ["Applicants", apps.length], ["Interviews", apps.filter(a => a.status == "Interview").length], ["Saved candidates", SV().length]]
+        .map(([l, v]) => `<div class="tile"><div class="l">${l}</div><div class="v">${v}</div></div>`).join("")}</div>
+    <div class="sec-label">Quick actions</div>
+    <div class="srow"><a class="btn s" href="#/dashboard?tab=post">Post a job</a><a class="btn s o" href="#/talent">Search talent</a><a class="btn s o" href="#/dashboard?tab=co">Edit company details</a><button class="btn s o" onclick="viewOrg('${me.uid}')">Preview public profile</button></div>
+    <div class="sec-label">Recent applicants</div>
+    ${apps.slice(0, 5).map(a => `<div class="pc" style="grid-template-columns:44px 1fr auto"><div class="ini" style="width:44px;height:44px;font-size:14px">${esc(ini(a.candidateName))}</div>
+      <div><b class="lnk" onclick="viewUser('${a.candidateId}')">${esc(a.candidateName)}</b><div class="mut">${esc(a.jobTitle)}</div></div><span class="tag st">${esc(a.status)}</span></div>`).join("") || "<p class='mut'>No applicants yet.</p>"}`;
+
+  T.co = `<div class="card"><div class="ohead"><div class="ini sq">${esc(ini(P.name))}</div><div><h3 style="font-size:19px;margin:0">${esc(P.name)}</h3>
+      <div class="mut">${[P.orgKind, P.location, P.size ? P.size + " people" : ""].filter(Boolean).map(esc).join(" · ")}</div></div></div></div>
+    <div class="card"><div class="form">${fields(OF, P)}
+      <div class="full"><label>Focus technologies</label>${chips("c_f", TECH, P.focus)}</div>
+      <div class="full srow"><button class="btn" onclick="saveOrg()">Save details</button><button class="btn o" onclick="viewOrg('${me.uid}')">Preview public profile</button></div></div></div>`;
+
+  T.post = `<div class="card">${jobForm({})}<div class="srow"><button class="btn" onclick="post()">Publish job</button></div></div>`;
+
+  T.jobs = mine.map(j => `<div class="pc" style="grid-template-columns:1fr auto"><div><h3>${esc(j.title)}</h3><div class="mut">${esc(j.location)} · ${apps.filter(a => a.jobId == j.id).length} applicant(s)</div>
+      <div class="tr">${tags({ ...j, location: "" })}</div></div>
+      <div class="ea"><button class="btn o s" onclick="editJob('${j.id}')">Edit</button><button class="btn o s" onclick="delJob('${j.id}')">Delete</button></div></div>`).join("") || "<p class='mut'>No jobs posted yet.</p>";
+
+  T.apps = `<div class="pipe">${ST.map(s => `<div class="pcol"><h5>${s}<span>${apps.filter(a => a.status == s).length}</span></h5>
+      ${apps.filter(a => a.status == s).map(a => `<div class="pcard"><b class="lnk" onclick="viewUser('${a.candidateId}')">${esc(a.candidateName)}</b><div class="mut">${esc(a.jobTitle)}</div>
+        <select onchange="setSt('${a.id}',this.value)">${opts(ST, a.status)}</select></div>`).join("")}</div>`).join("")}</div>`;
+
+  const tabs = [["ov", "Overview"], ["co", "Company profile"], ["post", "Post a job"], ["jobs", "My jobs"], ["apps", "Applicants"]];
+  $("#app").innerHTML = `<div class="page"><h2>Employer dashboard</h2>
+    <div class="tabs">${tabs.map(([k, l]) => `<button class="${k == tab ? "on" : ""}" onclick="location.hash='#/dashboard?tab=${k}'">${l}</button>`).join("")}</div>${T[tab] || T.ov}</div>`;
+};
+
+window.saveOrg = async () => { await upd({ ...read(OF), focus: picked("c_f") }); authBox(); route(); };
+window.post = async () => {
+  const d = readJob();
+  if (!d.title) return toast("Add a job title");
+  await addDoc(collection(db, "jobs"), { ...d, orgId: me.uid, orgName: P.name, created: serverTimestamp() });
+  toast("Job published");
+  location.hash = "#/dashboard?tab=jobs";
+};
+window.editJob = id => modal(`<h2>Edit job</h2>${jobForm(MJ[id])}<div class="srow"><button class="btn" onclick="saveJob('${id}')">Save changes</button><button class="btn o" onclick="closeM()">Cancel</button></div>`, 1);
+window.saveJob = async id => { await updateDoc(doc(db, "jobs", id), readJob()); closeM(); toast("Job updated"); route(); };
+window.delJob = async id => { if (confirm("Delete this job?")) { await deleteDoc(doc(db, "jobs", id)); route(); } };
+window.setSt = (id, s) => updateDoc(doc(db, "applications", id), { status: s }).then(() => { toast("Status updated"); route(); });
+
+/* ----- public views (profile + firm) ----- */
+window.viewUser = async id => {
+  const u = U[id] || (await getDoc(doc(db, "users", id))).data();
+  if (!u) return toast("Profile not found");
+  U[id] = u;
+  const saved = SV().includes(id);
+  modal(`${profileMain(u, false)}${isGrp() && G[AG] ? gNotes(id) : ""}<div class="srow" style="margin-top:16px">
+    ${u.email ? `<a class="btn" href="mailto:${esc(u.email)}">Contact</a>` : ""}
+    ${isHire() ? `<button class="btn o" onclick="toggleSave('${id}',true)">${saved ? "★ Saved" : isGrp() ? "☆ Add to group shortlist" : "☆ Save candidate"}</button>` : ""}
+    <button class="btn o" onclick="closeM()">Close</button></div>`, 1);
+  setCover(id, "#mbox");
+};
+window.toggleSave = async (id, reopen) => {
+  if (isGrp()) {
+    const g = G[AG];
+    if (!g) return toast("Create or choose a group first");
+    const s = new Set(g.saved || []);
+    s.has(id) ? s.delete(id) : s.add(id);
+    await updateDoc(doc(db, "groups", g.id), { saved: [...s] });
+    g.saved = [...s];
+    toast("Group shortlist updated");
+  } else {
+    const s = new Set(P.saved || []);
+    s.has(id) ? s.delete(id) : s.add(id);
+    await upd({ saved: [...s] });
+  }
+  redraw();
+  if (reopen) viewUser(id);
+};
+
+window.viewOrg = async id => {
+  const o = (await getDoc(doc(db, "users", id))).data();
+  if (!o) return;
+  const jobs = (await getDocs(query(collection(db, "jobs"), where("orgId", "==", id)))).docs.map(d => ({ id: d.id, ...d.data() }));
+  jobs.forEach(j => JOBS[j.id] = j);
+  modal(`<div class="ohead"><div class="ini sq">${esc(ini(o.name))}</div><div><h2 style="margin:0">${esc(o.name)}</h2>
+      <div class="mut">${[o.orgKind, o.location, o.industry, o.size ? o.size + " people" : "", o.founded ? "Founded " + o.founded : ""].filter(Boolean).map(esc).join(" · ")}</div></div></div>
+    ${o.tagline ? `<p><b>${esc(o.tagline)}</b></p>` : ""}
+    <div class="tr">${(o.focus || []).map(x => tg("hard", x)).join("")}</div>
+    ${o.about ? `<div class="sec-label">About</div><p style="white-space:pre-line">${esc(o.about)}</p>` : ""}
+    ${o.pods ? `<div class="sec-label">Group overview</div><p style="white-space:pre-line">${esc(o.pods)}</p>` : ""}
+    ${(o.podList || []).length ? `<div class="sec-label">Pods</div>${o.podList.map(p => podCard(p, "", false)).join("")}` : ""}
+    ${jobs.length ? `<div class="sec-label">Open roles</div>${jobs.map(j => `<div class="mut"><a class="lnk" onclick="viewJob('${j.id}')">${esc(j.title)}</a> · ${esc(j.location)}</div>`).join("")}` : ""}
+    <div class="srow" style="margin-top:16px">${o.website ? `<a class="btn o" target="_blank" rel="noopener" href="${esc(url(o.website))}">Website</a>` : ""}
+      ${o.linkedin ? `<a class="btn o" target="_blank" rel="noopener" href="${esc(url(o.linkedin))}">LinkedIn</a>` : ""}
+      ${o.contactEmail || o.email ? `<a class="btn" href="mailto:${esc(o.contactEmail || o.email)}">Contact</a>` : ""}
+      ${isGrp() ? `<button class="btn o" onclick="toggleSave('${id}')">${SV().includes(id) ? "★ Saved" : "☆ Add to group shortlist"}</button>` : ""}
+      <button class="btn o" onclick="closeM()">Close</button></div>`, 1);
+};
+
+/* ----- talent search (employers) ----- */
+V.talent = async () => {
+  if (!need("hire")) return;
+  if (!me.emailVerified) return $("#app").innerHTML = gateHtml();
+  const extra = `<div class="ff"><label>Availability</label><select id="av">${opts(AVAIL, "", "Any")}</select></div>
+    <div class="ff"><label>Min. years experience</label><input id="y" type="number" min="0" placeholder="0"></div>
+    <div class="ff"><label>Min. ATS score</label><input id="a" type="number" min="0" max="100" placeholder="0"></div>
+    <div class="ff"><label>Shortlist</label><label class="ck"><input type="checkbox" id="sv"> ${isGrp() ? "Group shortlist only" : "Saved only"}</label></div>
+    ${isGrp() ? `<div class="ff"><label>Active group</label><select id="gsel">${Object.values(G).map(g => `<option value="${g.id}" ${g.id == AG ? "selected" : ""}>${esc(g.name)}</option>`).join("") || "<option value=''>No group yet</option>"}</select></div>` : ""}`;
+  $("#app").innerHTML = `<div class="band"><div class="wrap"><h2>Search talent</h2><p>Find individual consultants or ready-made consultancy pods with the same taxonomy candidates use.</p>${filterBar({}, extra)}</div></div>
+    <div class="page">${legend()}<div class="toggle">${isGrp() ? `<button id="tg0"></button>` : ""}<button id="tg1" class="on"></button><button id="tg2"></button>${isGrp() ? `<button id="tg3"></button>` : ""}</div><div id="res" class="mut">Loading…</div></div>`;
+  let us;
+  try { us = (await getDocs(query(collection(db, "users"), limit(500)))).docs.map(d => ({ id: d.id, ...d.data() })); }
+  catch (e) { return $("#res").textContent = "Could not load talent: " + e.message; }
+  us.forEach(u => U[u.id] = u);
+  const oj = {};
+  if (isGrp()) try { (await getDocs(query(collection(db, "jobs"), limit(500)))).docs.forEach(d => { const j = d.data(); (oj[j.orgId] ||= []).push(j); }); } catch {}
+  const orgs = us.filter(u => u.type == "org");
+  const coList = sv => orgs.filter(o => (!gv("k") || JSON.stringify([o.name, o.tagline, o.about, o.focus]).toLowerCase().includes(gv("k")))
+    && (!gv("l") || (o.location || "").toLowerCase().includes(gv("l")))
+    && (!gv("i") || o.industry?.toLowerCase() == gv("i") || (oj[o.id] || []).some(j => j.industry?.toLowerCase() == gv("i")))
+    && (!(gv("r") || gv("s") || gv("ss") || gv("t")) || (oj[o.id] || []).some(j => (!gv("r") || j.role?.toLowerCase() == gv("r")) && (!gv("s") || has(j.skills, gv("s"))) && (!gv("ss") || has(j.softSkills, gv("ss"))) && (!gv("t") || j.jobType?.toLowerCase() == gv("t"))))
+    && (!sv || SV().includes(o.id)));
+  const coHtml = l => `<div class="count">${l.length} compan${l.length == 1 ? "y" : "ies"} — role, skill and job-type filters match against their open jobs</div>` + (l.map(o => `<div class="pc"><div class="ini sq">${esc(ini(o.name))}</div>
+    <div><h3><a class="lnk" style="color:var(--navy)" onclick="viewOrg('${o.id}')">${esc(o.name)}</a></h3>
+      <div class="meta">${[o.orgKind, o.location, o.industry, o.size ? o.size + " people" : ""].filter(Boolean).map(esc).join(" · ")}</div>
+      <div class="tr">${(o.focus || []).map(x => tg("hard", x)).join("")}${[...new Set((oj[o.id] || []).map(j => j.role))].filter(Boolean).map(x => tg("role", x)).join("")}</div>
+      <p class="mut">${esc((o.tagline || o.about || "").slice(0, 200))}</p></div>
+    <div class="act"><span class="match">${(oj[o.id] || []).length} open role(s)</span><button class="btn o s" onclick="viewOrg('${o.id}')">View company</button>
+      <button class="btn o s" onclick="toggleSave('${o.id}')">${SV().includes(o.id) ? "★ Saved" : "☆ Save"}</button></div></div>`).join("") || "<p>No companies match these filters.</p>");
+  const cands = us.filter(u => u.type == "candidate" && u.visible !== false);
+  const pods = us.filter(u => u.type == "org").flatMap(o => (o.podList || []).map(p => ({ ...p, orgId: o.id, orgName: o.name, orgEmail: o.contactEmail || o.email })));
+
+  const draw = () => {
+    if ($("#gsel")) AG = $("#gsel").value;
+    const y = +gv("y") || 0, a = +gv("a") || 0, sv = $("#sv").checked;
+    const ci = cands.filter(u => (!gv("k") || JSON.stringify([u.name, u.headline, u.about, u.skills, u.softSkills, u.experience]).toLowerCase().includes(gv("k")))
+      && (!gv("r") || u.role?.toLowerCase() == gv("r"))
+      && (!gv("s") || has([...(u.skills || []), ...(u.resumeSkills || [])], gv("s")))
+      && (!gv("ss") || has(u.softSkills, gv("ss")))
+      && (!gv("l") || (u.location || "").toLowerCase().includes(gv("l")))
+      && (!gv("t") || u.jobType?.toLowerCase() == gv("t"))
+      && (!gv("i") || u.industry?.toLowerCase() == gv("i"))
+      && (!gv("av") || u.availability?.toLowerCase() == gv("av"))
+      && (+u.years || 0) >= y && (u.atsScore || 0) >= a
+      && (!sv || SV().includes(u.id))).sort((p, q) => (q.atsScore || 0) - (p.atsScore || 0));
+    const pi = pods.filter(p => (!gv("k") || JSON.stringify(p).toLowerCase().includes(gv("k")))
+      && (!gv("r") || has(p.roles, gv("r")))
+      && (!gv("s") || has(p.skills, gv("s")))
+      && (!gv("l") || (p.location || "").toLowerCase().includes(gv("l")))
+      && (!gv("t") || p.jobType?.toLowerCase() == gv("t"))
+      && (!gv("i") || p.industry?.toLowerCase() == gv("i"))
+      && (!gv("av") || p.avail?.toLowerCase() == gv("av")));
+    if ($("#tg3")) { const cl = coList(sv); $("#tg3").textContent = `Companies (${cl.length})`; $("#tg3").className = mode == "co" ? "on" : ""; }
+    $("#tg1").textContent = `Individuals (${ci.length})`;
+    $("#tg2").textContent = `Consultancy pods (${pi.length})`;
+    $("#tg1").className = mode == "ind" ? "on" : "";
+    $("#tg2").className = mode == "pod" ? "on" : "";
+    const render = m => m == "co" ? coHtml(coList(sv)) : m == "ind"
+      ? `<div class="count">${ci.length} candidate${ci.length == 1 ? "" : "s"}, ranked by ATS score</div>` + (ci.map(u => `<div class="pc">${av(u)}
+          <div><h3><a class="lnk" style="color:var(--navy)" onclick="viewUser('${u.id}')">${esc(u.name)}</a></h3>
+            <div class="meta">${[u.headline, u.years ? u.years + " yrs" : "", u.availability ? "Available: " + u.availability : ""].filter(Boolean).map(esc).join(" · ")}</div>
+            <div class="tr">${tags(u)}</div><p class="mut">${esc((u.about || "").slice(0, 200))}</p></div>
+          <div class="act">${u.atsScore != null ? `<span class="match">ATS ${u.atsScore}</span>` : ""}
+            <button class="btn o s" onclick="viewUser('${u.id}')">View profile</button>
+            <button class="btn o s" onclick="toggleSave('${u.id}')">${SV().includes(u.id) ? "★ Saved" : "☆ Save"}</button></div></div>`).join("") || "<p>No candidates match these filters.</p>")
+      : `<div class="count">${pi.length} pod${pi.length == 1 ? "" : "s"}</div>` + (pi.map(p => `<div class="pc"><div class="ini sq">${esc(ini(p.orgName))}</div>
+          <div><h3>${esc(p.orgName)} <span class="pod">POD · ${esc(p.size || "?")} members</span></h3><div class="meta">${esc(p.name)}${p.avail ? " · Available: " + esc(p.avail) : ""}</div>
+            <div class="tr">${(p.roles || []).map(x => tg("role", x)).join("")}${(p.skills || []).map(x => tg("hard", x)).join("")}${tg("loc", p.location)}${tg("jobtype", p.jobType)}${tg("industry", p.industry)}</div>
+            <p class="mut">${esc((p.desc || "").slice(0, 200))}</p></div>
+          <div class="act"><button class="btn o s" onclick="viewOrg('${p.orgId}')">View firm</button>${p.orgEmail ? `<a class="btn s" href="mailto:${esc(p.orgEmail)}">Request pod</a>` : ""}</div></div>`).join("") || "<p>No pods match these filters.</p>");
+    $("#res").innerHTML = mode == "all" ? render("ind") + '<div style="height:18px"></div>' + render("co") : render(mode);
+    if ($("#tg0")) { $("#tg0").textContent = `All (${ci.length + coList(sv).length})`; $("#tg0").className = mode == "all" ? "on" : ""; }
+  };
+  redraw = draw;
+  if (!isGrp() && (mode == "co" || mode == "all")) mode = "ind";
+  if (isGrp() && !window._gAll) { mode = "all"; window._gAll = 1; }
+  if (isOrg()) { $("#tg2").style.display = "none"; if (mode == "pod") mode = "ind"; }
+  $("#tg1").onclick = () => { mode = "ind"; draw(); };
+  $("#tg2").onclick = () => { mode = "pod"; draw(); };
+  if ($("#tg0")) $("#tg0").onclick = () => { mode = "all"; draw(); };
+  if ($("#tg3")) $("#tg3").onclick = () => { mode = "co"; draw(); };
+  $("#fg").oninput = draw;
+  draw();
+};
+
+/* ---------- profile photo & background (resized in-browser, stored in Firestore) ---------- */
+const COV = {};
+async function setCover(id, scope) {
+  try {
+    const d = COV[id] ??= (await getDoc(doc(db, "photos", id))).data() || {};
+    if (d.cover) document.querySelectorAll(scope + " .cover").forEach(e => e.style.background = `url(${d.cover}) center/cover`);
+  } catch {}
+}
+let CR = null;
+window.photoUI = k => {
+  CR = null;
+  const sz = k == "photo" ? [240, 240] : [1200, 300];
+  modal(`<h2>${k == "photo" ? "Profile photo" : "Background photo"}</h2>
+    <input type="file" accept="image/*" onchange="cropLoad(this.files[0])">
+    <canvas id="cc" width="${sz[0]}" height="${sz[1]}" style="width:100%;border-radius:10px;margin:10px 0;background:var(--line)"></canvas>
+    <label>Zoom</label><input id="cz" type="range" min="1" max="3" step=".01" value="1" oninput="cropDraw()">
+    <label>Left / right</label><input id="cx" type="range" min="-1" max="1" step=".01" value="0" oninput="cropDraw()">
+    <label>Up / down</label><input id="cy" type="range" min="-1" max="1" step=".01" value="0" oninput="cropDraw()">
+    <div class="srow"><button class="btn" onclick="cropSave('${k}')">Save</button><button class="btn o" onclick="cropSave('${k}',1)">Remove</button><button class="btn o" onclick="closeM()">Cancel</button></div>`);
+};
+window.cropLoad = f => { if (!f) return; const i = new Image(); i.onload = () => { CR = i; cropDraw(); }; i.src = URL.createObjectURL(f); };
+window.cropDraw = () => {
+  if (!CR) return;
+  const c = $("#cc"), x = c.getContext("2d"), z = +$("#cz").value;
+  const s = Math.max(c.width / CR.width, c.height / CR.height) * z, w = CR.width * s, h = CR.height * s;
+  x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height);
+  x.drawImage(CR, (c.width - w) / 2 + +$("#cx").value * (w - c.width) / 2, (c.height - h) / 2 + +$("#cy").value * (h - c.height) / 2, w, h);
+};
+window.cropSave = async (k, rm) => {
+  if (!rm && !CR) return toast("Choose an image first");
+  const data = rm ? "" : $("#cc").toDataURL("image/jpeg", k == "photo" ? .85 : .8);
+  try {
+    if (k == "photo") await upd({ photo: data });
+    else { await setDoc(doc(db, "photos", me.uid), { cover: data }); COV[me.uid] = { cover: data }; toast("Saved"); }
+    closeM(); authBox(); route();
+  } catch (e) { toast("Could not save: " + e.message); }
+};
+
+/* ---------- ATS-driven job matches ---------- */
+async function topMatches() {
+  const el = $("#tm");
+  if (!el || !myText().size) return;
+  try {
+    const s = myText(), js = (await getDocs(query(collection(db, "jobs"), limit(300)))).docs.map(d => ({ id: d.id, ...d.data() }));
+    js.forEach(j => JOBS[j.id] = j);
+    const r = js.map(j => ({ j, m: match(j) })).filter(x => x.m != null).sort((a, b) => b.m - a.m).slice(0, 5);
+    el.innerHTML = `<div class="sec-label">Best job matches for your resume</div>` + (r.map(({ j, m }) => {
+      const miss = [...(j.skills || []), ...(j.softSkills || [])].filter(x => !s.has(x.toLowerCase())).slice(0, 3);
+      return `<div style="padding:8px 0;border-bottom:1px solid var(--line)"><div style="display:flex;justify-content:space-between;gap:8px"><a class="lnk" onclick="viewJob('${j.id}')">${esc(j.title)}</a><span class="match">${m}%</span></div>
+        <div class="mut">${esc(j.orgName)}${miss.length ? " · Missing: " + esc(miss.join(", ")) : ""}</div><div class="meter" style="height:6px"><div style="width:${m}%"></div></div></div>`;
+    }).join("") || '<p class="mut">No posted jobs list skills yet.</p>');
+  } catch {}
+}
+
+/* ---------- consultancy / group accounts ---------- */
+const G = {}; let AG = "";
+const SV = () => isGrp() ? (G[AG]?.saved || []) : (P?.saved || []);
+async function loadG() {
+  const s = await getDocs(query(collection(db, "groups"), where("memberEmails", "array-contains", me.email.toLowerCase())));
+  Object.keys(G).forEach(k => delete G[k]);
+  s.docs.forEach(d => G[d.id] = { id: d.id, ...d.data() });
+  if (!G[AG]) AG = Object.keys(G)[0] || "";
+}
+const gNotes = id => `<div class="sec-label">Group notes — ${esc(G[AG].name)}</div>
+  ${(G[AG].comments || []).filter(c => c.id == id).map(c => `<div class="mut">💬 <b>${esc(c.by)}:</b> ${esc(c.text)}</div>`).join("") || '<div class="empty">No notes yet.</div>'}
+  <div class="addc" style="margin-top:8px"><input id="gn_t" placeholder="Add a note for your group…"><button class="btn o s" onclick="gNote('${id}')">Post</button></div>`;
+window.gNote = async id => {
+  const t = $("#gn_t").value.trim(); if (!t) return;
+  const g = G[AG], c = { id, by: P.name, text: t, t: Date.now() };
+  await updateDoc(doc(db, "groups", g.id), { comments: arrayUnion(c) });
+  g.comments = [...(g.comments || []), c];
+  viewUser(id);
+};
+window.mkGroup = async () => {
+  const n = $("#gn").value.trim(); if (!n) return toast("Enter a group name");
+  const r = await addDoc(collection(db, "groups"), { name: n, ownerId: me.uid, ownerName: P.name, firm: P.firm || "", memberEmails: [me.email.toLowerCase()], saved: [], comments: [], created: serverTimestamp() });
+  AG = r.id; toast("Group created"); route();
+};
+/* Invitation email service: create a free EmailJS account (emailjs.com), add an email service and a template, then fill these 3 values.
+   Template: To = {{to_email}}, From name = {{from_name}}, Reply-To = {{reply_to}}, Subject = {{subject}}, Body = {{message}} */
+const EMAILJS = { service: "", template: "", key: "" };
+/* group account profile (editable) */
+const GF = [["name", "Full name"], ["firm", "Firm / company name"], ["designation", "Your designation / title"], ["website", "Firm website"], ["linkedin", "LinkedIn URL"],
+  ["location", "Firm location"], ["industry", "Primary industry", "ind"], ["about", "About you / the firm", "area", 1]];
+const gProfile = (u, ed) => `<div class="card"><div class="cover">${ed ? `<button class="camb" title="Change background photo" onclick="photoUI('cover')">📷 Edit background</button>` : ""}</div>
+  <div class="hd-top"><div class="hd"><div class="avw">${av(u, "lg")}${ed ? `<button class="camb sm" title="Change profile photo" onclick="photoUI('photo')">📷</button>` : ""}</div></div>${ed ? `<button class="btn o s" style="margin-top:14px" onclick="editGProfile()">✎ Edit profile</button>` : ""}</div>
+  <h2 style="margin-top:10px">${esc(u.name)}</h2>
+  <div style="font-size:15px">${esc([u.designation, u.firm].filter(Boolean).join(" · ") || (ed ? "Add your designation and firm" : ""))}</div>
+  <div class="mut">${[u.location, u.industry, u.email].filter(Boolean).map(esc).join(" · ")}</div>
+  <div class="srow" style="margin-top:10px">${u.website ? `<a class="btn o s" target="_blank" rel="noopener" href="${esc(url(u.website))}">Website</a>` : ""}${u.linkedin ? `<a class="btn o s" target="_blank" rel="noopener" href="${esc(url(u.linkedin))}">LinkedIn</a>` : ""}</div>
+  <div class="sec-label">About</div>${u.about ? `<p style="white-space:pre-line;margin:0">${esc(u.about)}</p>` : `<div class="empty">${ed ? "Describe yourself and your firm." : "Not provided."}</div>`}</div>`;
+window.editGProfile = () => modal(`<h2>Edit profile</h2><div class="form">${fields(GF, P)}</div>
+  <div class="srow"><button class="btn" onclick="saveGProfile()">Save</button><button class="btn o" onclick="closeM()">Cancel</button></div>`, 1);
+window.saveGProfile = async () => {
+  const d = read(GF); if (!d.name.trim()) return toast("Name is required");
+  await upd(d); closeM(); authBox(); route();
+};
+window.viewMember = async e => {
+  const u = await memberUser(e);
+  if (!u) return toast("This person has not registered yet");
+  modal(`${gProfile(u, false)}<div class="srow" style="margin-top:16px"><a class="btn" href="mailto:${esc(u.email)}">Contact</a><button class="btn o" onclick="closeM()">Close</button></div>`, 1);
+  setCover(u.id, "#mbox");
+};
+const MU = {};
+async function memberUser(e) {
+  if (MU[e]) return MU[e];
+  const s = await getDocs(query(collection(db, "users"), where("email", "==", e), limit(1)));
+  const d = s.docs[0]; return d ? (MU[e] = { id: d.id, ...d.data() }) : null;
+}
+async function membersFill(g) {
+  const rows = await Promise.all((g.memberEmails || []).map(async m => {
+    let u = null; try { u = await memberUser(m); } catch {}
+    const own = g.ownerId == me.uid, owner = u && u.id == g.ownerId;
+    return `<div class="pc" style="grid-template-columns:auto 1fr auto">${u ? av(u) : `<div class="ini">${esc(ini(m))}</div>`}
+      <div><h3>${u ? `<a class="lnk" style="color:var(--navy)" onclick="viewMember('${esc(m)}')">${esc(u.name)}</a>` : esc(m)}${owner ? ' <span class="pod">OWNER</span>' : ""}</h3>
+        <div class="meta">${u ? [u.designation, u.firm, u.location, u.industry].filter(Boolean).map(esc).join(" · ") : "Not registered yet"}</div>
+        <div class="mut">${esc(m)}</div></div>
+      <div class="act">${u ? `<button class="btn o s" onclick="viewMember('${esc(m)}')">View profile</button>` : ""}${own && m != me.email.toLowerCase() ? `<button class="btn o s" onclick="rmMember('${g.id}','${esc(m)}')">Remove</button>` : ""}</div></div>`;
+  }));
+  const el = $("#mb_" + g.id); if (el) el.innerHTML = rows.join("");
+}
+window.editGroup = gid => { const g = G[gid]; modal(`<h2>Edit group</h2><label>Group name</label><input id="eg_n" value="${esc(g.name)}">
+  <label>Description</label><textarea id="eg_d" rows="4">${esc(g.desc)}</textarea>
+  <div class="srow"><button class="btn" onclick="saveGroup('${gid}')">Save</button><button class="btn o" onclick="closeM()">Cancel</button></div>`); };
+window.saveGroup = async gid => {
+  const n = $("#eg_n").value.trim(); if (!n) return toast("Enter a group name");
+  await updateDoc(doc(db, "groups", gid), { name: n, desc: $("#eg_d").value }); closeM(); toast("Group updated"); route();
+};
+/* invitations: the person is added to the group only after accepting */
+window.addMember = async gid => {
+  const e = $("#am_" + gid).value.trim().toLowerCase(), g = G[gid];
+  if (!/^\S+@\S+\.\S+$/.test(e)) return toast("Enter a valid email");
+  if ((g.memberEmails || []).includes(e)) return toast("Already a member");
+  const my = me.email.toLowerCase(), link = location.origin + location.pathname + "#/groups";
+  try {
+    await setDoc(doc(db, "invites", gid + "_" + e), { groupId: gid, groupName: g.name, inviteeEmail: e, invitedBy: me.uid, invitedByName: P.name, invitedByEmail: my, status: "pending", created: serverTimestamp() });
+  } catch (x) { return toast("Could not send invitation: " + x.message); }
+  const subject = `${P.name} invited you to join "${g.name}" on ConsultMesh`;
+  const text = `${P.name} (${my}) has invited you to join the group "${g.name}" on ConsultMesh.\n\nLog in (or sign up as Consultancy / Group with this email address) and accept the invitation under My groups:\n${link}\n\nYou will only be added to the group once you accept.\n\n— ConsultMesh`;
+  if (EMAILJS.service && EMAILJS.template && EMAILJS.key) {
+    try {
+      const r = await fetch("https://api.emailjs.com/api/v1.0/email/send", { method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ service_id: EMAILJS.service, template_id: EMAILJS.template, user_id: EMAILJS.key,
+          template_params: { to_email: e, from_name: "ConsultMesh", inviter_name: P.name, inviter_email: my, reply_to: my, group_name: g.name, link, subject, message: text } }) });
+      if (!r.ok) throw new Error(await r.text());
+      toast("Invitation email sent to " + e);
+    } catch (x) { toast("Invitation saved, but the email could not be sent: " + x.message); }
+  } else {
+    /* no email service configured: open the inviter's own email app with the invitation ready to send */
+    toast("Invitation saved. Send the prepared email from your mail app.");
+    location.href = `mailto:${encodeURIComponent(e)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(text)}`;
+  }
+  route();
+};
+window.cancelInv = async id => { await deleteDoc(doc(db, "invites", id)); toast("Invitation cancelled"); route(); };
+window.acceptInv = async (id, gid) => {
+  const e = me.email.toLowerCase();
+  try {
+    await updateDoc(doc(db, "groups", gid), { memberEmails: arrayUnion(e) });
+    await updateDoc(doc(db, "invites", id), { status: "accepted" });
+    toast("You joined the group");
+  } catch (x) { toast("Could not accept: " + x.message); }
+  route();
+};
+window.declineInv = async id => { await updateDoc(doc(db, "invites", id), { status: "declined" }); toast("Invitation declined"); route(); };
+window.rmMember = async (gid, e) => { if (confirm("Remove " + e + " from this group?")) { await updateDoc(doc(db, "groups", gid), { memberEmails: arrayRemove(e) }); route(); } };
+window.gToggle = async (gid, id) => { AG = gid; await toggleSave(id); route(); };
+window.useGroup = gid => { AG = gid; location.hash = "#/talent"; };
+async function shortlistFill(g) {
+  const rows = await Promise.all((g.saved || []).map(async id => {
+    const u = U[id] || (U[id] = (await getDoc(doc(db, "users", id))).data());
+    return u ? `<div class="pc" style="grid-template-columns:1fr auto"><div><b class="lnk" onclick="${u.type == "org" ? "viewOrg" : "viewUser"}('${id}')">${esc(u.name)}</b>
+      <div class="mut">${[u.headline || u.orgKind, u.role, u.location, u.industry, u.years ? u.years + " yrs" : ""].filter(Boolean).map(esc).join(" · ")}</div>
+      <div class="tr">${u.type == "org" ? (u.focus || []).map(x => tg("hard", x)).join("") : tags({ ...u, location: "", role: "", industry: "" })}</div>
+      ${(g.comments || []).filter(c => c.id == id).map(c => `<div class="mut">💬 <b>${esc(c.by)}:</b> ${esc(c.text)}</div>`).join("")}</div>
+      <button class="btn o s" onclick="gToggle('${g.id}','${id}')">Remove</button></div>` : "";
+  }));
+  const el = $("#sl_" + g.id);
+  if (el) el.innerHTML = rows.join("") || "Nothing shortlisted yet. Save people and companies from talent search.";
+}
+V.groups = async () => {
+  if (!need("group")) return;
+  if (!me.emailVerified) return $("#app").innerHTML = gateHtml();
+  try { await loadG(); } catch (e) { return $("#app").innerHTML = `<div class="page"><p>Could not load groups: ${esc(e.message)}</p></div>`; }
+  const gs = Object.values(G), mail = me.email.toLowerCase();
+  let inv = [], sent = [];
+  try {
+    inv = (await getDocs(query(collection(db, "invites"), where("inviteeEmail", "==", mail), where("status", "==", "pending")))).docs.map(d => ({ id: d.id, ...d.data() }));
+    sent = (await getDocs(query(collection(db, "invites"), where("invitedBy", "==", me.uid)))).docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch {}
+  $("#app").innerHTML = `<div class="page"><h2>My profile</h2>${gProfile(P, true)}
+    <h2 style="margin-top:24px">My groups</h2>
+    <p class="mut">A group lets colleagues from your firm review the same individuals and companies together. Invite colleagues by email; they are added to the group only after they accept the invitation.</p>
+    ${inv.length ? `<div class="card"><h3>Invitations for you</h3>${inv.map(i => `<div class="pc" style="grid-template-columns:1fr auto"><div><b>${esc(i.groupName)}</b><div class="mut">Invited by ${esc(i.invitedByName)} (${esc(i.invitedByEmail)})</div></div>
+      <div class="act"><button class="btn s" onclick="acceptInv('${esc(i.id)}','${esc(i.groupId)}')">Accept</button><button class="btn o s" onclick="declineInv('${esc(i.id)}')">Decline</button></div></div>`).join("")}</div>` : ""}
+    <div class="card"><div class="addc" style="margin:0"><input id="gn" placeholder="New group name (e.g. SAP hiring panel)"><button class="btn" onclick="mkGroup()">Create group</button></div></div>
+    ${gs.map(g => { const own = g.ownerId == me.uid, pend = sent.filter(i => i.groupId == g.id && i.status != "accepted"); return `<div class="card"><div class="sh"><h3>${esc(g.name)}${own ? ' <span class="pod">OWNER</span>' : ""}</h3><div class="srow" style="margin:0">${own ? `<button class="btn o s" onclick="editGroup('${g.id}')">✎ Edit group</button>` : ""}<button class="btn s" onclick="useGroup('${g.id}')">Search as this group</button></div></div>
+      ${g.desc ? `<p class="mut" style="white-space:pre-line">${esc(g.desc)}</p>` : ""}
+      <div class="sec-label" style="margin-top:0">Members (${(g.memberEmails || []).length})</div>
+      <div id="mb_${g.id}" class="mut">Loading…</div>
+      ${own && pend.length ? `<div class="sec-label">Invitations</div>${pend.map(i => `<div class="mut">${esc(i.inviteeEmail)} · <b>${i.status == "declined" ? "Declined" : "Pending"}</b> <a class="lnk" onclick="cancelInv('${esc(i.id)}')">${i.status == "declined" ? "✕ Dismiss" : "✕ Cancel"}</a></div>`).join("")}` : ""}
+      ${own ? `<div class="addc" style="margin-top:10px"><input id="am_${g.id}" type="email" placeholder="colleague@firm.com"><button class="btn o s" onclick="addMember('${g.id}')">Send invitation</button></div>` : ""}
+      <div class="sec-label">Shared shortlist (${(g.saved || []).length})</div><div id="sl_${g.id}" class="mut">Loading…</div></div>`; }).join("") || "<p class='mut' style='margin-top:16px'>You are not in a group yet. Create one above.</p>"}</div>`;
+  setCover(me.uid, "#app");
+  gs.forEach(g => { shortlistFill(g); membersFill(g); });
+};
+
+/* ---------- landing page (signed-out visitors) ---------- */
+const MEDIA = {
+  about: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1000&q=70",
+  cta: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1400&q=60",
+  video: "",   // paste an .mp4 URL (e.g. a company intro video) to show a video section
+  poster: ""
+};
+const imgTag = u => u ? `<img src="${u}" alt="" loading="lazy" onerror="this.remove()">` : "";
+V.home = () => {
+  const N = [[60, 60, "i"], [170, 40, "e"], [290, 70, "g"], [110, 150, "e"], [230, 160, "i"], [340, 170, "i"], [60, 250, "g"], [170, 270, "i"], [290, 270, "e"]];
+  const L = [[0, 1], [1, 2], [0, 3], [1, 4], [2, 5], [3, 4], [4, 5], [3, 6], [4, 7], [5, 8], [6, 7], [7, 8], [1, 3], [4, 8]];
+  const col = { i: "#9cc4f5", e: "#e0b043", g: "#ffffff" };
+  const mesh = `<svg class="mesh" viewBox="0 0 400 320" role="img" aria-label="A network connecting individuals, employers and consultancy groups">
+    ${L.map(([a, b]) => `<line class="ln" x1="${N[a][0]}" y1="${N[a][1]}" x2="${N[b][0]}" y2="${N[b][1]}"/>`).join("")}
+    ${N.map(([x, y, k], i) => `<circle class="nd" style="animation-delay:${-i * .35}s" cx="${x}" cy="${y}" r="${k == "g" ? 11 : 8}" fill="${col[k]}"/>`).join("")}</svg>
+    <div class="mlg"><span><i style="background:#9cc4f5"></i>Individuals</span><span><i style="background:#e0b043"></i>Employers</span><span><i style="background:#fff"></i>Consultancy groups</span></div>`;
+  const aud = [
+    ["Individuals", "candidate", "Get hired for the work you actually do.", ["A full LinkedIn-style profile with photo and banner", "Free resume ATS score with fix-it tips", "Jobs ranked by how well they match your resume"], "Create my profile"],
+    ["Employers", "org", "Find the right person without the noise.", ["Post roles and manage every applicant in a pipeline", "Search by role, hard skill, soft skill, location, job type, industry, availability, experience and ATS score", "Shortlist candidates in one click"], "Start hiring"],
+    ["Consultancies & groups", "group", "Review talent together, not in silos.", ["One person creates a group and invites colleagues by email", "Search individuals and companies as a team", "Shared shortlist with notes everyone can see"], "Register my group"]
+  ];
+  return `<div class="hero"><div class="wrap lh"><div>
+      <h1>Enterprise tech talent, matched with the teams that need it.</h1>
+      <p>ConsultMesh is a global network for SAP and enterprise technology professionals, the employers who hire them and the consultancies who evaluate them.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn gold" onclick="authUI('signup')">Sign up free</button><button class="btn o" style="background:transparent;color:#fff;border-color:#8fa6c4" onclick="authUI('login')">Log in</button></div>
+    </div><div>${mesh}</div></div></div>
+
+  <section class="b"><div class="wrap two"><div>
+      <h2>Who we are</h2>
+      <p>We are a talent network built for the people who run ERP rollouts, cloud migrations, data platforms and security programmes.</p>
+      <p>Individuals, employers and consultancy groups share one taxonomy of roles, skills, industries and job types, so a search for “SAP FICO, contract, BFSI” means the same thing to everyone on the platform.</p>
+      <p class="mut">Our focus is SAP first, with depth across business applications, cloud and infrastructure, cyber security, data and analytics, and software development.</p>
+    </div><div class="ph">${imgTag(MEDIA.about)}</div></div></section>
+
+  <section class="b" style="background:#fff"><div class="wrap">
+    <h2>What we do</h2><p class="mut">One platform, three kinds of account. Pick the one that fits you when you sign up.</p>
+    <div class="grid3">${aud.map(([t, k, h, l, b]) => `<div class="card aud"><h3>${t}</h3><b style="color:var(--navy)">${h}</b><ul>${l.map(x => `<li>${x}</li>`).join("")}</ul><button class="btn s" onclick="authUI('signup','${k}')">${b}</button></div>`).join("")}</div>
+  </div></section>
+
+  <section class="b"><div class="wrap two"><div>
+      <h2>See how your resume scores before an employer does</h2>
+      <p>Upload a PDF and get an ATS score, specific tips, the skills we detected, and the open roles that fit your resume best, including which skills each one says you are missing.</p>
+      <button class="btn" onclick="authUI('signup','candidate')">Check my resume</button>
+    </div><div class="demo"><div class="mut" style="color:#9fb0c8">Illustrative example</div>
+      <div><span class="big" id="dn">0</span><span style="color:#9fb0c8"> / 100 ATS score</span></div>
+      <div class="meter" style="margin:12px 0 16px"><div style="--w:86%"></div></div>
+      <div class="jr"><b>92%</b>SAP S/4HANA Finance Lead</div><div class="jr"><b>81%</b>Solution Architect, Cloud ERP</div><div class="jr"><b>67%</b>Data Analyst, BFSI</div>
+    </div></div></section>
+
+  ${MEDIA.video ? `<section class="b" style="background:#fff"><div class="wrap"><h2>Meet ConsultMesh</h2><video class="vid" controls preload="metadata" ${MEDIA.poster ? `poster="${MEDIA.poster}"` : ""} src="${MEDIA.video}"></video></div></section>` : ""}
+
+  <section class="b" style="background:#fff"><div class="wrap"><h2>Technologies we cover</h2>
+    <div class="chips" style="margin-top:12px">${TECH.map(t => `<span class="chip" style="cursor:default">${t}</span>`).join("")}</div></div></section>
+
+  <div class="ctab">${imgTag(MEDIA.cta)}<div class="wrap"><h2>Ready to join the mesh?</h2><p style="color:#cfd9e6;margin:0 auto 20px">Create a free account in under a minute.</p>
+    <button class="btn gold" onclick="authUI('signup')">Sign up</button> <button class="btn o" style="background:transparent;color:#fff;border-color:#8fa6c4" onclick="authUI('login')">Log in</button></div></div>`;
+};
+function landingFx() {
+  const d = $(".demo"); if (!d) return;
+  new IntersectionObserver((e, o) => {
+    if (!e[0].isIntersecting) return;
+    o.disconnect(); d.classList.add("go");
+    let i = 0; const t = setInterval(() => { $("#dn").textContent = i; if (i++ >= 86) clearInterval(t); }, 18);
+  }, { threshold: .4 }).observe(d);
+}
+
+/* ---------- router ---------- */
+async function route() {
+  redraw = () => {};
+  let h = (location.hash.slice(2) || "home").split("?")[0];
+  if (!me) h = "home";
+  else if (h == "home") { location.hash = homeHash(); return; }
+  const v = V[h] || V.home;
+  const o = await v();
+  if (typeof o == "string") { $("#app").innerHTML = o; if (h == "home") { landingFx(); } }
+  window.scrollTo(0, 0);
+}
+async function count() {
+  try {
+    const n = (await getDocs(query(collection(db, "jobs"), limit(500)))).size;
+    let i = 0;
+    const t = setInterval(() => { $("#n2").textContent = i; if (i++ >= n) clearInterval(t); }, 40);
+  } catch {}
+}
+window.route = route;
+window.addEventListener("hashchange", route);
+window.$ = $;
+
+/* ---------- email verification ---------- */
+const ver = () => { if (me && me.emailVerified) return true; toast("Please verify your email first"); return false; };
+const gateHtml = () => `<div class="page"><h2>Verify your email to continue</h2>
+  <p>We sent a verification link to <b>${esc(me?.email || "")}</b>. Open it, then press the button below. Check your spam folder if you cannot find it.</p>
+  <div class="srow"><button class="btn" onclick="checkVer()">I've verified</button><button class="btn o" onclick="resendVer()">Resend email</button></div></div>`;
+function vbar() {
+  const b = $("#vbar"); if (!b) return;
+  if (me && !me.emailVerified) {
+    b.className = "vbar";
+    b.innerHTML = `Verify your email: we sent a link to <b>${esc(me.email)}</b>. Until you verify you cannot edit, post, apply or search. <a class="lnk" onclick="resendVer()">Resend email</a> · <a class="lnk" onclick="checkVer()">I've verified</a>`;
+  } else { b.className = ""; b.innerHTML = ""; }
+}
+window.resendVer = async () => {
+  try { await sendEmailVerification(me); toast("Verification email sent"); }
+  catch (e) { toast(authMsg(e)); }
+};
+window.checkVer = async silent => {
+  if (!me) return;
+  try {
+    await me.reload();
+    if (me.emailVerified) { await me.getIdToken(true); vbar(); toast("Email verified"); route(); }
+    else if (silent !== true) toast("Not verified yet. Open the link in the email first.");
+  } catch (e) { if (silent !== true) toast(authMsg(e)); }
+};
+window.addEventListener("focus", () => { if (me && !me.emailVerified) checkVer(true); });
+/* every action that writes data requires a verified email (the security rules enforce this too) */
+["upd", "post", "apply", "saveJob", "delJob", "setSt", "mkGroup", "addMember", "rmMember", "gToggle", "gNote", "toggleSave",
+ "saveGProfile", "saveGroup", "cancelInv", "acceptInv", "declineInv", "saveSec", "delSec", "saveIntro", "saveAbout", "saveSkills", "saveOrg", "cropSave", "resume"].forEach(n => {
+  const f = window[n]; if (f) window[n] = (...a) => ver() ? f(...a) : undefined;
+});
+nav();
+</script>
+</body>
+
+</html>
