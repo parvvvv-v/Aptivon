@@ -7,7 +7,7 @@
 <title>ConsultMesh: A tech talent network</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
 <style>
@@ -247,7 +247,502 @@ img.ini{object-fit:cover;background:#fff}
 @media (prefers-reduced-motion:reduce){.mesh .ln,.mesh .nd{animation:none}.demo .meter div{transition:none}}
 .vbar{background:#fff4d6;color:#5c4300;padding:10px 28px;font-size:13.5px;border-bottom:1px solid #ecd48a}
 .vbar .lnk{color:#5c4300;text-decoration:underline;cursor:pointer}
+
+/* ============ v3: Red Global style hero + Catalant style motion ============ */
+:root{--hot:#ff4b2b;--hot2:#ff7a45}
+header{backdrop-filter:blur(10px);background:rgba(22,41,63,.94);box-shadow:0 1px 0 rgba(255,255,255,.06)}
+.dd>a,nav>a{position:relative}
+.dd>a:before,nav>a:before{content:"";position:absolute;left:12px;right:12px;bottom:14px;height:2px;background:var(--hot);transform:scaleX(0);transform-origin:left;transition:transform .35s cubic-bezier(.2,.7,.2,1)}
+.dd:hover>a:before,nav>a:hover:before{transform:scaleX(1)}
+#auth{gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.hl{display:inline-flex;align-items:center;gap:6px;color:#fff;font-weight:600;font-size:13.5px;padding:6px 8px;position:relative}
+.hl span{background:linear-gradient(currentColor,currentColor) 0 100%/0 2px no-repeat;transition:background-size .3s}
+.hl:hover span{background-size:100% 2px}
+.pill{border-radius:999px;padding:9px 18px;font-weight:700;font-size:13.5px;cursor:pointer;border:1px solid transparent;transition:transform .25s,box-shadow .25s,background .25s,color .25s;white-space:nowrap}
+.pill.hot{background:linear-gradient(135deg,var(--hot),var(--hot2));color:#fff;box-shadow:0 6px 18px rgba(255,75,43,.35)}
+.pill.ol{background:transparent;color:#fff;border-color:rgba(255,255,255,.55)}
+.pill:hover{transform:translateY(-2px)}
+.pill.hot:hover{box-shadow:0 10px 26px rgba(255,75,43,.5)}
+.pill.ol:hover{background:#fff;color:var(--navy);box-shadow:0 8px 20px rgba(0,0,0,.25)}
+@media(max-width:1100px){.pill.ol:nth-of-type(3){display:none}}
+@media(max-width:900px){.pill.ol{display:none}}
+
+.hero.rg{min-height:620px;display:flex;align-items:center;padding:96px 28px 90px;background:#14243a;font-family:'Sora','Plus Jakarta Sans',sans-serif}
+.hero.rg:before,.hero.rg:after{display:none}
+.hero.rg .wrap{width:100%;z-index:2}
+.hbg{position:absolute;inset:0;overflow:hidden}
+.hbg img{width:100%;height:100%;object-fit:cover;animation:kb 22s ease-in-out infinite alternate;filter:saturate(1.15)}
+@keyframes kb{from{transform:scale(1) translateX(0)}to{transform:scale(1.14) translateX(-2%)}}
+.hero.rg .tint{position:absolute;inset:0;background:linear-gradient(100deg,rgba(14,26,46,.92) 0%,rgba(31,58,95,.72) 45%,rgba(255,75,43,.28) 100%),radial-gradient(60% 80% at 100% 0%,rgba(255,75,43,.55),transparent 70%);animation:tintp 9s ease-in-out infinite alternate}
+@keyframes tintp{to{opacity:.82}}
+.streak{position:absolute;top:-20%;width:90px;height:140%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);filter:blur(14px);transform:rotate(18deg);z-index:1;animation:sweep 11s linear infinite}
+.streak.s1{left:-10%}.streak.s2{left:-10%;animation-delay:-4s;width:150px;opacity:.7}.streak.s3{left:-10%;animation-delay:-8s;width:60px}
+@keyframes sweep{to{left:115%}}
+.hero.rg h1{font-weight:300;font-size:58px;letter-spacing:-1.5px;line-height:1.08}
+.hero.rg h1 b{font-weight:700}
+.hero.rg p{color:#e3ebf6;font-size:16.5px}
+.abtn{display:inline-flex;align-items:center;gap:30px;justify-content:space-between;background:rgba(20,55,85,.92);color:#fff;border:0;padding:16px 26px;font-weight:600;font-size:15px;cursor:pointer;margin:0 8px 10px 0;position:relative;overflow:hidden;transition:background .3s,transform .3s}
+.abtn:before{content:"";position:absolute;left:0;bottom:0;height:3px;width:0;background:var(--hot);transition:width .35s}
+.abtn:hover{background:var(--hot);transform:translateY(-2px)}
+.abtn:hover:before{width:100%;background:#fff}
+.abtn i{font-style:normal;transition:transform .3s}
+.abtn:hover i{transform:translateX(6px)}
+.hero-login{margin-left:6px}
+.scrollhint{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);font-size:12px;color:#fff;opacity:.7;letter-spacing:.12em;text-transform:uppercase;animation:bob 2s ease-in-out infinite;z-index:2}
+@keyframes bob{50%{transform:translate(-50%,6px)}}
+.hero.rg .mesh{filter:drop-shadow(0 12px 30px rgba(0,0,0,.35))}
+
+/* scroll reveal */
+.rv{opacity:0;transform:translateY(28px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
+.rv.in{opacity:1;transform:none}
+.rv.d2{transition-delay:.15s}.rv.d3{transition-delay:.3s}
+.hero .rv{animation:rvin 1s .1s both}.hero .rv.d2{animation-delay:.3s}
+@keyframes rvin{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
+.hero .rv{opacity:1;transform:none;transition:none}
+
+/* hover effects */
+.grid3 .card{transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .35s,border-color .35s;position:relative;overflow:hidden}
+.grid3 .card:before{content:"";position:absolute;left:0;top:0;height:3px;width:100%;background:linear-gradient(90deg,var(--hot),var(--gold));transform:scaleX(0);transform-origin:left;transition:transform .45s}
+.grid3 .card:hover{transform:translateY(-8px);box-shadow:0 18px 40px rgba(31,58,95,.18);border-color:transparent}
+.grid3 .card:hover:before{transform:scaleX(1)}
+.ph img{transition:transform .8s cubic-bezier(.2,.7,.2,1)}
+.ph:hover img{transform:scale(1.07)}
+.ph{box-shadow:0 20px 50px rgba(31,58,95,.2)}
+section.b h2{position:relative;display:inline-block}
+section.b h2:after{content:"";display:block;height:3px;width:40%;margin-top:6px;background:var(--hot);border-radius:2px;transition:width .5s}
+section.b:hover h2:after{width:100%}
+.chips .chip{transition:transform .25s,background .25s,color .25s,box-shadow .25s}
+.chips .chip:hover{transform:translateY(-3px);background:var(--navy);color:#fff;box-shadow:0 8px 18px rgba(31,58,95,.25)}
+.btn{transition:transform .25s,box-shadow .25s,filter .25s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(31,58,95,.22)}
+.demo{transition:transform .4s,box-shadow .4s}.demo:hover{transform:translateY(-6px);box-shadow:0 24px 50px rgba(0,0,0,.3)}
+.demo .jr{transition:padding-left .3s,background .3s}.demo .jr:hover{padding-left:10px;background:rgba(255,255,255,.06)}
+.ctab img{animation:kb 24s ease-in-out infinite alternate}
+@media(max-width:860px){.hero.rg h1{font-size:34px}.hero.rg{min-height:520px}}
+@media(prefers-reduced-motion:reduce){.hbg img,.streak,.tint,.scrollhint,.ctab img{animation:none}.rv{opacity:1;transform:none;transition:none}}
+
+/* ===== Landing additions: nav, services, news, logos, team, contact ===== */
+nav > a.nv, nav .dd > a.nv{cursor:pointer}
+#hire,#services,#news{scroll-margin-top:72px}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--brand);margin:0 0 8px}
+.sec-h{text-align:center;max-width:720px;margin:0 auto 10px}
+.sec-h h2{font-size:34px;letter-spacing:-.8px}
+.sec-sub{text-align:center;color:var(--mut);max-width:640px;margin:0 auto 26px}
+.svc{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+.svc .card{transition:transform .25s,box-shadow .25s,border-color .25s;border-top:3px solid transparent}
+.svc .card:hover{transform:translateY(-6px);box-shadow:0 18px 36px rgba(20,36,58,.12);border-top-color:var(--brand)}
+.svc .ic{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--brand),var(--navy));color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:12px}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px;margin-top:20px;counter-reset:st}
+.steps .st{position:relative;background:var(--surf);border:1px solid var(--bd);border-radius:12px;padding:24px 20px 20px}
+.steps .st:before{counter-increment:st;content:counter(st);position:absolute;top:-16px;left:18px;width:34px;height:34px;border-radius:50%;background:var(--gold);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center}
+.news-tabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:0 0 22px}
+.news-tabs button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 18px;font-weight:700;cursor:pointer;color:var(--navy);transition:.2s}
+.news-tabs button.on,.news-tabs button:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
+.ngrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+.ncard{display:flex;flex-direction:column;background:#fff;border:1px solid var(--bd);border-radius:14px;overflow:hidden;transition:transform .3s,box-shadow .3s}
+.ncard:hover{transform:translateY(-6px);box-shadow:0 20px 40px rgba(20,36,58,.16)}
+.ncard .im{position:relative;height:180px;overflow:hidden;background:linear-gradient(135deg,var(--navy),var(--brand))}
+.ncard .im img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.ncard:hover .im img{transform:scale(1.08)}
+.ncard .im:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(14,26,46,.65))}
+.ncard .tag{position:absolute;left:12px;bottom:10px;z-index:1;color:#fff;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:rgba(255,75,43,.9);padding:3px 9px;border-radius:999px}
+.ncard .bd{padding:16px 18px 18px;display:flex;flex-direction:column;gap:8px;flex:1}
+.ncard h4{margin:0;font-size:15.5px;line-height:1.35;color:var(--navy)}
+.ncard p{margin:0;font-size:13px;color:var(--mut);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.ncard .ft{margin-top:auto;font-size:12px;color:var(--mut);display:flex;justify-content:space-between;gap:8px}
+.nsk{height:300px;border-radius:14px;background:linear-gradient(100deg,#eceae4 30%,#f6f5f1 50%,#eceae4 70%);background-size:200% 100%;animation:sh 1.3s linear infinite}
+@keyframes sh{to{background-position:-200% 0}}
+.logos{background:#fff;border-top:1px solid var(--line);padding:46px 0 52px;overflow:hidden}
+.logos h3{text-align:center;font-size:15px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);margin:0 0 26px}
+.lmq{display:flex;gap:18px;width:max-content;animation:mq 38s linear infinite}
+.logos:hover .lmq{animation-play-state:paused}
+@keyframes mq{to{transform:translateX(-50%)}}
+.lg{display:flex;align-items:center;gap:12px;padding:14px 26px;border:1px solid var(--line);border-radius:12px;background:var(--surf);min-width:190px;filter:grayscale(1);opacity:.8;transition:.3s}
+.lg:hover{filter:none;opacity:1;transform:translateY(-3px);box-shadow:0 10px 24px rgba(20,36,58,.12)}
+.lg img{width:38px;height:38px;object-fit:contain;border-radius:6px}
+.lg b{font-size:15px;color:var(--navy)}
+@media(prefers-reduced-motion:reduce){.lmq,.nsk{animation:none}}
+.pf-ban{height:170px;border-radius:14px 14px 0 0;background:linear-gradient(120deg,var(--navy),var(--brand) 60%,var(--gold))}
+.pf{padding:0;overflow:hidden}
+.pf .in{padding:0 28px 28px;margin-top:-52px}
+.pf .avl{width:104px;height:104px;border-radius:50%;background:var(--navy);color:#fff;border:4px solid #fff;display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:800}
+.pf h1{margin:12px 0 2px;font-size:28px;color:var(--navy)}
+.pf .li{display:flex;gap:12px;flex-wrap:wrap;margin:14px 0}
+.pf .ex{border-left:2px solid var(--line);padding:0 0 14px 16px;margin-left:6px}
+.ctgrid{display:grid;grid-template-columns:1.2fr 1fr;gap:20px}
+@media(max-width:860px){.ctgrid{grid-template-columns:1fr}.sec-h h2{font-size:26px}}
+
+/* ===== Round 2: industry dropdown, colour themes, live news ===== */
+.msd{border:1px solid var(--line);border-radius:8px;background:#fff}
+.msd .msb{width:100%;text-align:left;background:none;border:0;padding:10px 12px;cursor:pointer;display:flex;justify-content:space-between;gap:8px;color:var(--ink);font-weight:500}
+.msd .msb:after{content:"▾";color:var(--mut)}
+.msd.open .msb:after{content:"▴"}
+.msd .msp{display:none;max-height:210px;overflow:auto;padding:6px 12px 10px;border-top:1px solid var(--line);grid-template-columns:1fr;gap:6px}
+.msd.open .msp{display:grid}
+.msd .msp label{display:flex;gap:8px;align-items:center;font-weight:500;color:var(--ink);margin:0;text-transform:none;letter-spacing:0;font-size:13.5px}
+.msd .msp input{width:auto}
+section.b{position:relative;overflow:hidden}
+section.b:before{content:"";position:absolute;width:380px;height:380px;border-radius:50%;right:-120px;top:-140px;background:radial-gradient(circle,rgba(42,120,214,.16),transparent 70%);pointer-events:none}
+section.b:after{content:"";position:absolute;width:300px;height:300px;border-radius:50%;left:-110px;bottom:-130px;background:radial-gradient(circle,rgba(255,75,43,.12),transparent 70%);pointer-events:none}
+section.b .wrap{z-index:1}
+section.b.t-sky{background:linear-gradient(135deg,#e3eefc,#f2f7ff 55%,#fdf1de)}
+section.b.t-sand{background:linear-gradient(135deg,#fff3dc,#fffaf1 55%,#ffe9e6)}
+section.b.t-mint{background:linear-gradient(135deg,#dff6f2,#f2fbf9 55%,#e6effc)}
+section.b.t-ice{background:linear-gradient(160deg,#ece6ff,#f7f4ff 60%,#e4f1ff)}
+section.b.t-dark{color:#fff;background:radial-gradient(60% 90% at 92% 0%,rgba(255,75,43,.38),transparent 70%),radial-gradient(50% 80% at 0% 100%,rgba(42,120,214,.45),transparent 70%),linear-gradient(135deg,#16293f,#1F3A5F)}
+.t-dark h2,.t-dark h3{color:#fff}
+.t-dark .mut,.t-dark .sec-sub{color:#cfd9e6}
+.t-dark .eyebrow{color:#ffb35c}
+.t-dark .st{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2)}
+.t-dark .btn.o{background:transparent;color:#fff;border-color:#8fa6c4}
+.sec-h h2:after{content:"";display:block;width:56px;height:4px;border-radius:4px;margin:12px auto 0;background:linear-gradient(90deg,var(--brand),#ff4b2b)}
+.svc .card,.grid3 .card.aud{border-top:4px solid var(--brand)}
+.svc .card:nth-child(4n+2),.grid3 .card.aud:nth-child(3n+2){border-top-color:var(--gold)}
+.svc .card:nth-child(4n+3),.grid3 .card.aud:nth-child(3n+3){border-top-color:#ff4b2b}
+.svc .card:nth-child(4n+4){border-top-color:#12b5a6}
+.svc .card:nth-child(4n+2) .ic{background:linear-gradient(135deg,var(--gold),#e0a93a)}
+.svc .card:nth-child(4n+3) .ic{background:linear-gradient(135deg,#ff4b2b,#ff8a5c)}
+.svc .card:nth-child(4n+4) .ic{background:linear-gradient(135deg,#12b5a6,#2fd3c3)}
+.svc .card:nth-child(6) .ic{background:linear-gradient(135deg,#7a5af8,#a48bff)}
+.svc .card:hover{border-top-color:#ff4b2b}
+.t-mint .chip{background:#fff;border-color:#9fdcd5;color:#0f6f66}
+.logos{background:linear-gradient(180deg,#fff,#e8f0fc 60%,#fdf1de)}
+.lg{filter:none;opacity:1;background:#fff;text-decoration:none;box-shadow:0 4px 14px rgba(20,36,58,.06)}
+.lg:hover{border-color:var(--brand)}
+.nstat{text-align:center;font-size:12.5px;color:var(--mut);margin:-8px 0 18px}
+.nstat i{display:inline-block;width:8px;height:8px;border-radius:50%;background:#0ca30c;margin-right:6px;animation:pl 1.4s ease-in-out infinite}
+@keyframes pl{50%{opacity:.25}}
+
+/* ===== Landing: warm editorial look (cream + off-white, orange accent, burgundy base) ===== */
+:root{--cream:#f6f3ec;--paper:#fdfcf9;--wine:#4a1222;--tile:#e9e4da}
+/* sections alternate off-white / cream only */
+section.b,section.b[class*="t-"]{background:var(--paper);color:var(--ink)}
+#app section.b:nth-of-type(even),#app section.b[class*="t-"]:nth-of-type(even){background:var(--cream)}
+section.b:before,section.b:after{display:none}
+/* the one dark band keeps a calm burgundy */
+section.b.t-dark{background:var(--wine)!important;color:#fff}
+/* serif headings, mono eyebrows */
+section.b h2,.sec-h h2,.ctab h2,.page .sec-h h2{font-family:'Newsreader',Georgia,'Times New Roman',serif;font-weight:400;letter-spacing:-.4px;color:#15121a;font-size:38px;line-height:1.12}
+section.b h3{font-family:'Newsreader',Georgia,serif;font-weight:500;font-size:21px;color:#15121a}
+.ctab h2{color:#fff}.t-dark h2,.t-dark h3{color:#fff}
+section.b h2:after,.sec-h h2:after{display:none}
+.sec-h{text-align:left;max-width:none;margin:0 0 26px}
+.sec-sub{text-align:left;margin:0 0 26px;max-width:640px}
+.eyebrow,.t-dark .eyebrow{font-family:'DM Mono',ui-monospace,Menlo,monospace;font-weight:400;font-size:12.5px;letter-spacing:.16em;color:var(--hot)}
+/* flat beige cards, no borders / coloured tops */
+section.b .card,section.b .st,.svc .card,.grid3 .card,.grid3 .card.aud{background:var(--cream);border:0!important;border-radius:6px;box-shadow:none}
+#app section.b:nth-of-type(even) .card,#app section.b:nth-of-type(even) .st{background:var(--paper)}
+.svc .card,.svc .card:nth-child(n),.grid3 .card.aud,.grid3 .card.aud:nth-child(n){border-top:0!important}
+.grid3 .card:before{display:none}
+.grid3 .card:hover,.svc .card:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(74,18,34,.10)}
+.svc .ic,.svc .card:nth-child(n) .ic{background:var(--tile)!important;color:var(--wine);border-radius:6px;width:48px;height:48px}
+.steps .st:before{background:var(--hot)}
+.t-dark .st{background:rgba(255,255,255,.07)!important}
+.fcard{background:var(--paper)!important}
+.ph,.ncard{border-radius:6px;box-shadow:none}
+.ph{box-shadow:none}
+.ncard{background:var(--paper);border:1px solid var(--line)}
+.ncard h4{font-family:'Newsreader',Georgia,serif;font-weight:500;font-size:18px;color:#15121a}
+.ncard .tag{background:var(--cream);color:#15121a;font-family:'DM Mono',monospace;font-weight:400;font-size:10.5px;border-radius:4px}
+.ncard .im:after{background:none}
+.news-tabs button{background:transparent;border-color:var(--wine);color:var(--wine)}
+/* chips: soft beige */
+section.b .chip,.t-mint .chip{background:var(--tile);border-color:transparent;color:#15121a;border-radius:4px}
+/* buttons: orange pill + outlined pill */
+section.b .btn,.ctab .btn{border-radius:999px;background:var(--hot);color:#fff;padding:10px 22px}
+section.b .btn.o,.t-dark .btn.o{background:transparent;color:var(--wine);border:1px solid var(--wine)}
+.t-dark .btn.o{color:#fff;border-color:#fff}
+/* logo strip, CTA, footer */
+.logos{background:var(--paper);border-top:0}
+.logos h3{font-family:'DM Mono',monospace;font-weight:400;color:var(--hot)}
+.lg{background:var(--cream);border:0;border-radius:6px;box-shadow:none;filter:none;opacity:1}
+.lg:hover{box-shadow:0 8px 20px rgba(74,18,34,.10)}
+.lg b{color:#15121a}
+.ctab,.ctab:before{background:var(--wine)}
+.ctab:before{display:none}
+.ctab img{opacity:.14}
+footer{background:var(--wine);color:#e6d3d8}
+
+/* ============================================================
+   v4: Internal pages redesign (jobs, profile, dashboard, talent,
+   groups, applications, modals). Presentation only.
+   ============================================================ */
+:root{--r:14px;--sh1:0 1px 2px rgba(20,22,31,.05),0 4px 14px rgba(20,22,31,.05);--sh2:0 2px 4px rgba(20,22,31,.06),0 14px 34px rgba(74,18,34,.12);--accent:#ff4b2b;--ring:0 0 0 3px rgba(42,120,214,.22)}
+html{scroll-behavior:smooth}
+body{background:var(--cream);-webkit-font-smoothing:antialiased}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+::selection{background:var(--brandl)}
+
+/* ---- header (shared) ---- */
+header{height:64px;box-shadow:0 1px 0 rgba(255,255,255,.06),0 6px 24px rgba(10,15,32,.18)}
+.me{padding:4px 12px 4px 4px;border-radius:999px;background:rgba(255,255,255,.08);transition:background .2s}
+.me:hover{background:rgba(255,255,255,.16)}
+.me .av{background:linear-gradient(135deg,var(--brand),var(--accent))}
+.dd div{border-radius:12px;border:0;box-shadow:0 18px 44px rgba(10,15,32,.28);padding:8px;top:58px}
+.dd div a{border-radius:8px;font-weight:500}
+.dd div a:hover{background:var(--cream);color:var(--wine)}
+
+/* ---- page frame ---- */
+.page{max-width:1180px;padding:34px 24px 80px}
+.page>h2,.page h2{font-family:'Newsreader',Georgia,serif;font-weight:500;font-size:34px;letter-spacing:-.5px;color:#15121a;margin-bottom:14px}
+.page h3,.card h3{font-family:'Newsreader',Georgia,serif;font-weight:500;font-size:20px;color:#15121a}
+.sec-label{font-family:'DM Mono',ui-monospace,monospace;font-weight:400;font-size:11.5px;letter-spacing:.14em;color:var(--hot);margin:22px 0 10px;display:flex;align-items:center;gap:10px}
+.sec-label:after{content:"";flex:1;height:1px;background:var(--line)}
+.mut{color:#6b6a72}
+
+/* ---- hero band on search pages ---- */
+.band{background:radial-gradient(60% 120% at 100% 0%,rgba(255,75,43,.35),transparent 65%),radial-gradient(50% 100% at 0% 100%,rgba(42,120,214,.35),transparent 70%),var(--wine);padding:44px 28px 34px}
+.band h2{font-family:'Newsreader',Georgia,serif;font-weight:400;font-size:40px;letter-spacing:-.8px;margin-bottom:6px}
+.band p{color:#e6d3d8;font-size:15px}
+.fgrid{border:0;border-radius:var(--r);padding:16px;box-shadow:0 18px 40px rgba(0,0,0,.22);gap:12px}
+.ff label{font-family:'DM Mono',monospace;font-size:10px;font-weight:400;letter-spacing:.12em}
+.srow .btn.s[style*="background:#fff"]{background:rgba(255,255,255,.14)!important;color:#fff!important;border:1px solid rgba(255,255,255,.35)}
+
+/* ---- inputs ---- */
+input,select,textarea{border-radius:10px;border:1px solid #d9d6cc;padding:10px 12px;transition:border-color .2s,box-shadow .2s,background .2s}
+input:hover,select:hover,textarea:hover{border-color:#bdb9ab}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--brand);box-shadow:var(--ring)}
+input[type=checkbox]{accent-color:var(--hot);width:auto}
+input[type=range]{accent-color:var(--hot);padding:0}
+input[type=file]{padding:8px;background:var(--cream);border-style:dashed}
+label{letter-spacing:.01em}
+.msd{border-radius:10px;border-color:#d9d6cc}
+.msd.open{box-shadow:var(--ring);border-color:var(--brand)}
+
+/* ---- buttons ---- */
+.page .btn,.modal .btn,.band .btn{border-radius:999px;background:var(--hot);padding:10px 22px;letter-spacing:.01em;box-shadow:0 4px 12px rgba(255,75,43,.22)}
+.page .btn.s,.modal .btn.s,.band .btn.s{padding:7px 16px}
+.page .btn.o,.modal .btn.o{background:transparent;color:var(--wine);border:1px solid rgba(74,18,34,.35);box-shadow:none}
+.page .btn.o:hover,.modal .btn.o:hover{background:var(--wine);color:#fff;border-color:var(--wine);filter:none}
+.btn:active{transform:translateY(0) scale(.98)}
+.btn[disabled]{opacity:.5;pointer-events:none}
+.ib{border-radius:8px;background:var(--cream);border-color:transparent;transition:background .2s,transform .2s}
+.ib:hover{background:var(--brandl);transform:translateY(-1px)}
+.lnk{color:var(--brand)}
+.camb{box-shadow:0 4px 14px rgba(0,0,0,.28);font-weight:600;transition:transform .2s}
+.camb:hover{transform:scale(1.06)}
+
+/* ---- cards ---- */
+.page .card,.modal .card{background:var(--paper);border:1px solid rgba(20,22,31,.07);border-radius:var(--r);box-shadow:var(--sh1)}
+.modal .card{box-shadow:0 30px 80px rgba(10,15,32,.45);border:0;padding:26px}
+.page .card+.card{margin-top:18px}
+.empty{padding:14px;border:1px dashed var(--line);border-radius:10px;text-align:center;background:var(--cream)}
+
+/* ---- result rows (jobs, talent, companies, applicants) ---- */
+.pc{background:var(--paper);border:1px solid rgba(20,22,31,.07);border-radius:var(--r);padding:18px;box-shadow:var(--sh1);transition:transform .25s,box-shadow .25s,border-color .25s;position:relative}
+.pc:hover{transform:translateY(-3px);box-shadow:var(--sh2);border-color:transparent}
+.pc h3{margin:0 0 2px}
+.pc h3 a{color:#15121a!important}
+.pc h3 a:hover{color:var(--brand)!important;text-decoration:none}
+.ini{background:linear-gradient(135deg,#dbe9fb,#f3e3d9);color:var(--wine);font-family:'Newsreader',serif;font-weight:500}
+.ini.sq{background:linear-gradient(135deg,var(--wine),var(--navy));color:#fff;border-radius:14px}
+img.ini{border:2px solid #fff;box-shadow:0 2px 8px rgba(20,22,31,.15)}
+.match{background:var(--goodbg);padding:3px 10px;border-radius:999px;font-size:12px}
+.pod{background:var(--wine);border-radius:999px;padding:3px 10px;letter-spacing:.04em}
+.count{font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.06em;color:var(--mut);padding:2px 0 10px}
+
+/* ---- tags & legend ---- */
+.tag{border-radius:999px;padding:3px 10px;font-weight:600;font-size:11.5px}
+.tag.role{background:#e7edf9;color:var(--navy)}
+.tag.hard{background:#dcebfc;color:#1d5fb3}
+.tag.soft{background:#fbe9d6;color:#8a5a00}
+.tag.jobtype{background:#eee6fa;color:#5d3fa0}
+.tag.industry{background:#e3f4e3;color:#0a7a0a}
+.tag.st{background:#fff0d6;color:#8a5a00}
+.legend{padding:10px 14px;background:var(--paper);border-radius:10px;border:1px solid var(--line);display:inline-flex}
+.dot{border-radius:50%}
+.chip{border-radius:999px;padding:6px 14px;transition:all .2s}
+.chip:hover{border-color:var(--brand);color:var(--brand)}
+.chip.sel:hover{color:#fff;background:#1f66bd}
+.toggle button{border-radius:999px;padding:8px 18px;transition:all .2s}
+.toggle button:hover{border-color:var(--wine)}
+.toggle button.on{background:var(--wine);border-color:var(--wine)}
+
+/* ---- tabs ---- */
+.tabs{border:0;background:#ebe7dd;padding:5px;border-radius:999px;display:inline-flex;max-width:100%;margin-bottom:24px;gap:2px}
+.tabs button{border:0;border-radius:999px;padding:9px 18px;color:var(--ink2);transition:background .2s,color .2s}
+.tabs button:hover{color:#15121a}
+.tabs .on{background:#fff;color:var(--wine);box-shadow:0 2px 8px rgba(20,22,31,.12)}
+
+/* ---- stat tiles ---- */
+.tiles{gap:14px}
+.tile{border:0;border-radius:var(--r);background:var(--paper);box-shadow:var(--sh1);padding:14px 20px;min-width:140px;position:relative;overflow:hidden}
+.tile:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(var(--hot),var(--gold))}
+.tile .l{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.12em}
+.tile .v{font-family:'Newsreader',serif;font-size:30px;font-weight:500;color:#15121a;line-height:1.2}
+.meter{height:8px;border-radius:99px;background:#e8e4d9}
+.meter div{border-radius:99px;background:linear-gradient(90deg,var(--brand),var(--accent))}
+
+/* ---- profile ---- */
+.pl{gap:24px}
+.cover{height:150px;border-radius:var(--r) var(--r) 0 0;background:linear-gradient(120deg,var(--wine),#a3341f 55%,var(--gold))}
+.hd{margin-top:-52px}
+.hd .ini{border:5px solid #fff;box-shadow:0 6px 18px rgba(20,22,31,.2)}
+.ini.lg{width:104px;height:104px;font-size:32px}
+.hd-top{align-items:flex-end}
+.ent{padding:16px 0;transition:background .2s}
+.ent .ico{border-radius:12px;background:var(--cream)}
+.sh h3{color:#15121a}
+.side .card{position:sticky;top:84px}
+.side .card:not(:first-child){position:static}
+.side h4{font-family:'DM Mono',monospace;font-weight:400;letter-spacing:.14em}
+
+/* ---- pipeline (applicants kanban) ---- */
+.pipe{gap:14px}
+.pcol{background:#ece8de;border:0;border-radius:var(--r);padding:12px;min-height:140px}
+.pcol h5{font-family:'DM Mono',monospace;font-weight:400;letter-spacing:.12em;padding-bottom:8px;margin-bottom:12px;border-bottom:3px solid var(--brand)}
+.pcol:nth-child(2) h5{border-color:var(--gold)}
+.pcol:nth-child(3) h5{border-color:#7a5af8}
+.pcol:nth-child(4) h5{border-color:var(--good)}
+.pcol:nth-child(5) h5{border-color:var(--crit)}
+.pcol h5 span{background:#fff;border-radius:99px;padding:0 9px;color:var(--ink)}
+.pcard{background:var(--paper);border:0;border-radius:10px;box-shadow:var(--sh1);padding:10px 12px;transition:transform .2s,box-shadow .2s}
+.pcard:hover{transform:translateY(-2px);box-shadow:var(--sh2)}
+.podc{border:0;border-radius:var(--r);box-shadow:var(--sh1);background:var(--paper)}
+.ohead .ini{border-radius:16px}
+
+/* ---- tables ---- */
+table.rt th{font-family:'DM Mono',monospace;font-weight:400;letter-spacing:.1em}
+table.rt tr:hover td{background:var(--cream)}
+
+/* ---- modal ---- */
+.modal{background:rgba(20,10,18,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);padding:16px}
+.modal .card{max-height:92vh;overscroll-behavior:contain;width:min(460px,94vw)}
+.modal .card.wide{width:min(800px,94vw)}
+.modal .card h2{font-family:'Newsreader',serif;font-weight:500;font-size:28px}
+.modal .card .cover{margin:-26px -26px 0}
+@keyframes pop{from{transform:translateY(14px) scale(.97);opacity:0}}
+
+/* ---- toast ---- */
+.toast{background:#15121a;border-radius:999px;padding:12px 24px;box-shadow:0 12px 34px rgba(0,0,0,.35);font-weight:600;font-size:14px;max-width:92vw;text-align:center;animation:tin .3s cubic-bezier(.2,.7,.2,1)}
+.toast:before{content:"✓";color:#6ee06e;margin-right:10px;font-weight:800}
+@keyframes tin{from{opacity:0;transform:translate(-50%,14px)}}
+
+/* ---- verification bar ---- */
+.vbar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center;text-align:center}
+
+/* ---- loading state ---- */
+
+/* ---- footer ---- */
+footer{text-align:center}
+
+/* ---- mobile ---- */
+@media(max-width:860px){
+  /* signed-in menus were hidden on phones; show their links as a scrollable row instead */
+  .dd{display:flex;align-items:center}
+  .dd>a:after{display:none}
+  .dd>a{padding:8px 4px 8px 10px;color:#fff;font-weight:700}
+  .dd div{display:flex!important;position:static;background:none;box-shadow:none;border-radius:0;padding:0;min-width:0;color:#dbe5f1}
+  .dd div a{color:#dbe5f1;padding:8px 10px;white-space:nowrap;font-size:13.5px}
+  .dd div a:hover{background:rgba(255,255,255,.1);color:#fff}
+  .dd>a:before,nav>a:before{display:none}
+  nav{gap:0;scrollbar-width:none}
+  nav::-webkit-scrollbar{display:none}
+  .page{padding:22px 16px 60px}
+  .page>h2,.page h2{font-size:28px}
+  .band{padding:30px 16px 24px}
+  .band h2{font-size:30px}
+  .tabs{display:flex;border-radius:14px}
+  .tiles .tile{flex:1 1 140px}
+  .side .card{position:static}
+  .modal .card{padding:20px}
+  .modal .card .cover{margin:-20px -20px 0}
+  .ini.lg{width:84px;height:84px;font-size:26px}
+  .hd{margin-top:-44px}
+}
+@media(prefers-reduced-motion:reduce){.pc,.pcard,.btn,.toast,.modal .card{transition:none;animation:none}}
+@media print{header,footer,.toast,.modal,.vbar{display:none}}
+
+/* multi-select filter dropdowns float over the page instead of pushing it down */
+.fgrid .msd{position:relative;background:#fff}
+.fgrid .msd .msp{position:absolute;left:-1px;top:calc(100% + 4px);z-index:40;min-width:calc(100% + 2px);width:max-content;max-width:300px;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 18px 40px rgba(20,22,31,.25);max-height:260px}
+.msd .msb{font-size:14px}
+.msd .mst{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.msd .msp label{font-family:inherit;cursor:pointer;padding:3px 0}
+.msd .msp label:hover{color:var(--brand)}
+
+/* ============================================================
+   v5: round avatars, no profile background photo, internal pages
+   restyled to match the landing page (hero band, editorial sections)
+   ============================================================ */
+.ini:not(.sq),img.ini,.ini.lg,.me .av,.me img.av{border-radius:50%!important;aspect-ratio:1/1;flex:none;object-fit:cover}
+.ini.sq{border-radius:14px;flex:none}
+.avw{display:inline-block;line-height:0;border-radius:50%;flex:none}
+.avw .ini{display:block}
+.me .av{width:34px;height:34px}
+.pc>.ini:not(.sq){width:52px;height:52px}
+.cover,.pf-ban{display:none!important}
+.hd{margin-top:0}
+.pf .in{margin-top:0;padding-top:28px}
+.phead .hd-top{align-items:center}
+#cc.rnd{border-radius:50%!important;width:240px!important;max-width:100%;display:block;margin:12px auto!important}
+
+/* hero band used at the top of every internal page */
+.phero,.band{position:relative;overflow:hidden}
+.phero{color:#fff;padding:58px 28px 46px;background:radial-gradient(60% 120% at 100% 0%,rgba(255,75,43,.38),transparent 65%),radial-gradient(50% 100% at 0% 100%,rgba(42,120,214,.38),transparent 70%),var(--wine)}
+.phero:before,.phero:after,.band:before{content:"";position:absolute;border-radius:50%;pointer-events:none;animation:fl 9s ease-in-out infinite alternate}
+.phero:before,.band:before{width:360px;height:360px;right:-90px;top:-130px;background:var(--hot);opacity:.14}
+.phero:after{width:220px;height:220px;right:260px;bottom:-120px;background:var(--gold);opacity:.16;animation-delay:-4s}
+.phero .wrap,.band .wrap{z-index:1}
+.phero .eyebrow,.band .eyebrow{color:#ff9d7a}
+.phero h2{font-family:'Newsreader',Georgia,serif;font-weight:400;font-size:46px;line-height:1.1;letter-spacing:-1px;color:#fff;margin:0 0 10px;max-width:760px}
+.phero .psub{color:#e6d3d8;font-size:16px;max-width:640px;margin:0 0 20px}
+.phero .wrap>*{animation:rvin .8s both}
+.phero .wrap>*:nth-child(2){animation-delay:.08s}.phero .wrap>*:nth-child(3){animation-delay:.16s}.phero .wrap>*:nth-child(4){animation-delay:.24s}.phero .wrap>*:nth-child(5){animation-delay:.32s}
+.pact{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px}
+.phero .btn{border-radius:999px;background:var(--hot);padding:10px 22px;box-shadow:0 6px 18px rgba(255,75,43,.3)}
+.phero .btn.o{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.55);box-shadow:none}
+.phero .btn.o:hover{background:#fff;color:var(--wine)}
+.pstats{display:flex;gap:40px;flex-wrap:wrap;margin-top:22px}
+.pstats b{display:block;font-family:'Newsreader',serif;font-weight:400;font-size:38px;line-height:1.1;color:#fff}
+.pstats span{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#d9bfc6}
+.band .pstats{margin-top:26px}
+
+/* two-column layout: content + sticky rail */
+.lay{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:26px;align-items:start}
+.rail{position:sticky;top:84px;display:grid;gap:16px;align-self:start}
+.rail .card,.rail .card+.card{margin-top:0}
+.tipc h4{margin:0 0 12px;font-family:'DM Mono',monospace;font-weight:400;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--hot)}
+.tipc ul{margin:0 0 4px;padding:0;list-style:none;display:grid;gap:10px}
+.tipc li{position:relative;padding-left:22px;font-size:13.5px;color:var(--ink2)}
+.tipc li:before{content:"→";position:absolute;left:0;color:var(--hot);font-weight:700}
+.tipc .chips{margin:0}
+.tipc .btn{margin-top:10px}
+.chk li:before{content:"○";color:#b9b5a8}
+.chk li.ok{color:var(--mut)}
+.chk li.ok:before{content:"✓";color:var(--good)}
+.qa{display:grid;gap:8px}
+.qa .btn{margin:0;text-align:center}
+.fn{display:grid;grid-template-columns:90px 1fr 34px;gap:12px;align-items:center;padding:7px 0;font-size:13.5px}
+.fn span{color:var(--ink2);font-weight:600}.fn b{text-align:right}
+.rowl{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.rowl:last-child{border-bottom:0}
+
+/* application progress tracker */
+.trk{display:flex;margin-top:16px;max-width:520px}
+.trk>div{flex:1;position:relative;text-align:center;font-size:11.5px;color:var(--mut)}
+.trk i{display:block;width:14px;height:14px;border-radius:50%;background:#ddd8cb;margin:0 auto 6px;position:relative;z-index:1}
+.trk>div:before{content:"";position:absolute;top:6px;left:-50%;width:100%;height:2px;background:#ddd8cb}
+.trk>div:first-child:before{display:none}
+.trk .done i,.trk .cur i{background:var(--hot)}
+.trk .done:before,.trk .cur:before{background:var(--hot)}
+.trk .cur{color:var(--ink);font-weight:700}
+.trk .cur i{box-shadow:0 0 0 4px rgba(255,75,43,.2)}
+.empty-big{text-align:center;padding:44px 20px}
+.empty-big .em{font-size:40px;margin-bottom:8px}
+.empty-big .srow{justify-content:center}
+
+/* landing-style sections and CTA on internal pages */
+.ctab.sm{padding:56px 28px;margin-top:10px}
+.ctab .btn.o{background:transparent;color:#fff;border:1px solid #fff}
+.ctab .btn.o:hover{background:#fff;color:var(--wine)}
+.ctab .btn{margin:0 4px 6px}
+.mtile{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+@media(max-width:980px){.lay{grid-template-columns:1fr}.rail{position:static}}
+@media(max-width:860px){.phero{padding:40px 16px 34px}.phero h2{font-size:32px}.pstats{gap:22px}.pstats b{font-size:30px}.fn{grid-template-columns:70px 1fr 28px}}
+@media(prefers-reduced-motion:reduce){.phero:before,.phero:after,.band:before,.phero .wrap>*{animation:none}}
 </style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
 </head>
 
 <body>
@@ -288,14 +783,15 @@ const auth = getAuth(initializeApp(CONFIG)), db = getFirestore();
 /* ---------- taxonomy ---------- */
 const ROLES = ["Program Manager", "Project Manager", "Transformation Manager", "Solution Architect", "Functional Consultant", "Developer", "Data Analyst", "Security Engineer"];
 const TYPES = ["Contract", "Permanent", "Freelance", "Part-time", "Internship"];
-const INDS = ["Manufacturing", "Retail & CPG", "BFSI", "Life Sciences", "Technology", "Public Sector"];
+const INDS = ["Manufacturing", "Retail & CPG", "BFSI", "Life Sciences", "Technology", "Public Sector", "Non-Profit", "Healthcare Services", "Transportation & Logistics", "Education", "Consumer Services", "Entertainment & Media", "Professional & Business Services", "Medical Technology", "Travel & Hospitality", "Energy & Utilities", "Industrials", "Pharma & Biotech", "Agriculture", "Retail", "Financial Services", "Consumer Goods", "Private Equity"];
 const TECH = ["Business Applications", "Cloud & Infrastructure", "Cyber Security", "Data & Analytics", "SAP", "Software Development"];
 const SKILLS = ["SAP S/4HANA", "SAP FICO", "SAP MM", "SAP SD", "SAP ABAP", "SAP BASIS", "SAP BTP", "SuccessFactors", "Workday", "Python", "Java", "JavaScript", "React", "SQL", "AWS", "Azure", "Power BI", "Stakeholder Management", "Agile", "Change Management"];
 const SOFT = ["Stakeholder Management", "Executive Communication", "Negotiation", "Mentoring", "Change Leadership", "Cross-cultural Teams", "Problem Solving", "Facilitation"];
-const AVAIL = ["Immediately", "Within 2 weeks", "Within 1 month", "1–3 months", "Not looking"];
+const AVAIL = ["Immediately", "Within 2 weeks", "Within 1 month", "1–3 months", "3+ months", "Not looking"];
 const KINDS = ["Company", "Consultancy", "Firm / Group", "Staffing agency"];
 const ST = ["Applied", "Screened", "Interview", "Offer", "Rejected"];
 const SEL = { role: ROLES, type: TYPES, ind: INDS, avail: AVAIL, kind: KINDS, consent: ["Confirmed", "Pending"], pods: ["Yes — individuals or pods", "Individuals only"] };
+const MS = { mrole: ROLES, mtype: TYPES, mind: INDS };
 const CSVK = ["skills", "softSkills", "roles"];
 
 let me = null, P = null, mode = "ind", redraw = () => {};
@@ -306,7 +802,8 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const csv = s => String(s || "").split(",").map(x => x.trim()).filter(Boolean);
 const opts = (a, v, any) => (any ? `<option value="">${any}</option>` : "") + a.map(x => `<option ${x == v ? "selected" : ""}>${esc(x)}</option>`).join("");
-const toast = m => { const t = $("#toast"); t.textContent = m; t.style.display = "block"; setTimeout(() => t.style.display = "none", 2600); };
+let TT = null;
+const toast = m => { const t = $("#toast"); t.textContent = m; t.style.display = "block"; clearTimeout(TT); TT = setTimeout(() => t.style.display = "none", 2800); };
 const ini = n => String(n || "?").split(/\s+/).map(w => w[0]).slice(0, 2).join("").toUpperCase();
 const isOrg = () => P?.type === "org";
 const isGrp = () => P?.type === "group";
@@ -315,7 +812,7 @@ const isHire = () => !!P && P.type !== "candidate";
 const homeHash = () => P?.type === "org" ? "#/dashboard" : P?.type === "group" ? "#/groups" : "#/profile";
 const av = (u, c = "") => u.photo ? `<img class="ini ${c}" src="${esc(u.photo)}" alt="">` : `<div class="ini ${c}">${esc(ini(u.name))}</div>`;
 const url = u => /^https?:\/\//i.test(u) ? u : "https://" + u;
-const tg = (c, x) => x ? `<span class="tag ${c}">${esc(x)}</span>` : "";
+const tg = (c, x) => x ? (["role", "jobtype", "industry"].includes(c) ? csv(x) : [x]).map(v => `<span class="tag ${c}">${esc(v)}</span>`).join("") : "";
 const tags = u => tg("role", u.role)
   + (u.skills || []).map(x => tg("hard", x)).join("")
   + (u.softSkills || []).map(x => tg("soft", x)).join("")
@@ -334,10 +831,15 @@ let MD = false;
 $("#modal").onmousedown = e => { MD = e.target.id === "modal"; };
 $("#modal").onclick = e => { if (e.target.id === "modal" && MD && !PEND) closeM(); MD = false; };
 window.closeM = closeM;
+document.addEventListener("keydown", e => { if (e.key === "Escape" && $("#modal").classList.contains("on") && !PEND) closeM(); });
 
 /* ---------- header / nav (role aware) ---------- */
 function nav() {
-  if (!me) { $("#nav").innerHTML = ""; return; }
+  if (!me) {
+    $("#nav").innerHTML = `<a class="nv" onclick="goSec('hire')">Hire</a><a class="nv" onclick="goSec('services')">Services</a><a class="nv" href="#/team">Our Team</a><a class="nv" href="#/contact">Contact</a>
+      <div class="dd"><a class="nv" href="#/blog" tabindex="0">SAP</a><div><a href="#" onclick="sapGo('jobs');return false">SAP Jobs</a><a href="#" onclick="sapGo('talent');return false">SAP Talent Pool</a><a href="#/blog">SAP Blog</a></div></div>`;
+    return;
+  }
   const cand = isCand(), emp = isOrg(), grp = isGrp();
   $("#nav").innerHTML =
     (cand ? `<div class="dd"><a href="#/jobs" tabindex="0">Candidates</a><div>
@@ -349,21 +851,114 @@ function nav() {
       <a href="#/talent">Search talent &amp; companies</a><a href="#/groups">My groups</a></div></div>` : "")
     + `<div class="dd"><a href="#/jobs" tabindex="0">Technologies</a><div>${TECH.map(t => `<a href="#/jobs?q=${encodeURIComponent(t)}">${t}</a>`).join("")}</div></div>`;
 }
+/* header buttons: label, account type they open sign-up for, style. Edit freely. */
+const NAVBTN = [["Find Solutions", "candidate", "hot"], ["For Consultants", "group", "ol"], ["For Hiring", "org", "ol"], ["For Groups", "group", "ol"]];
 function authBox() {
   $("#auth").innerHTML = me
     ? `<a class="me" href="${homeHash()}">${P?.photo ? `<img class="av" src="${esc(P.photo)}" alt="">` : `<span class="av">${esc(ini(P?.name))}</span>`}<span>${esc(P?.name || "")}</span></a>
        <button class="btn o s" style="background:transparent;color:#fff;border-color:#8fa6c4" onclick="logout()">Log out</button>`
-    : `<button class="btn o s" style="background:transparent;color:#fff;border-color:#8fa6c4" onclick="authUI('login')">Log in</button>
-       <button class="btn gold s" onclick="authUI('signup')">Sign up</button>`;
+    : `<a class="hl" href="#" onclick="authUI('login');return false"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 4a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7zm0 14.2a8 8 0 0 1-6-2.7c.1-2 4-3.1 6-3.1s5.9 1.100 6 3.100a8 8 0 0 1-6 2.700z"/></svg><span>Log in</span></a>
+       ${NAVBTN.map(([l, t, c]) => `<button class="pill ${c}" onclick="authUI('signup','${t}')">${l}</button>`).join("")}`;
 }
 
 /* ---------- auth ---------- */
 /* signup questions (important details asked once, at registration) */
 const SU = {
-  candidate: [["headline", "Headline (e.g. SAP FICO consultant)"], ["role", "Primary role", "role"], ["years", "Years of experience"], ["location", "Location (city, country)"], ["availability", "Availability", "avail"], ["jobType", "Preferred job type", "type"], ["industry", "Industry", "ind"]],
-  org: [["orgKind", "Organisation type", "kind"], ["website", "Website"], ["location", "HQ location"], ["industry", "Industry", "ind"], ["size", "Team size (number of people)"], ["contactEmail", "Hiring contact email"]],
-  group: [["designation", "Your designation / title"], ["website", "Firm website"], ["location", "Firm location"], ["industry", "Primary industry", "ind"]]
+  candidate: [["headline", "Headline (e.g. SAP FICO consultant)"], ["role", "Primary role (select one or more)", "mrole"], ["years", "Years of experience"], ["location", "Location (city, country)"], ["availability", "Availability", "avail"], ["jobType", "Preferred job type (select one or more)", "mtype"], ["industry", "Industry (select one or more)", "mind"]],
+  org: [["orgKind", "Organisation type", "kind"], ["website", "Website"], ["location", "HQ location"], ["industry", "Industry (select one or more)", "mind"], ["size", "Team size (number of people)"], ["contactEmail", "Hiring contact email"]],
+  group: [["designation", "Your designation / title"], ["website", "Firm website"], ["location", "Firm location"], ["industry", "Primary industry (select one or more)", "mind"]]
 };
+/* Founder details: edit the text below to update the landing page and Our Team page */
+const FOUNDER_PHOTO = "data:image/jpeg;base64,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";
+const FOUNDER = {
+  name: "Surendra Agarwal", title: "Founder, ConsultMesh",
+  linkedin: "https://www.linkedin.com/in/surendra-agarwal",
+  photo: FOUNDER_PHOTO,
+  bio: ["I help enterprises turn SAP transformation into measurable business value: faster revenue, simpler operations and a clean, AI-ready core. Total 22+ years of experience, 16+ leading SAP-enabled transformation for Aramco, Philips, Sulzer, Microsoft, GE Grid Solution, Cardinal Health and others."]
+};
+/* Extra LinkedIn details for Our Team / Contact pages. Empty sections stay hidden. */
+Object.assign(FOUNDER, {
+  headline: "Founder, ConsultMesh | Enterprise Solution Architect | SAP S/4HANA, BRIM & Signavio",
+  location: "Bengaluru, Karnataka, India",
+  about: "I help enterprises turn SAP transformation into measurable business value: faster revenue, simpler operations and a clean, AI-ready core. Total 22+ years of experience, 16+ leading SAP-enabled transformation for Aramco, Philips, Sulzer, Microsoft, GE Grid Solution, Cardinal Health and others.",
+  aboutBlocks: [{"h": "Impact", "ul": ["$200M opportunity: designed an AI-supported proof-of-delivery and revenue-recognition solution at Philips, cutting the recognition cycle by an estimated 15-30 days", "90+ sites: CAPA-driven shelf-life compliance for a $12B MedTech business, closing off the risk of shipping expired devices", "One enterprise standard: replaced point-to-point integrations between SAP, Salesforce, Zuora and Appian with a reusable API framework that kept the ERP core clean", "Reusable IP: an S/4HANA order-to-cash template adopted by Infosys as its discrete-manufacturing reference model", "People: built and led a 90+ consultant SCM capability through training, mentoring and knowledge sharing"]}, {"h": "What's now", "p": "Currently architecting a greenfield S/4HANA Private Cloud enterprise for AGOC unifying a fragmented, largely SAP B1 landscape into one scalable platform. Alongside, I am completing XLRI Jamshedpur's Global Senior Management Program to sharpen my strategy and leadership lens."}, {"h": "Where I add most value", "ul": ["Enterprise architecture, SAP strategy and clean-core roadmaps (S/4HANA, RISE, BTP, LeanIX)", "Order-to-Cash, logistics and supply chain transformation", "Subscription and consumption business models (SAP BRIM, RAR, Salesforce, Zuora)", "Global template design and multi-country rollouts", "AI-enabled process redesign (SAP Business AI, Joule, Signavio process mining)", "Building capabilities and Center of Excellence that outlast the program"]}, {"h": "How I think", "p": "Putting AI on top of ERP is the easy part. The value comes from redesigning the work ERP records, and the operating model around it."}, {"h": "What's next", "p": "Leading enterprise architecture, enterprise applications or an SAP transformation capability, where I own the roadmap, the team and the business outcome."}],
+  experience: [
+  {
+    "role": "Enterprise Solution Architect",
+    "org": "Freelance · Bengaluru, Karnataka, India · Hybrid",
+    "dates": "Aug 2026 – Present",
+    "desc": "Working as a Solution Architect on a large-scale Greenfield SAP S/4HANA Private Cloud transformation for a leading organization in the Oil & Gas industry, transforming a predominantly non-SAP landscape into a standardized, scalable and intelligent SAP platform."
+  },
+  {
+    "role": "Senior Platform Analyst | SCM Solutions Architect | Capability Lead",
+    "org": "Philips · Full-time · Bengaluru, Karnataka, India",
+    "dates": "Oct 2021 – Jun 2026",
+    "desc": "Drove the SAP SCM platform for Philips' global S/4HANA transformation SPINE program from the commercial platform. Designed and orchestrated enterprise SAP-centric SaaS solutions by implementing robust APIs and workflow with Salesforce, improving process efficiency and solution scalability across multiple projects. Enhanced and expanded SCM capabilities by driving cross-module integration, creating comprehensive training programs, mentoring emerging talent and facilitating knowledge sharing, positioning the enterprise for future growth."
+  },
+  {
+    "role": "Lead Consultant",
+    "org": "Wipro Limited · Full-time · Pune/Pimpri-Chinchwad Area",
+    "dates": "Jan 2020 – Oct 2021",
+    "desc": "Led the global Regional Distribution Centre template design for Philips, drawing on prior template-delivery experience to standardize operations across the distribution network; the template went on to become the regional standard. Closed a critical operational gap by building the shipment and transportation integration between SAP and the third-party INFODIS platform, lifting workflow efficiency and processing speed across the network."
+  },
+  {
+    "role": "Senior Consultant",
+    "org": "Infosys · Full-time · Pune/Pimpri-Chinchwad Area",
+    "dates": "Nov 2016 – Jan 2020",
+    "desc": "Led the SAP S/4HANA Greenfield implementation for Sulzer in the O2C process and developed a common industry-standard solution for the discrete manufacturing domain, optimizing end-to-end Order to Cash processes. Served as Central Business Analyst at GE Grid Solution, playing an instrumental role in the implementation of Italy e-Invoicing, the Internal Entrepreneur Billing system and Customer e-KYC integration with DUNS."
+  },
+  {
+    "role": "Lead Consultant",
+    "org": "HCL Technologies · Full-time · Noida Area, India",
+    "dates": "Sep 2015 – Oct 2016",
+    "desc": "Delivered SAP RAR integration for Microsoft, ensuring US IFRS compliance in integration between Microsoft applications and the ECC and RAR applications."
+  },
+  {
+    "role": "Assistant Consultant",
+    "org": "Tata Consultancy Services · Gandhinagar",
+    "dates": "Jan 2011 – Aug 2015",
+    "desc": "Managed multiple SAP projects for Cardinal Health, Voltas, Tata Chemical and small and medium enterprise clients such as Nelco and Oxford Stationary, delivering successful implementations within schedule and budget. Led SAP and Salesforce integration and archival implementation with SAP."
+  }
+],
+  education: [
+  {
+    "school": "XLRI Jamshedpur",
+    "degree": "Global Senior Management Program, Organizational Leadership",
+    "dates": "Jun 2026 – May 2027",
+    "desc": "Currently pursuing the program to strengthen capabilities in strategic leadership, business strategy and enterprise transformation."
+  },
+  {
+    "school": "Om Kothari Institute of Management & Research, Kota",
+    "degree": "Master of Business Administration (MBA), Marketing/Marketing Management, General",
+    "dates": "2002 – 2004",
+    "desc": ""
+  },
+  {
+    "school": "Siemens Information Systems Limited",
+    "degree": "SAP, Sales and Distribution (SAP SD Certification)",
+    "dates": "2008",
+    "desc": ""
+  },
+  {
+    "school": "Government College, Kota",
+    "degree": "Bachelor of Science, Computer Programming, Specific Applications",
+    "dates": "",
+    "desc": ""
+  },
+  {
+    "school": "Bal Vidyalaya School, Kota",
+    "degree": "Primary and Secondary Education, Mathematics and Science (School Education till H.S.C)",
+    "dates": "1992 – 1998",
+    "desc": ""
+  }
+],
+  skills: ["SAP Enterprises Architect Framework", "Enterprise Solution Architect", "SAP BRIM", "SAP Signavio", "SAP Sales & Distribution", "SAP HANA", "Lead Consultant at Wipro", "Senior Consultant at Infosys", "SAP Certified Professional - SAP Enterprise Architect", "SAP Certified Associate - Process Management Consultant - SAP Signavio", "Technology Maximizer - Fulfillment of Auto Upgrade of Software"],
+  certs: ["SAP Enterprise Architect", "SAP BRIM", "SIGNAVIO", "SAP S/4HANA Sales", "PRINCE2"]
+});
+/* Renders the founder's full About text (intro + sections with bullets) */
+const founderAbout = () => `<p>${esc(FOUNDER.about)}</p>` + FOUNDER.aboutBlocks.map(b => `<h4 style="margin:14px 0 4px;color:var(--navy)">${esc(b.h)}</h4>` + (b.p ? `<p style="margin:0 0 6px">${esc(b.p)}</p>` : "") + (b.ul ? `<ul style="margin:0 0 6px;padding-left:20px">${b.ul.map(x => `<li style="margin:3px 0">${esc(x)}</li>`).join("")}</ul>` : "")).join("");
+const founderImg = (size, extra = "") => `<img src="${FOUNDER.photo}" alt="${esc(FOUNDER.name)}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;${extra}">`;
+const CONTACT = { email: "", phone: "", address: "" };   // optional, shown on Contact page when filled
 const LAND = { candidate: "#/profile", org: "#/dashboard?tab=co", group: "#/groups" };
 let SIGNUP = false;
 const authMsg = x => ({
@@ -527,10 +1122,13 @@ const need = t => {
 
 const fields = (o, d) => o.map(([k, l, t, full]) => `<div class="${full ? "full" : ""}"><label>${l}</label>${
   t == "area" ? `<textarea id="f_${k}" rows="4">${esc(d[k])}</textarea>`
+  : t == "mind" ? `<div class="msd" id="f_${k}"><button type="button" class="msb" onclick="this.parentNode.classList.toggle('open')"><span class="mst">${csv(d[k]).join(", ") || "Select one or more industries"}</span></button><div class="msp">${[...new Set([...MS[t], ...csv(d[k])])].map(x => `<label><input type="checkbox" value="${esc(x)}" ${csv(d[k]).includes(x) ? "checked" : ""}> ${esc(x)}</label>`).join("")}</div></div>`
+  : MS[t] ? `<div class="mchk" id="f_${k}" style="display:flex;flex-wrap:wrap;gap:6px 14px;padding:6px 0">${[...new Set([...MS[t], ...csv(d[k])])].map(x => `<label style="display:flex;gap:6px;align-items:center;font-weight:500;color:var(--ink);margin:0"><input type="checkbox" style="width:auto" value="${esc(x)}" ${csv(d[k]).includes(x) ? "checked" : ""}> ${esc(x)}</label>`).join("")}</div>`
   : SEL[t] ? `<select id="f_${k}">${opts(SEL[t], d[k], "Select…")}</select>`
   : `<input id="f_${k}" value="${esc(Array.isArray(d[k]) ? d[k].join(", ") : d[k])}">`}</div>`).join("");
 
-const read = o => Object.fromEntries(o.map(([k]) => {
+const read = o => Object.fromEntries(o.map(([k, , t]) => {
+  if (MS[t]) return [k, [...document.querySelectorAll(`#f_${k} input:checked`)].map(e => e.value).join(", ")];
   const v = $("#f_" + k).value;
   return [k, CSVK.includes(k) ? csv(v) : v];
 }));
@@ -567,7 +1165,7 @@ const legend = () => `<div class="legend">${[["#eef2fb", "Role"], ["var(--brandl
 
 function filterBar(v = {}, extra = "") {
   const f = ([id, l, o, any]) => `<div class="ff"><label>${l}</label>${o
-    ? `<select id="${id}">${opts(o, v[id] || "", any)}</select>`
+    ? msf(id, any, o, csv(v[id]))
     : `<input id="${id}" value="${esc(v[id] || "")}" placeholder="${any || ""}">`}</div>`;
   return `<div class="fgrid" id="fg">${[
     ["k", "Keyword", 0, "Title, name or text"], ["r", "Role", ROLES, "Any role"], ["s", "Hard skill", SKILLS, "Any hard skill"],
@@ -576,47 +1174,74 @@ function filterBar(v = {}, extra = "") {
   <div class="srow"><button class="btn s" style="background:#fff;color:var(--navy)" onclick="clearF()">Clear filters</button></div>`;
 }
 window.clearF = () => {
-  document.querySelectorAll("#fg input:not([type=checkbox]),#fg select").forEach(e => e.value = "");
+  document.querySelectorAll("#fg input:not([type=checkbox]),#fg select:not(#gsel)").forEach(e => e.value = "");
   document.querySelectorAll("#fg input[type=checkbox]").forEach(e => e.checked = false);
+  document.querySelectorAll("#fg .msd").forEach(msLabel);
   $("#fg").dispatchEvent(new Event("input"));
 };
 const gv = id => ($("#" + id)?.value || "").toLowerCase();
+/* multi-select filter dropdowns: tick one or more options (matches ANY of the ticked options) */
+const msf = (id, any, o, sel = []) => `<div class="msd" id="${id}" data-ph="${esc(any)}"><button type="button" class="msb" onclick="this.parentNode.classList.toggle('open')"><span class="mst">${esc(sel.join(", ") || any)}</span></button><div class="msp">${o.map(x => `<label><input type="checkbox" value="${esc(x)}" ${sel.includes(x) ? "checked" : ""}> ${esc(x)}</label>`).join("")}</div></div>`;
+const gm = id => [...document.querySelectorAll(`#${id} input:checked`)].map(e => e.value.toLowerCase());
+const ma = (val, id) => { const s = gm(id); if (!s.length) return true; const L = Array.isArray(val) ? val : csv(val); return L.some(x => s.includes(String(x).toLowerCase())); };
+const msLabel = b => { const v = [...b.querySelectorAll("input:checked")].map(i => i.value); b.querySelector(".mst").textContent = v.join(", ") || b.dataset.ph || "Select one or more industries"; };
 const has = (a, v) => (a || []).some(x => String(x).toLowerCase() == v);
 
 /* ---------- views ---------- */
 const V = {};
 
+/* ----- shared building blocks for internal pages (landing-page look) ----- */
+const pHero = (eb, title, sub, stats = [], actions = "") => `<div class="phero"><div class="wrap"><p class="eyebrow">${eb}</p><h2>${title}</h2><p class="psub">${sub}</p>${actions ? `<div class="pact">${actions}</div>` : ""}${stats.length ? `<div class="pstats">${stats.map(([v, l]) => `<div><b>${v}</b><span>${l}</span></div>`).join("")}</div>` : ""}</div></div>`;
+const pSteps = (eb, title, sub, items) => `<section class="b"><div class="wrap"><div class="sec-h"><p class="eyebrow">${eb}</p><h2>${title}</h2></div>${sub ? `<p class="sec-sub">${sub}</p>` : ""}<div class="steps">${items.map(([t, d]) => `<div class="st"><h3>${t}</h3><p class="mut">${d}</p></div>`).join("")}</div></div></section>`;
+const pCta = (title, sub, btns) => `<div class="ctab sm"><div class="wrap"><h2>${title}</h2><p style="color:#e6d3d8;margin:0 auto 20px">${sub}</p>${btns}</div></div>`;
+const tipCard = (t, items, extra = "") => `<div class="card tipc"><h4>${t}</h4><ul>${items.map(x => `<li>${x}</li>`).join("")}</ul>${extra}</div>`;
+const chkCard = (t, items) => `<div class="card tipc"><h4>${t}</h4><ul class="chk">${items.map(([l, d]) => `<li class="${d ? "ok" : ""}">${l}</li>`).join("")}</ul></div>`;
+const fdate = x => x?.seconds ? new Date(x.seconds * 1000).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) : "";
+const firstName = n => esc(String(n || "").trim().split(/\s+/)[0] || "there");
+
 /* ----- jobs ----- */
 const jobCard = j => {
-  const m = j.m;
+  const m = j.m, meta = [j.location, j.exp ? j.exp + "+ yrs experience" : "", fdate(j.created) ? "Posted " + fdate(j.created) : ""].filter(Boolean).map(esc).join(" · ");
   return `<div class="pc"><div class="ini sq">${esc(ini(j.orgName))}</div>
     <div><h3><a class="lnk" onclick="viewJob('${j.id}')" style="color:var(--navy)">${esc(j.title)}</a></h3>
-      <div class="meta"><a class="lnk" onclick="viewOrg('${j.orgId}')">${esc(j.orgName)}</a> · ${esc(j.location)}</div>
+      <div class="meta"><a class="lnk" onclick="viewOrg('${j.orgId}')">${esc(j.orgName)}</a> · ${meta}</div>
       <div class="tr">${tags({ ...j, location: "" })}</div>
-      <p class="mut">${esc((j.desc || "").slice(0, 200))}</p></div>
-    <div class="act">${m != null ? `<span class="match">${m}% match</span>` : ""}${!isCand() ? "" : `<button class="btn s" onclick="apply('${j.id}')">Apply</button>`}</div></div>`;
+      <p class="mut">${esc((j.desc || "").slice(0, 320))}${(j.desc || "").length > 320 ? "…" : ""}</p></div>
+    <div class="act">${m != null ? `<span class="match">${m}% match</span>` : ""}${!isCand() ? "" : `<button class="btn s" onclick="apply('${j.id}')">Apply</button>`}<button class="btn o s" onclick="viewJob('${j.id}')">View details</button></div></div>`;
 };
 
 V.jobs = async () => {
   const p = new URLSearchParams(location.hash.split("?")[1] || "");
-  $("#app").innerHTML = `<div class="band"><div class="wrap"><h2>Find jobs</h2><p>Search by role, hard skill, soft skill, location, job type and industry independently.</p>
-    ${filterBar({ k: p.get("q") || "", r: p.get("r") || "", s: p.get("s") || "" })}</div></div>
-    <div class="page">${legend()}<div id="res" class="mut">Loading…</div></div>`;
+  const rail = isCand()
+    ? tipCard("Get better matches", ["Add at least 3 hard skills and a few soft skills to your profile", "Upload your resume to get an ATS score and detected skills", "Set your availability so employers know when you can start"], `<a class="btn s" href="#/profile">Update my profile</a>`)
+    : tipCard("Hiring?", ["Post a role and receive applicants in a pipeline", "Search the talent pool by skill, role, industry and ATS score", "Shortlist candidates in one click"], `<a class="btn s" href="${isOrg() ? "#/dashboard?tab=post" : "#/talent"}">${isOrg() ? "Post a job" : "Search talent"}</a>`);
+  $("#app").innerHTML = `<div class="band"><div class="wrap"><p class="eyebrow">Jobs</p><h2>Find jobs</h2><p>Search by role, hard skill, soft skill, location, job type and industry independently.</p>
+    ${filterBar({ k: p.get("q") || "", r: p.get("r") || "", s: p.get("s") || "" })}<div class="pstats" id="jst"></div></div></div>
+    <div class="page"><div class="lay"><div>${legend()}<div id="res" class="mut">Loading…</div></div>
+    <aside class="rail">${rail}
+      <div class="card tipc"><h4>Browse by role</h4><div class="chips">${ROLES.map(r => `<a class="chip" href="#/jobs?r=${encodeURIComponent(r)}">${esc(r)}</a>`).join("")}</div></div>
+      <div class="card tipc"><h4>Browse by technology</h4><div class="chips">${TECH.map(t => `<a class="chip" href="#/jobs?q=${encodeURIComponent(t)}">${esc(t)}</a>`).join("")}</div></div>
+      ${tipCard("How match % works", ["We compare the hard and soft skills a job asks for with the skills on your profile and resume", "Jobs are ranked by match, then by newest"])}
+    </aside></div></div>
+    ${pSteps("How it works", "From search to offer in three steps", "", [["Search & filter", "Combine role, skill, location, job type and industry filters to narrow the list."], ["Apply in one click", "Your profile and ATS score travel with your application, so there is no form to fill."], ["Track every step", "Follow each application from Applied to Offer under My applications."]])}
+    ${pCta("Ready for your next role?", "Keep your profile complete and your resume up to date to rank higher in every search.", `<a class="btn" href="#/profile">My profile</a><a class="btn o" href="#/applications">My applications</a>`)}`;
   let all;
   try { all = (await getDocs(query(collection(db, "jobs"), limit(300)))).docs.map(d => ({ id: d.id, ...d.data() })); }
   catch (e) { return $("#res").textContent = "Could not load jobs: " + e.message; }
   all.forEach(j => JOBS[j.id] = j);
+  const js = $("#jst");
+  if (js) js.innerHTML = [[all.length, "Open jobs"], [new Set(all.map(j => j.orgId)).size, "Employers hiring"], [new Set(all.map(j => (j.location || "").trim().toLowerCase()).filter(Boolean)).size, "Locations"], [new Set(all.flatMap(j => csv(j.role))).size, "Roles"]].map(([v, l]) => `<div><b>${v}</b><span>${l}</span></div>`).join("");
   const draw = () => {
     let r = all.filter(j => (!gv("k") || JSON.stringify(j).toLowerCase().includes(gv("k")))
-      && (!gv("r") || j.role?.toLowerCase() == gv("r"))
-      && (!gv("s") || has(j.skills, gv("s")))
-      && (!gv("ss") || has(j.softSkills, gv("ss")))
+      && ma(j.role, "r")
+      && ma(j.skills, "s")
+      && ma(j.softSkills, "ss")
       && (!gv("l") || (j.location || "").toLowerCase().includes(gv("l")))
-      && (!gv("t") || j.jobType?.toLowerCase() == gv("t"))
-      && (!gv("i") || j.industry?.toLowerCase() == gv("i")));
+      && ma(j.jobType, "t")
+      && ma(j.industry, "i"));
     r = r.map(j => ({ ...j, m: match(j) })).sort((a, b) => (b.m || 0) - (a.m || 0) || (b.created?.seconds || 0) - (a.created?.seconds || 0));
     $("#res").innerHTML = `<div class="count">${r.length} job${r.length == 1 ? "" : "s"}${me && isCand() && myText().size ? " — ranked by match to your CV" : ""}</div>`
-      + (r.map(jobCard).join("") || "<p>No jobs match these filters yet.</p>");
+      + (r.map(jobCard).join("") || `<div class="card empty-big"><div class="em">🔎</div><h3>No jobs match these filters yet</h3><p class="mut">Try removing a filter or searching a broader keyword.</p><div class="srow"><button class="btn s" onclick="clearF()">Clear filters</button></div></div>`);
   };
   $("#fg").oninput = draw;
   draw();
@@ -624,32 +1249,60 @@ V.jobs = async () => {
 
 window.viewJob = id => {
   const j = JOBS[id]; if (!j) return;
-  modal(`<h2>${esc(j.title)}</h2><div class="mut"><a class="lnk" onclick="viewOrg('${j.orgId}')">${esc(j.orgName)}</a> · ${esc(j.location)}</div>
-    <div class="tr">${tags({ ...j, location: "" })}</div>
-    ${j.exp ? `<p class="mut">Minimum experience: ${esc(j.exp)} years</p>` : ""}
-    <p style="white-space:pre-line">${esc(j.desc)}</p>
-    <div class="srow">${!isCand() ? "" : `<button class="btn" onclick="apply('${id}')">Apply now</button>`}<button class="btn o" onclick="closeM()">Close</button></div>`, 1);
+  const m = isCand() ? match(j) : null;
+  const facts = [["Location", j.location], ["Experience", j.exp ? j.exp + "+ years" : ""], ["Job type", csv(j.jobType).join(", ")], ["Industry", csv(j.industry).join(", ")], ["Role", csv(j.role).join(", ")], ["Posted", fdate(j.created)]].filter(([, v]) => v);
+  modal(`<h2>${esc(j.title)}</h2><div class="mut"><a class="lnk" onclick="viewOrg('${j.orgId}')">${esc(j.orgName)}</a>${m != null ? ` · <span class="match">${m}% match</span>` : ""}</div>
+    <div class="tiles">${facts.map(([l, v]) => `<div class="tile" style="min-width:120px"><div class="l">${l}</div><div class="v" style="font-size:17px">${esc(v)}</div></div>`).join("")}</div>
+    <div class="sec-label">About the role</div><p style="white-space:pre-line;margin:0">${esc(j.desc)}</p>
+    ${(j.skills || []).length ? `<div class="sec-label">Required hard skills</div><div class="tr" style="margin-top:0">${j.skills.map(x => tg("hard", x)).join("")}</div>` : ""}
+    ${(j.softSkills || []).length ? `<div class="sec-label">Soft skills</div><div class="tr" style="margin-top:0">${j.softSkills.map(x => tg("soft", x)).join("")}</div>` : ""}
+    <div class="srow" style="margin-top:18px">${!isCand() ? "" : `<button class="btn" onclick="apply('${id}')">Apply now</button>`}<button class="btn o" onclick="closeM()">Close</button></div>`, 1);
 };
 
 window.apply = async id => {
   if (!need("candidate")) return;
-  const j = (await getDoc(doc(db, "jobs", id))).data();
-  await setDoc(doc(db, "applications", id + "_" + me.uid), { jobId: id, jobTitle: j.title, orgId: j.orgId, candidateId: me.uid, candidateName: P.name, status: "Applied", created: serverTimestamp() });
-  closeM();
-  toast("Application sent");
+  try {
+    const j = (await getDoc(doc(db, "jobs", id))).data();
+    if (!j) return toast("This job is no longer available");
+    const ref = doc(db, "applications", id + "_" + me.uid);
+    let exists = false;
+    try { exists = (await getDoc(ref)).exists(); } catch {}
+    if (exists) { closeM(); return toast("You have already applied to this job"); }
+    await setDoc(ref, { jobId: id, jobTitle: j.title, orgId: j.orgId, candidateId: me.uid, candidateName: P.name, status: "Applied", created: serverTimestamp() });
+    closeM();
+    toast("Application sent");
+  } catch (x) { toast("Could not apply: " + (x.message || x)); }
 };
 
 V.applications = async () => {
   if (!need("candidate")) return;
-  const a = (await getDocs(query(collection(db, "applications"), where("candidateId", "==", me.uid)))).docs.map(d => d.data());
-  $("#app").innerHTML = `<div class="page"><h2>My applications</h2>
-    ${a.map(x => `<div class="pc" style="grid-template-columns:1fr auto"><div><h3>${esc(x.jobTitle)}</h3></div><span class="tag st">${esc(x.status)}</span></div>`).join("") || "<p class='mut'>You haven't applied yet.</p>"}</div>`;
+  const a = (await getDocs(query(collection(db, "applications"), where("candidateId", "==", me.uid)))).docs.map(d => d.data())
+    .sort((x, y) => (y.created?.seconds || 0) - (x.created?.seconds || 0));
+  const jobs = {};
+  await Promise.all([...new Set(a.map(x => x.jobId))].map(async id => { try { const sn = await getDoc(doc(db, "jobs", id)); if (sn.exists()) { jobs[id] = { id, ...sn.data() }; JOBS[id] = jobs[id]; } } catch {} }));
+  const cnt = (...st) => a.filter(x => st.includes(x.status)).length;
+  const flow = ST.filter(x => x != "Rejected");
+  const trk = st => { const i = flow.indexOf(st); return st == "Rejected" ? `<div style="margin-top:12px"><span class="tag" style="background:#fde3e3;color:#b02a2a">Application closed</span></div>` : `<div class="trk">${flow.map((x, k) => `<div class="${k < i ? "done" : k == i ? "cur" : ""}"><i></i><span>${x}</span></div>`).join("")}</div>`; };
+  const list = a.map(x => { const j = jobs[x.jobId]; return `<div class="pc" style="grid-template-columns:52px 1fr auto"><div class="ini sq">${esc(ini(j?.orgName || x.jobTitle))}</div>
+      <div><h3>${esc(x.jobTitle)}</h3>
+        <div class="meta">${[j ? `<a class="lnk" onclick="viewOrg('${j.orgId}')">${esc(j.orgName)}</a>` : "", j?.location ? esc(j.location) : "", fdate(x.created) ? "Applied " + fdate(x.created) : ""].filter(Boolean).join(" · ")}</div>
+        ${j ? `<div class="tr">${tags({ ...j, location: "" })}</div><p class="mut">${esc((j.desc || "").slice(0, 220))}${(j.desc || "").length > 220 ? "…" : ""}</p>` : ""}
+        ${trk(x.status)}</div>
+      <div class="act"><span class="tag st">${esc(x.status)}</span>${j ? `<button class="btn o s" onclick="viewJob('${j.id}')">View job</button>` : ""}</div></div>`; }).join("");
+  $("#app").innerHTML = `${pHero("Candidate", "My applications", "Follow every application from Applied to Offer in one place.", [[a.length, "Total applications"], [cnt("Applied", "Screened"), "In review"], [cnt("Interview"), "Interviews"], [cnt("Offer"), "Offers"]], `<a class="btn" href="#/jobs">Find more jobs</a><a class="btn o" href="#/profile">Improve my profile</a>`)}
+    <div class="page"><div class="lay"><div>${list || `<div class="card empty-big"><div class="em">📨</div><h3>You haven't applied yet</h3><p class="mut">Browse open roles ranked by how well they match your resume, then apply in one click.</p><div class="srow"><a class="btn" href="#/jobs">Browse jobs</a><a class="btn o" href="#/profile">Complete my profile</a></div></div>`}</div>
+      <aside class="rail">
+        ${tipCard("What each status means", ["<b>Applied</b>: the employer has received your application", "<b>Screened</b>: your profile has been reviewed", "<b>Interview</b>: you have been shortlisted for a conversation", "<b>Offer</b>: the employer wants to hire you", "<b>Rejected</b>: the role is closed for you, keep applying"])}
+        ${tipCard("Interview preparation", ["Re-read the job description and match each requirement to an example from your work", "Prepare two or three project stories with measurable results", "Have questions ready about the team, the scope and the timeline"])}
+        ${tipCard("Stand out", ["Keep your ATS score high by updating your resume", "Add certifications and recent projects to your profile"], `<a class="btn s" href="#/profile">Open my profile</a>`)}
+      </aside></div></div>
+    ${pCta("Keep the momentum going", "Strong profiles get more interviews. Apply to a few more roles that fit your skills.", `<a class="btn" href="#/jobs">Find jobs</a><a class="btn o" href="#/profile">My profile</a>`)}`;
 };
 
 /* ----- candidate profile (LinkedIn-style, fully editable) ----- */
 const IF = [
-  ["name", "Full name"], ["headline", "Headline (e.g. SAP FICO consultant)"], ["role", "Primary role", "role"], ["years", "Years of experience"],
-  ["location", "Location"], ["availability", "Availability", "avail"], ["jobType", "Preferred job type", "type"], ["industry", "Industry", "ind"]
+  ["name", "Full name"], ["headline", "Headline (e.g. SAP FICO consultant)"], ["role", "Primary role (select one or more)", "mrole"], ["years", "Years of experience"],
+  ["location", "Location"], ["availability", "Availability", "avail"], ["jobType", "Preferred job type (select one or more)", "mtype"], ["industry", "Industry (select one or more)", "mind"]
 ];
 const SECT = {
   experience: { t: "experience", ico: "💼", f: [["title", "Title"], ["company", "Company"], ["from", "From (e.g. Jan 2020)"], ["to", "To (blank = present)"], ["desc", "Description", "area", 1]] },
@@ -679,7 +1332,7 @@ const block = (title, sec, u, ed) => {
 };
 
 function profileMain(u, ed) {
-  const head = `<div class="card"><div class="cover">${ed ? `<button class="camb" title="Change background photo" onclick="photoUI('cover')">📷 Edit background</button>` : ""}</div>
+  const head = `<div class="card phead">
     <div class="hd-top"><div class="hd"><div class="avw">${av(u, "lg")}${ed ? `<button class="camb sm" title="Change profile photo" onclick="photoUI('photo')">📷</button>` : ""}</div></div>${ed ? `<button class="btn o s" style="margin-top:14px" onclick="editIntro()">✎ Edit intro</button>` : ""}</div>
     <h2 style="margin-top:10px">${esc(u.name)}</h2>
     <div style="font-size:15px">${esc(u.headline || (ed ? "Add a headline" : ""))}</div>
@@ -700,7 +1353,9 @@ function profileMain(u, ed) {
 V.profile = () => {
   if (!need("candidate")) return;
   const s = P.atsScore, st = strength(P);
-  $("#app").innerHTML = `<div class="page"><div class="pl"><div>${profileMain(P, true)}</div>
+  const cl = chkCard("Profile checklist", [["Add a headline", !!P.headline], ["Write an About section", !!P.about], ["Add work experience", list(P, "experience").length > 0], ["Add education", list(P, "education").length > 0], ["Add at least 3 hard skills", (P.skills || []).length >= 3], ["Add soft skills", (P.softSkills || []).length > 0], ["Upload your resume for an ATS score", P.atsScore != null], ["Set your availability", !!P.availability]]);
+  $("#app").innerHTML = `${pHero("Candidate profile", `Welcome back, ${firstName(P.name)}`, "A complete profile ranks higher in employer searches and gets you better job matches.", [[st + "%", "Profile strength"], [s == null ? "–" : s, "ATS score"], [(P.skills || []).length + (P.softSkills || []).length, "Skills listed"], [list(P, "experience").length, "Roles listed"]], `<a class="btn" href="#/jobs">Find jobs</a><a class="btn o" href="#/applications">My applications</a>`)}
+    <div class="page"><div class="pl"><div>${profileMain(P, true)}</div>
     <div class="side">
       <div class="card"><h4>Profile strength</h4><b style="font-size:26px;color:var(--navy)">${st}%</b><div class="meter"><div style="width:${st}%"></div></div>
         <p class="mut">Add an about section, experience, education and at least 3 skills to reach 100%.</p></div>
@@ -714,8 +1369,11 @@ V.profile = () => {
       <div class="card"><h4>Visibility</h4>
         <label style="display:flex;gap:8px;align-items:center;font-weight:500;color:var(--ink)"><input type="checkbox" style="width:auto" ${P.visible !== false ? "checked" : ""} onchange="upd({visible:this.checked})"> Visible to employers in talent search</label>
         <p class="mut">Employers can contact you at your sign-up email.</p></div>
-    </div></div></div>`;
-  setCover(me.uid, "#app"); topMatches();
+      ${cl}
+      ${tipCard("Career tips", ["Lead your About section with the modules and industries you know best", "Describe results, not just duties, in each experience entry", "Certifications such as SAP S/4HANA badges build trust quickly"])}
+    </div></div></div>
+    ${pCta("Let the right employers find you", "Keep “Visible to employers” on and your profile fresh to appear in more talent searches.", `<a class="btn" href="#/jobs">Browse jobs</a><a class="btn o" href="#/applications">Track applications</a>`)}`;
+  topMatches();
 };
 
 window.editIntro = () => modal(`<h2>Edit intro</h2><div class="form">${fields(IF, P)}</div>
@@ -806,14 +1464,19 @@ V.dashboard = async () => {
   mine.forEach(j => MJ[j.id] = j);
   const T = {};
 
-  T.ov = `<div class="tiles" style="margin-top:0">
-      ${[["Open jobs", mine.length], ["Applicants", apps.length], ["Interviews", apps.filter(a => a.status == "Interview").length], ["Saved candidates", SV().length]]
-        .map(([l, v]) => `<div class="tile"><div class="l">${l}</div><div class="v">${v}</div></div>`).join("")}</div>
-    <div class="sec-label">Quick actions</div>
-    <div class="srow"><a class="btn s" href="#/dashboard?tab=post">Post a job</a><a class="btn s o" href="#/talent">Search talent</a><a class="btn s o" href="#/dashboard?tab=co">Edit company details</a><button class="btn s o" onclick="viewOrg('${me.uid}')">Preview public profile</button></div>
-    <div class="sec-label">Recent applicants</div>
-    ${apps.slice(0, 5).map(a => `<div class="pc" style="grid-template-columns:44px 1fr auto"><div class="ini" style="width:44px;height:44px;font-size:14px">${esc(ini(a.candidateName))}</div>
-      <div><b class="lnk" onclick="viewUser('${a.candidateId}')">${esc(a.candidateName)}</b><div class="mut">${esc(a.jobTitle)}</div></div><span class="tag st">${esc(a.status)}</span></div>`).join("") || "<p class='mut'>No applicants yet.</p>"}`;
+  T.ov = `<div class="lay"><div>
+    <div class="card"><div class="sh"><h3>Hiring funnel</h3><a class="lnk" href="#/dashboard?tab=apps">Open pipeline →</a></div>
+      ${ST.map(x => { const n = apps.filter(a => a.status == x).length; return `<div class="fn"><span>${x}</span><div class="meter"><div style="width:${Math.round(100 * n / Math.max(1, apps.length))}%"></div></div><b>${n}</b></div>`; }).join("")}</div>
+    <div class="card"><div class="sh"><h3>Recent applicants</h3><a class="lnk" href="#/dashboard?tab=apps">View all →</a></div>
+      ${apps.slice(0, 5).map(a => `<div class="rowl"><div style="display:flex;gap:12px;align-items:center"><div class="ini" style="width:44px;height:44px;font-size:14px">${esc(ini(a.candidateName))}</div>
+        <div><b class="lnk" onclick="viewUser('${a.candidateId}')">${esc(a.candidateName)}</b><div class="mut">${esc(a.jobTitle)}</div></div></div><span class="tag st">${esc(a.status)}</span></div>`).join("") || `<div class="empty">No applicants yet. Share your open roles to start receiving applications.</div>`}</div>
+    <div class="card"><div class="sh"><h3>Your open jobs</h3><a class="lnk" href="#/dashboard?tab=jobs">Manage →</a></div>
+      ${mine.slice(0, 5).map(j => `<div class="rowl"><div><b>${esc(j.title)}</b><div class="mut">${esc(j.location)} · ${apps.filter(a => a.jobId == j.id).length} applicant(s)</div></div><button class="btn o s" onclick="viewJob('${j.id}')">Preview</button></div>`).join("") || `<div class="empty">No jobs posted yet.</div>`}</div>
+  </div><aside class="rail">
+    <div class="card tipc"><h4>Quick actions</h4><div class="qa"><a class="btn s" href="#/dashboard?tab=post">Post a job</a><a class="btn s o" href="#/talent">Search talent</a><a class="btn s o" href="#/dashboard?tab=co">Edit company details</a><button class="btn s o" onclick="viewOrg('${me.uid}')">Preview public profile</button></div></div>
+    ${chkCard("Setup checklist", [["Add a company tagline", !!P.tagline], ["Write an About section", !!P.about], ["Add your website", !!P.website], ["Choose focus technologies", (P.focus || []).length > 0], ["Post your first job", mine.length > 0], ["Review your applicants", apps.length > 0]])}
+    ${tipCard("Hiring tips", ["Be specific about modules, tools and years of experience in each job", "Move applicants through the pipeline so everyone gets a clear status", "Search the talent pool to approach candidates before they apply"])}
+  </aside></div>`;
 
   T.co = `<div class="card"><div class="ohead"><div class="ini sq">${esc(ini(P.name))}</div><div><h3 style="font-size:19px;margin:0">${esc(P.name)}</h3>
       <div class="mut">${[P.orgKind, P.location, P.size ? P.size + " people" : ""].filter(Boolean).map(esc).join(" · ")}</div></div></div></div>
@@ -832,8 +1495,9 @@ V.dashboard = async () => {
         <select onchange="setSt('${a.id}',this.value)">${opts(ST, a.status)}</select></div>`).join("")}</div>`).join("")}</div>`;
 
   const tabs = [["ov", "Overview"], ["co", "Company profile"], ["post", "Post a job"], ["jobs", "My jobs"], ["apps", "Applicants"]];
-  $("#app").innerHTML = `<div class="page"><h2>Employer dashboard</h2>
-    <div class="tabs">${tabs.map(([k, l]) => `<button class="${k == tab ? "on" : ""}" onclick="location.hash='#/dashboard?tab=${k}'">${l}</button>`).join("")}</div>${T[tab] || T.ov}</div>`;
+  $("#app").innerHTML = `${pHero("Employer dashboard", esc(P.name), "Post roles, manage applicants and find talent from one workspace.", [[mine.length, "Open jobs"], [apps.length, "Applicants"], [apps.filter(a => a.status == "Interview").length, "Interviews"], [SV().length, "Saved candidates"]], `<a class="btn" href="#/dashboard?tab=post">Post a job</a><a class="btn o" href="#/talent">Search talent</a>`)}
+    <div class="page">
+    <div class="tabs">${tabs.map(([k, l]) => `<button class="${k == tab ? "on" : ""}" onclick="location.hash='#/dashboard?tab=${k}'">${l}</button>`).join("")}</div>${T[tab] || T.ov}</div>${tab == "ov" ? pCta("Find your next hire", "Search ready-to-work consultants by skill, role, industry and ATS score.", `<a class="btn" href="#/talent">Search talent</a><a class="btn o" href="#/dashboard?tab=post">Post a job</a>`) : ""}`;
 };
 
 window.saveOrg = async () => { await upd({ ...read(OF), focus: picked("c_f") }); authBox(); route(); };
@@ -859,8 +1523,7 @@ window.viewUser = async id => {
     ${u.email ? `<a class="btn" href="mailto:${esc(u.email)}">Contact</a>` : ""}
     ${isHire() ? `<button class="btn o" onclick="toggleSave('${id}',true)">${saved ? "★ Saved" : isGrp() ? "☆ Add to group shortlist" : "☆ Save candidate"}</button>` : ""}
     <button class="btn o" onclick="closeM()">Close</button></div>`, 1);
-  setCover(id, "#mbox");
-};
+  };
 window.toggleSave = async (id, reopen) => {
   if (isGrp()) {
     const g = G[AG];
@@ -887,6 +1550,7 @@ window.viewOrg = async id => {
   modal(`<div class="ohead"><div class="ini sq">${esc(ini(o.name))}</div><div><h2 style="margin:0">${esc(o.name)}</h2>
       <div class="mut">${[o.orgKind, o.location, o.industry, o.size ? o.size + " people" : "", o.founded ? "Founded " + o.founded : ""].filter(Boolean).map(esc).join(" · ")}</div></div></div>
     ${o.tagline ? `<p><b>${esc(o.tagline)}</b></p>` : ""}
+    <div class="tiles">${[[jobs.length, "Open roles"], [(o.podList || []).length, "Pods"], [o.size || "–", "People"], [o.founded || "–", "Founded"]].map(([v, l]) => `<div class="tile" style="min-width:110px"><div class="l">${l}</div><div class="v">${esc(v)}</div></div>`).join("")}</div>
     <div class="tr">${(o.focus || []).map(x => tg("hard", x)).join("")}</div>
     ${o.about ? `<div class="sec-label">About</div><p style="white-space:pre-line">${esc(o.about)}</p>` : ""}
     ${o.pods ? `<div class="sec-label">Group overview</div><p style="white-space:pre-line">${esc(o.pods)}</p>` : ""}
@@ -903,13 +1567,20 @@ window.viewOrg = async id => {
 V.talent = async () => {
   if (!need("hire")) return;
   if (!me.emailVerified) return $("#app").innerHTML = gateHtml();
-  const extra = `<div class="ff"><label>Availability</label><select id="av">${opts(AVAIL, "", "Any")}</select></div>
+  const extra = `<div class="ff"><label>Availability</label>${msf("av", "Any", AVAIL)}</div>
     <div class="ff"><label>Min. years experience</label><input id="y" type="number" min="0" placeholder="0"></div>
     <div class="ff"><label>Min. ATS score</label><input id="a" type="number" min="0" max="100" placeholder="0"></div>
     <div class="ff"><label>Shortlist</label><label class="ck"><input type="checkbox" id="sv"> ${isGrp() ? "Group shortlist only" : "Saved only"}</label></div>
     ${isGrp() ? `<div class="ff"><label>Active group</label><select id="gsel">${Object.values(G).map(g => `<option value="${g.id}" ${g.id == AG ? "selected" : ""}>${esc(g.name)}</option>`).join("") || "<option value=''>No group yet</option>"}</select></div>` : ""}`;
-  $("#app").innerHTML = `<div class="band"><div class="wrap"><h2>Search talent</h2><p>Find individual consultants or ready-made consultancy pods with the same taxonomy candidates use.</p>${filterBar({}, extra)}</div></div>
-    <div class="page">${legend()}<div class="toggle">${isGrp() ? `<button id="tg0"></button>` : ""}<button id="tg1" class="on"></button><button id="tg2"></button>${isGrp() ? `<button id="tg3"></button>` : ""}</div><div id="res" class="mut">Loading…</div></div>`;
+  $("#app").innerHTML = `<div class="band"><div class="wrap"><p class="eyebrow">Talent search</p><h2>Search talent</h2><p>Find individual consultants or ready-made consultancy pods with the same taxonomy candidates use.</p>${filterBar({}, extra)}<div class="pstats" id="tst"></div></div></div>
+    <div class="page"><div class="lay"><div>${legend()}<div class="toggle">${isGrp() ? `<button id="tg0"></button>` : ""}<button id="tg1" class="on"></button><button id="tg2"></button>${isGrp() ? `<button id="tg3"></button>` : ""}</div><div id="res" class="mut">Loading…</div></div>
+      <aside class="rail">
+        ${tipCard("Search smarter", ["Combine role, hard skill and industry for the sharpest shortlist", "Use minimum experience and ATS score to filter out weak matches", "Candidates are ranked by ATS score, highest first"])}
+        ${tipCard(isGrp() ? "Shortlist with your team" : "Shortlist candidates", [isGrp() ? "Switch the active group, then star people and companies to add them to the shared shortlist" : "Star candidates to save them, then tick “Saved only” to review them", "Open a profile to see experience, education, skills and contact details"])}
+        ${tipCard("Need a full team?", ["Switch to Consultancy pods to hire a ready-made delivery squad", "Request a pod and the firm is contacted directly"])}
+      </aside></div></div>
+    ${pSteps("How it works", "Find the right people in three steps", "", [["Filter the network", "Use the same taxonomy candidates use for roles, skills, industries and job types."], ["Review profiles", "See ATS scores, experience, availability and detected skills at a glance."], ["Shortlist & contact", "Save the best fits, share them with your team and reach out by email."]])}
+    ${pCta("Can't find the right fit?", "Post a role and let matching consultants come to you.", `<a class="btn" href="${isOrg() ? "#/dashboard?tab=post" : "#/talent"}">${isOrg() ? "Post a job" : "Refine my search"}</a>`)}`;
   let us;
   try { us = (await getDocs(query(collection(db, "users"), limit(500)))).docs.map(d => ({ id: d.id, ...d.data() })); }
   catch (e) { return $("#res").textContent = "Could not load talent: " + e.message; }
@@ -919,8 +1590,8 @@ V.talent = async () => {
   const orgs = us.filter(u => u.type == "org");
   const coList = sv => orgs.filter(o => (!gv("k") || JSON.stringify([o.name, o.tagline, o.about, o.focus]).toLowerCase().includes(gv("k")))
     && (!gv("l") || (o.location || "").toLowerCase().includes(gv("l")))
-    && (!gv("i") || o.industry?.toLowerCase() == gv("i") || (oj[o.id] || []).some(j => j.industry?.toLowerCase() == gv("i")))
-    && (!(gv("r") || gv("s") || gv("ss") || gv("t")) || (oj[o.id] || []).some(j => (!gv("r") || j.role?.toLowerCase() == gv("r")) && (!gv("s") || has(j.skills, gv("s"))) && (!gv("ss") || has(j.softSkills, gv("ss"))) && (!gv("t") || j.jobType?.toLowerCase() == gv("t"))))
+    && (!gm("i").length || ma(o.industry, "i") || (oj[o.id] || []).some(j => ma(j.industry, "i")))
+    && (!(gm("r").length || gm("s").length || gm("ss").length || gm("t").length) || (oj[o.id] || []).some(j => ma(j.role, "r") && ma(j.skills, "s") && ma(j.softSkills, "ss") && ma(j.jobType, "t")))
     && (!sv || SV().includes(o.id)));
   const coHtml = l => `<div class="count">${l.length} compan${l.length == 1 ? "y" : "ies"} — role, skill and job-type filters match against their open jobs</div>` + (l.map(o => `<div class="pc"><div class="ini sq">${esc(ini(o.name))}</div>
     <div><h3><a class="lnk" style="color:var(--navy)" onclick="viewOrg('${o.id}')">${esc(o.name)}</a></h3>
@@ -931,27 +1602,28 @@ V.talent = async () => {
       <button class="btn o s" onclick="toggleSave('${o.id}')">${SV().includes(o.id) ? "★ Saved" : "☆ Save"}</button></div></div>`).join("") || "<p>No companies match these filters.</p>");
   const cands = us.filter(u => u.type == "candidate" && u.visible !== false);
   const pods = us.filter(u => u.type == "org").flatMap(o => (o.podList || []).map(p => ({ ...p, orgId: o.id, orgName: o.name, orgEmail: o.contactEmail || o.email })));
+  const tsEl = $("#tst"); if (tsEl) tsEl.innerHTML = [[cands.length, "Consultants"], [orgs.length, "Companies"], [pods.length, "Consultancy pods"], [new Set(cands.flatMap(u => csv(u.role))).size, "Roles covered"]].map(([v, l]) => `<div><b>${v}</b><span>${l}</span></div>`).join("");
 
   const draw = () => {
     if ($("#gsel")) AG = $("#gsel").value;
     const y = +gv("y") || 0, a = +gv("a") || 0, sv = $("#sv").checked;
     const ci = cands.filter(u => (!gv("k") || JSON.stringify([u.name, u.headline, u.about, u.skills, u.softSkills, u.experience]).toLowerCase().includes(gv("k")))
-      && (!gv("r") || u.role?.toLowerCase() == gv("r"))
-      && (!gv("s") || has([...(u.skills || []), ...(u.resumeSkills || [])], gv("s")))
-      && (!gv("ss") || has(u.softSkills, gv("ss")))
+      && ma(u.role, "r")
+      && ma([...(u.skills || []), ...(u.resumeSkills || [])], "s")
+      && ma(u.softSkills, "ss")
       && (!gv("l") || (u.location || "").toLowerCase().includes(gv("l")))
-      && (!gv("t") || u.jobType?.toLowerCase() == gv("t"))
-      && (!gv("i") || u.industry?.toLowerCase() == gv("i"))
-      && (!gv("av") || u.availability?.toLowerCase() == gv("av"))
+      && ma(u.jobType, "t")
+      && ma(u.industry, "i")
+      && ma(u.availability, "av")
       && (+u.years || 0) >= y && (u.atsScore || 0) >= a
       && (!sv || SV().includes(u.id))).sort((p, q) => (q.atsScore || 0) - (p.atsScore || 0));
     const pi = pods.filter(p => (!gv("k") || JSON.stringify(p).toLowerCase().includes(gv("k")))
-      && (!gv("r") || has(p.roles, gv("r")))
-      && (!gv("s") || has(p.skills, gv("s")))
+      && ma(p.roles, "r")
+      && ma(p.skills, "s")
       && (!gv("l") || (p.location || "").toLowerCase().includes(gv("l")))
-      && (!gv("t") || p.jobType?.toLowerCase() == gv("t"))
-      && (!gv("i") || p.industry?.toLowerCase() == gv("i"))
-      && (!gv("av") || p.avail?.toLowerCase() == gv("av")));
+      && ma(p.jobType, "t")
+      && ma(p.industry, "i")
+      && ma(p.avail, "av"));
     if ($("#tg3")) { const cl = coList(sv); $("#tg3").textContent = `Companies (${cl.length})`; $("#tg3").className = mode == "co" ? "on" : ""; }
     $("#tg1").textContent = `Individuals (${ci.length})`;
     $("#tg2").textContent = `Consultancy pods (${pi.length})`;
@@ -985,21 +1657,14 @@ V.talent = async () => {
   draw();
 };
 
-/* ---------- profile photo & background (resized in-browser, stored in Firestore) ---------- */
-const COV = {};
-async function setCover(id, scope) {
-  try {
-    const d = COV[id] ??= (await getDoc(doc(db, "photos", id))).data() || {};
-    if (d.cover) document.querySelectorAll(scope + " .cover").forEach(e => e.style.background = `url(${d.cover}) center/cover`);
-  } catch {}
-}
+/* ---------- profile photo (resized in-browser, stored on the user doc) ---------- */
 let CR = null;
 window.photoUI = k => {
   CR = null;
-  const sz = k == "photo" ? [240, 240] : [1200, 300];
-  modal(`<h2>${k == "photo" ? "Profile photo" : "Background photo"}</h2>
+  const sz = [240, 240];
+  modal(`<h2>Profile photo</h2>
     <input type="file" accept="image/*" onchange="cropLoad(this.files[0])">
-    <canvas id="cc" width="${sz[0]}" height="${sz[1]}" style="width:100%;border-radius:10px;margin:10px 0;background:var(--line)"></canvas>
+    <canvas id="cc" class="rnd" width="${sz[0]}" height="${sz[1]}" style="background:var(--line)"></canvas>
     <label>Zoom</label><input id="cz" type="range" min="1" max="3" step=".01" value="1" oninput="cropDraw()">
     <label>Left / right</label><input id="cx" type="range" min="-1" max="1" step=".01" value="0" oninput="cropDraw()">
     <label>Up / down</label><input id="cy" type="range" min="-1" max="1" step=".01" value="0" oninput="cropDraw()">
@@ -1015,10 +1680,9 @@ window.cropDraw = () => {
 };
 window.cropSave = async (k, rm) => {
   if (!rm && !CR) return toast("Choose an image first");
-  const data = rm ? "" : $("#cc").toDataURL("image/jpeg", k == "photo" ? .85 : .8);
+  const data = rm ? "" : $("#cc").toDataURL("image/jpeg", .85);
   try {
-    if (k == "photo") await upd({ photo: data });
-    else { await setDoc(doc(db, "photos", me.uid), { cover: data }); COV[me.uid] = { cover: data }; toast("Saved"); }
+    await upd({ photo: data });
     closeM(); authBox(); route();
   } catch (e) { toast("Could not save: " + e.message); }
 };
@@ -1069,7 +1733,7 @@ const EMAILJS = { service: "", template: "", key: "" };
 /* group account profile (editable) */
 const GF = [["name", "Full name"], ["firm", "Firm / company name"], ["designation", "Your designation / title"], ["website", "Firm website"], ["linkedin", "LinkedIn URL"],
   ["location", "Firm location"], ["industry", "Primary industry", "ind"], ["about", "About you / the firm", "area", 1]];
-const gProfile = (u, ed) => `<div class="card"><div class="cover">${ed ? `<button class="camb" title="Change background photo" onclick="photoUI('cover')">📷 Edit background</button>` : ""}</div>
+const gProfile = (u, ed) => `<div class="card phead">
   <div class="hd-top"><div class="hd"><div class="avw">${av(u, "lg")}${ed ? `<button class="camb sm" title="Change profile photo" onclick="photoUI('photo')">📷</button>` : ""}</div></div>${ed ? `<button class="btn o s" style="margin-top:14px" onclick="editGProfile()">✎ Edit profile</button>` : ""}</div>
   <h2 style="margin-top:10px">${esc(u.name)}</h2>
   <div style="font-size:15px">${esc([u.designation, u.firm].filter(Boolean).join(" · ") || (ed ? "Add your designation and firm" : ""))}</div>
@@ -1086,8 +1750,7 @@ window.viewMember = async e => {
   const u = await memberUser(e);
   if (!u) return toast("This person has not registered yet");
   modal(`${gProfile(u, false)}<div class="srow" style="margin-top:16px"><a class="btn" href="mailto:${esc(u.email)}">Contact</a><button class="btn o" onclick="closeM()">Close</button></div>`, 1);
-  setCover(u.id, "#mbox");
-};
+  };
 const MU = {};
 async function memberUser(e) {
   if (MU[e]) return MU[e];
@@ -1175,8 +1838,12 @@ V.groups = async () => {
     inv = (await getDocs(query(collection(db, "invites"), where("inviteeEmail", "==", mail), where("status", "==", "pending")))).docs.map(d => ({ id: d.id, ...d.data() }));
     sent = (await getDocs(query(collection(db, "invites"), where("invitedBy", "==", me.uid)))).docs.map(d => ({ id: d.id, ...d.data() }));
   } catch {}
-  $("#app").innerHTML = `<div class="page"><h2>My profile</h2>${gProfile(P, true)}
-    <h2 style="margin-top:24px">My groups</h2>
+  $("#app").innerHTML = `${pHero("Consultancy / group", `Hello, ${firstName(P.name)}`, "Review talent together with your colleagues, with one shared shortlist and notes.", [[gs.length, "Groups"], [gs.reduce((n, g) => n + (g.memberEmails || []).length, 0), "Members"], [gs.reduce((n, g) => n + (g.saved || []).length, 0), "Shortlisted"], [inv.length, "Pending invites"]], `<a class="btn" href="#/talent">Search talent</a>`)}
+    <div class="page"><div class="pl"><div>${gProfile(P, true)}</div><div class="side">
+      ${tipCard("How groups work", ["Create a group and give it a clear name, for example “SAP hiring panel”", "Invite colleagues by email; they join only after accepting", "Everyone searches talent and companies together", "Star people and companies to build one shared shortlist with notes"])}
+      ${chkCard("Setup checklist", [["Complete your firm profile", !!(P.firm && P.designation)], ["Add a firm website", !!P.website], ["Create your first group", gs.length > 0], ["Invite a colleague", gs.some(g => (g.memberEmails || []).length > 1) || sent.length > 0], ["Shortlist a candidate", gs.some(g => (g.saved || []).length > 0)]])}
+    </div></div>
+    <h2 style="margin-top:28px">My groups</h2>
     <p class="mut">A group lets colleagues from your firm review the same individuals and companies together. Invite colleagues by email; they are added to the group only after they accept the invitation.</p>
     ${inv.length ? `<div class="card"><h3>Invitations for you</h3>${inv.map(i => `<div class="pc" style="grid-template-columns:1fr auto"><div><b>${esc(i.groupName)}</b><div class="mut">Invited by ${esc(i.invitedByName)} (${esc(i.invitedByEmail)})</div></div>
       <div class="act"><button class="btn s" onclick="acceptInv('${esc(i.id)}','${esc(i.groupId)}')">Accept</button><button class="btn o s" onclick="declineInv('${esc(i.id)}')">Decline</button></div></div>`).join("")}</div>` : ""}
@@ -1187,13 +1854,14 @@ V.groups = async () => {
       <div id="mb_${g.id}" class="mut">Loading…</div>
       ${own && pend.length ? `<div class="sec-label">Invitations</div>${pend.map(i => `<div class="mut">${esc(i.inviteeEmail)} · <b>${i.status == "declined" ? "Declined" : "Pending"}</b> <a class="lnk" onclick="cancelInv('${esc(i.id)}')">${i.status == "declined" ? "✕ Dismiss" : "✕ Cancel"}</a></div>`).join("")}` : ""}
       ${own ? `<div class="addc" style="margin-top:10px"><input id="am_${g.id}" type="email" placeholder="colleague@firm.com"><button class="btn o s" onclick="addMember('${g.id}')">Send invitation</button></div>` : ""}
-      <div class="sec-label">Shared shortlist (${(g.saved || []).length})</div><div id="sl_${g.id}" class="mut">Loading…</div></div>`; }).join("") || "<p class='mut' style='margin-top:16px'>You are not in a group yet. Create one above.</p>"}</div>`;
-  setCover(me.uid, "#app");
-  gs.forEach(g => { shortlistFill(g); membersFill(g); });
+      <div class="sec-label">Shared shortlist (${(g.saved || []).length})</div><div id="sl_${g.id}" class="mut">Loading…</div></div>`; }).join("") || "<p class='mut' style='margin-top:16px'>You are not in a group yet. Create one above.</p>"}</div>
+    ${pCta("Build your shared shortlist", "Search individuals and companies, then star the best fits for your group.", `<a class="btn" href="#/talent">Search talent</a>`)}`;
+    gs.forEach(g => { shortlistFill(g); membersFill(g); });
 };
 
 /* ---------- landing page (signed-out visitors) ---------- */
 const MEDIA = {
+  hero: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=2000&q=70",
   about: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1000&q=70",
   cta: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1400&q=60",
   video: "",   // paste an .mp4 URL (e.g. a company intro video) to show a video section
@@ -1209,15 +1877,15 @@ V.home = () => {
     ${N.map(([x, y, k], i) => `<circle class="nd" style="animation-delay:${-i * .35}s" cx="${x}" cy="${y}" r="${k == "g" ? 11 : 8}" fill="${col[k]}"/>`).join("")}</svg>
     <div class="mlg"><span><i style="background:#9cc4f5"></i>Individuals</span><span><i style="background:#e0b043"></i>Employers</span><span><i style="background:#fff"></i>Consultancy groups</span></div>`;
   const aud = [
-    ["Individuals", "candidate", "Get hired for the work you actually do.", ["A full LinkedIn-style profile with photo and banner", "Free resume ATS score with fix-it tips", "Jobs ranked by how well they match your resume"], "Create my profile"],
+    ["Individuals", "candidate", "Get hired for the work you actually do.", ["A full LinkedIn-style profile with your profile photo", "Free resume ATS score with fix-it tips", "Jobs ranked by how well they match your resume"], "Create my profile"],
     ["Employers", "org", "Find the right person without the noise.", ["Post roles and manage every applicant in a pipeline", "Search by role, hard skill, soft skill, location, job type, industry, availability, experience and ATS score", "Shortlist candidates in one click"], "Start hiring"],
     ["Consultancies & groups", "group", "Review talent together, not in silos.", ["One person creates a group and invites colleagues by email", "Search individuals and companies as a team", "Shared shortlist with notes everyone can see"], "Register my group"]
   ];
-  return `<div class="hero"><div class="wrap lh"><div>
-      <h1>Enterprise tech talent, matched with the teams that need it.</h1>
+  return `<div class="hero rg"><div class="hbg">${imgTag(MEDIA.hero)}</div><div class="tint"></div><span class="streak s1"></span><span class="streak s2"></span><span class="streak s3"></span><div class="wrap lh"><div class="rv">
+      <h1>Enterprise tech talent, <b>matched with the teams that need it.</b></h1>
       <p>ConsultMesh is a global network for SAP and enterprise technology professionals, the employers who hire them and the consultancies who evaluate them.</p>
-      <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn gold" onclick="authUI('signup')">Sign up free</button><button class="btn o" style="background:transparent;color:#fff;border-color:#8fa6c4" onclick="authUI('login')">Log in</button></div>
-    </div><div>${mesh}</div></div></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="abtn" onclick="authUI('signup','org')">Build your team <i>→</i></button><button class="abtn" onclick="authUI('signup','candidate')">Find your next role <i>→</i></button><a class="hl hero-login" href="#" onclick="authUI('login');return false">Already a member? <span>Log in</span></a></div>
+    </div><div class="rv d2">${mesh}</div></div><div class="scrollhint">Scroll ↓</div></div>
 
   <section class="b"><div class="wrap two"><div>
       <h2>Who we are</h2>
@@ -1226,9 +1894,39 @@ V.home = () => {
       <p class="mut">Our focus is SAP first, with depth across business applications, cloud and infrastructure, cyber security, data and analytics, and software development.</p>
     </div><div class="ph">${imgTag(MEDIA.about)}</div></div></section>
 
+  <section class="b" style="background:#fff"><div class="wrap two"><div>
+      <h2>Meet the founder</h2>
+      <h3 style="margin:6px 0 2px">${esc(FOUNDER.name)}</h3>
+      <p class="mut" style="margin-top:0">${esc(FOUNDER.title)} · ${esc(FOUNDER.location)}</p>
+      <p>${esc(FOUNDER.about)}</p>
+      <div class="chips" style="margin-top:12px">${FOUNDER.certs.map(x => `<span class="chip" style="cursor:default">${esc(x)}</span>`).join("")}</div>
+      <a class="btn s" href="#/team" style="margin-right:8px">View full profile</a><a class="btn o s" href="${FOUNDER.linkedin}" target="_blank" rel="noopener">LinkedIn</a>
+    </div><div class="card fcard" style="text-align:center">${founderImg(190, "display:block;margin:0 auto 14px;border:5px solid #fff;box-shadow:0 8px 22px rgba(31,58,95,.28)")}<b>${esc(FOUNDER.name)}</b><div class="mut">${esc(FOUNDER.title)}</div><div class="mut" style="margin-top:4px">${esc(FOUNDER.location)}</div></div></div></section>
+
   <section class="b" style="background:#fff"><div class="wrap">
     <h2>What we do</h2><p class="mut">One platform, three kinds of account. Pick the one that fits you when you sign up.</p>
     <div class="grid3">${aud.map(([t, k, h, l, b]) => `<div class="card aud"><h3>${t}</h3><b style="color:var(--navy)">${h}</b><ul>${l.map(x => `<li>${x}</li>`).join("")}</ul><button class="btn s" onclick="authUI('signup','${k}')">${b}</button></div>`).join("")}</div>
+  </div></section>
+
+
+  <section class="b" id="services" style="background:#fff"><div class="wrap">
+    <div class="sec-h"><p class="eyebrow">Services</p><h2>Everything you need to build an enterprise tech team</h2></div>
+    <p class="sec-sub">From a single SAP specialist to a full delivery squad, one network covers sourcing, screening and shortlisting.</p>
+    <div class="svc">${[["🧩","SAP talent sourcing","FICO, MM, SD, ABAP, S/4HANA, BTP and more, matched by role, skill, industry and availability."],["📋","Job posting & pipeline","Post roles, receive applicants and move each one through a clear hiring pipeline."],["🔎","Expert talent search","Filter by hard and soft skills, location, job type, experience and ATS score."],["👥","Group evaluation","Consultancies and hiring panels review profiles together with a shared shortlist and notes."],["📄","Resume ATS scoring","Candidates see their score, improvement tips and the jobs that fit best."],["☁️","Cloud, data & security","Beyond SAP: cloud and infrastructure, cyber security, data and analytics, software development."]].map(([i,t,d])=>`<div class="card"><div class="ic">${i}</div><h3>${t}</h3><p class="mut">${d}</p></div>`).join("")}</div>
+  </div></section>
+
+  <section class="b" id="hire"><div class="wrap">
+    <div class="sec-h"><p class="eyebrow">Hire</p><h2>Hire on-demand experts in three steps</h2></div>
+    <p class="sec-sub">Skip the noise of generic job boards. Describe the need, review matched experts, and hire the right fit for the project.</p>
+    <div class="steps">${[["Tell us what you need","Post a role or search the network by skill, module, industry and availability."],["Get matched","Review ranked profiles with ATS scores, experience and job-type preferences."],["Shortlist & hire","Save candidates, share with your team or group, and move forward with confidence."]].map(([t,d])=>`<div class="st"><h3>${t}</h3><p class="mut">${d}</p></div>`).join("")}</div>
+    <div style="text-align:center;margin-top:26px"><button class="btn" onclick="authUI('signup','org')">Start hiring</button> <button class="btn o" onclick="authUI('signup','candidate')">Join as a consultant</button></div>
+  </div></section>
+
+  <section class="b" id="news" style="background:#fff"><div class="wrap">
+    <div class="sec-h"><p class="eyebrow">Newsroom</p><h2>Latest in AI, GCCs in India &amp; IT</h2></div>
+    <p class="sec-sub">Live headlines from around the web, refreshed every time you visit.</p>
+    <div class="news-tabs" id="ntabs">${[["ai","AI"],["gcc","GCC in India"],["it","IT News"]].map(([k,l],i)=>`<button class="${i?"":"on"}" data-k="${k}" onclick="loadNews('${k}',this)">${l}</button>`).join("")}</div>
+    <p class="nstat" id="nstat"></p><div class="ngrid" id="ngrid"></div>
   </div></section>
 
   <section class="b"><div class="wrap two"><div>
@@ -1247,9 +1945,15 @@ V.home = () => {
     <div class="chips" style="margin-top:12px">${TECH.map(t => `<span class="chip" style="cursor:default">${t}</span>`).join("")}</div></div></section>
 
   <div class="ctab">${imgTag(MEDIA.cta)}<div class="wrap"><h2>Ready to join the mesh?</h2><p style="color:#cfd9e6;margin:0 auto 20px">Create a free account in under a minute.</p>
-    <button class="btn gold" onclick="authUI('signup')">Sign up</button> <button class="btn o" style="background:transparent;color:#fff;border-color:#8fa6c4" onclick="authUI('login')">Log in</button></div></div>`;
+    <button class="btn gold" onclick="authUI('signup')">Sign up</button> <button class="btn o" style="background:transparent;color:#fff;border-color:#8fa6c4" onclick="authUI('login')">Log in</button></div></div>
+  <section class="logos"><h3>We worked with</h3><div class="lmq">${[...CLIENTS, ...CLIENTS].map(c => { const [n, d] = c.split("|"); return `<a class="lg" href="https://www.${d}" target="_blank" rel="noopener" title="Visit ${n}"><img src="https://www.google.com/s2/favicons?domain=${d}&sz=128" alt="${n} logo" loading="lazy" onerror="this.style.display='none'"><b>${n}</b></a>`; }).join("")}</div></section>`;
 };
+const CLIENTS = ["Philips|philips.com","Cardinal Health|cardinalhealth.com","Sulzer|sulzer.com","TCS|tcs.com","Infosys|infosys.com","Wipro|wipro.com","HCL|hcltech.com","Microsoft|microsoft.com","Voltas|voltas.com","GE|ge.com","Aramco|aramco.com"];
 function landingFx() {
+  const TH = [["Who we are", "t-sky"], ["Meet the founder", "t-sand"], ["What we do", "t-mint"], ["Everything you need", "t-ice"], ["Hire on-demand", "t-dark"], ["Latest in AI", "t-sand"], ["See how your resume", "t-sky"], ["Meet ConsultMesh", "t-rose"], ["Technologies", "t-sun"], ["Everything you need", "t-ice"]];
+  document.querySelectorAll("#app section.b").forEach(sec => { const h = sec.querySelector("h2")?.textContent || "", m = TH.find(([x]) => h.includes(x)); if (m) { sec.style.background = ""; sec.classList.add(m[1]); } });
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: .15 });
+  document.querySelectorAll("section.b .wrap > *, section.b .grid3 .card, .ctab .wrap").forEach((el, i) => { el.classList.add("rv"); el.style.transitionDelay = (i % 3) * .12 + "s"; io.observe(el); });
   const d = $(".demo"); if (!d) return;
   new IntersectionObserver((e, o) => {
     if (!e[0].isIntersecting) return;
@@ -1259,14 +1963,116 @@ function landingFx() {
 }
 
 /* ---------- router ---------- */
+
+/* ---------- landing helpers: news, scrolling, SAP menu ---------- */
+document.addEventListener("change", e => { const b = e.target.closest?.(".msd"); if (b) msLabel(b); });
+document.addEventListener("click", e => document.querySelectorAll(".msd.open").forEach(m => { if (!m.contains(e.target)) m.classList.remove("open"); }));
+window.goSec = id => {
+  const f = () => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  if ((location.hash.slice(2) || "home").split("?")[0] == "home") f(); else { location.hash = "#/"; setTimeout(f, 450); }
+};
+window.sapGo = k => { if (me) location.hash = k == "jobs" ? "#/jobs" : "#/talent"; else authUI("login"); };
+const NEWS_IMG = {
+  ai: ["photo-1677442136019-21780ecad995", "photo-1620712943543-bcc4688e7485", "photo-1555255707-c07966088b7b", "photo-1485827404703-89b55fcc595e"],
+  gcc: ["photo-1486406146926-c627a92ad1ab", "photo-1497366216548-37526070297c", "photo-1556761175-5973dc0f32e7", "photo-1522071820081-009f0129c71c"],
+  it: ["photo-1518770660439-4636190af475", "photo-1451187580459-43490279c0fa", "photo-1550751827-4bd374c3f58b", "photo-1573164713714-d95e436ab8d6"],
+  sap: ["photo-1551288049-bebda4e38f71", "photo-1460925895917-afdab827c52f", "photo-1504384308090-c894fdcc538d", "photo-1531297484001-80022131f5a1"]
+};
+/* Optional: paste a free GNews API key (gnews.io) to add keyed, image-rich headlines. Works without it. */
+const NEWS_KEY = "";
+const NEWS_EVERY = 30 * 60 * 1000;   // auto-refresh interval (30 minutes)
+const rj = u => "https://api.rss2json.com/v1/api.json?count=20&rss_url=" + encodeURIComponent(u);
+const gq = q => "https://news.google.com/rss/search?hl=en-IN&gl=IN&ceid=IN:en&q=" + encodeURIComponent(q);
+const FD = { ett: "https://economictimes.indiatimes.com/tech/rssfeeds/13357270.cms", mint: "https://www.livemint.com/rss/technology", bs: "https://www.business-standard.com/rss/technology-108.rss", inc: "https://inc42.com/feed/", ys: "https://yourstory.com/feed", tc: "https://techcrunch.com/feed/", tcai: "https://techcrunch.com/category/artificial-intelligence/feed/" };
+const NEWS_SRC = {
+  ai: { tag: "AI", dev: "https://dev.to/api/articles?tag=ai&per_page=10&top=7", feeds: [FD.tcai, gq("artificial intelligence when:3d")], gn: "artificial intelligence" },
+  gcc: { tag: "GCC India", feeds: [gq("GCC India global capability centre when:14d"), gq("\"global capability centres\" India when:14d"), FD.ett, FD.inc, FD.ys, FD.mint, FD.bs], filter: /\bGCCs?\b|global capability|capability cent/i, gn: "GCC India global capability centre" },
+  it: { tag: "IT News", feeds: [FD.ett, FD.mint, FD.bs, FD.tc, gq("IT services India when:3d")], gn: "IT services India technology" },
+  sap: { tag: "SAP", dev: "https://dev.to/api/articles?tag=sap&per_page=6", feeds: [gq("SAP S/4HANA OR SAP BTP when:14d")], gn: "SAP S/4HANA" }
+};
+const ago = d => { const t = Date.parse(d); if (!t) return ""; const h = Math.round((Date.now() - t) / 36e5); return h < 1 ? "Just now" : h < 24 ? h + "h ago" : Math.round(h / 24) + "d ago"; };
+const okUrl = u => /^https:\/\//i.test(u || "") ? u : "";
+const strip = h => { const d = document.createElement("div"); d.innerHTML = h || ""; return (d.textContent || "").trim(); };
+const jget = async (u, ms = 9000) => { const c = new AbortController(), t = setTimeout(() => c.abort(), ms); try { const r = await fetch(u, { signal: c.signal }); if (!r.ok) throw 0; return await r.json(); } finally { clearTimeout(t); } };
+const firstImg = h => (String(h || "").match(/<img[^>]+src=["']([^"']+)/i) || [])[1] || "";
+async function fetchNews(k) {
+  const S = NEWS_SRC[k], jobs = [];
+  if (NEWS_KEY) jobs.push(jget(`https://gnews.io/api/v4/search?q=${encodeURIComponent(S.gn)}&lang=en&max=10&sortby=publishedAt&apikey=${NEWS_KEY}`).then(r => (r.articles || []).map(a => ({ t: a.title, u: a.url, img: a.image, d: a.description, src: a.source?.name || "GNews", at: a.publishedAt }))));
+  if (S.dev) jobs.push(jget(S.dev).then(r => r.map(a => ({ t: a.title, u: a.url, img: a.cover_image || a.social_image, d: a.description, src: a.user?.name || "DEV", at: a.published_at }))));
+  S.feeds.forEach(f => jobs.push(jget(rj(f)).then(r => (r.items || []).filter(a => !S.filter || f.includes("news.google.com") || S.filter.test(a.title + " " + strip(a.description))).map(a => {
+    const g = f.includes("news.google.com"), m = g && (a.title || "").match(/^(.*) - ([^-]+)$/), enc = a.enclosure?.link || "";
+    return { t: m ? m[1] : a.title, u: a.link, img: a.thumbnail || (/\.(jpe?g|png|webp)|image/i.test(enc + (a.enclosure?.type || "")) ? enc : "") || firstImg(a.content || a.description), d: strip(a.description), src: m ? m[2] : (r.feed?.title || "News"), at: a.pubDate };
+  }))));
+  const all = (await Promise.allSettled(jobs)).flatMap(x => x.status == "fulfilled" ? x.value : []);
+  const seen = new Set(), out = all.filter(x => { const key = (x.t || "").toLowerCase().slice(0, 60); if (!x.t || !okUrl(x.u) || seen.has(key)) return false; seen.add(key); return true; })
+    .sort((a, b) => (Date.parse(b.at) || 0) - (Date.parse(a.at) || 0));
+  return [...out.filter(x => okUrl(x.img)), ...out.filter(x => !okUrl(x.img))].slice(0, 9);
+}
+function newsCards(list, k) {
+  const fb = NEWS_IMG[k];
+  return list.map((a, i) => { const f = `https://images.unsplash.com/${fb[i % fb.length]}?auto=format&fit=crop&w=800&q=60`, img = okUrl(a.img) || f;
+    return `<a class="ncard" href="${esc(a.u)}" target="_blank" rel="noopener"><div class="im"><img src="${esc(img)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${f}'"><span class="tag">${NEWS_SRC[k].tag}</span></div>
+    <div class="bd"><h4>${esc(a.t)}</h4>${a.d ? `<p>${esc(a.d.slice(0, 220))}</p>` : ""}<div class="ft"><span>${esc(a.src)}</span><span>${esc(ago(a.at))}</span></div></div></a>`; }).join("");
+}
+async function renderNews(k, box, quiet) {
+  if (!box) return;
+  if (!quiet) box.innerHTML = '<div class="nsk"></div>'.repeat(3);
+  const list = await fetchNews(k); window.__nl = Date.now();
+  if (list.length) box.innerHTML = newsCards(list, k);
+  else if (!quiet) box.innerHTML = `<p class="mut" style="grid-column:1/-1;text-align:center">Live news could not be loaded right now. <a class="lnk" target="_blank" rel="noopener" href="https://news.google.com/search?q=${encodeURIComponent(NEWS_SRC[k].tag)}">Open Google News</a></p>`;
+  const st = $("#nstat"); if (st && list.length) st.innerHTML = `<i></i>Live · updated ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} · refreshes automatically every 30 minutes`;
+}
+window.loadNews = (k, btn) => { document.querySelectorAll("#ntabs button").forEach(b => b.classList.toggle("on", b == btn)); renderNews(k, $("#ngrid")); };
+const curTab = () => document.querySelector("#ntabs button.on")?.dataset.k;
+clearInterval(window.__nt);
+window.__nt = setInterval(() => { const k = curTab(); if (k && $("#ngrid")) renderNews(k, $("#ngrid"), true); }, NEWS_EVERY);
+document.addEventListener("visibilitychange", () => { const k = curTab(); if (!document.hidden && k && $("#ngrid") && Date.now() - (window.__nl || 0) > NEWS_EVERY) renderNews(k, $("#ngrid"), true); });
+
+/* ---------- public pages: Our Team, Contact, SAP Blog ---------- */
+const fSec = (t, body) => body ? `<div class="sec-label">${t}</div>${body}` : "";
+V.team = () => {
+  const F = FOUNDER;
+  return `<div class="page"><div class="sec-h"><p class="eyebrow">Our Team</p><h2>The people behind ConsultMesh</h2></div>
+  <div class="card pf"><div class="in">
+    <div class="avl" style="overflow:hidden;padding:0"><img src="${F.photo}" alt="${esc(F.name)}" style="width:100%;height:100%;object-fit:cover"></div>
+    <h1>${esc(F.name)}</h1><div style="font-weight:600">${esc(F.headline || F.title)}</div>
+    ${F.location ? `<div class="mut">${esc(F.location)}</div>` : ""}
+    <div class="li"><a class="btn" href="${F.linkedin}" target="_blank" rel="noopener">View full LinkedIn profile</a><a class="btn o" href="#/contact">Contact</a></div>
+    ${fSec("About", founderAbout())}
+    ${fSec("Experience", (F.experience || []).map(e => `<div class="ex"><b>${esc(e.role)}</b><div>${esc(e.org)} <span class="mut">· ${esc(e.dates || "")}</span></div><p class="mut" style="margin:2px 0">${esc(e.desc || "")}</p></div>`).join(""))}
+    ${fSec("Education", (F.education || []).map(e => `<div class="ex"><b>${esc(e.school)}</b><div>${esc(e.degree || "")} <span class="mut">${e.dates ? "· " + esc(e.dates) : ""}</span></div>${e.desc ? `<p class="mut" style="margin:2px 0">${esc(e.desc)}</p>` : ""}</div>`).join(""))}
+    ${fSec("Skills", (F.skills || []).length ? `<div class="chips">${F.skills.map(x => `<span class="chip" style="cursor:default">${esc(x)}</span>`).join("")}</div>` : "")}
+    ${fSec("Licenses & certifications", (F.certs || []).length ? `<ul>${F.certs.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : "")}
+  </div></div></div>`;
+};
+V.contact = () => {
+  const F = FOUNDER, C = CONTACT;
+  return `<div class="page"><div class="sec-h"><p class="eyebrow">Contact</p><h2>Let’s talk about your talent needs</h2></div><div class="ctgrid">
+    <div class="card"><div style="display:flex;gap:14px;align-items:center"><div class="avl" style="width:72px;height:72px;border-width:0;overflow:hidden;padding:0"><img src="${F.photo}" alt="${esc(F.name)}" style="width:100%;height:100%;object-fit:cover"></div><div><h3 style="margin:0">${esc(F.name)}</h3><div class="mut">${esc(F.headline || F.title)}</div>${F.location ? `<div class="mut">${esc(F.location)}</div>` : ""}</div></div>
+      ${F.about ? `<p>${esc(F.about)}</p>` : ""}
+      ${(F.experience || []).slice(0, 2).map(e => `<div class="ex"><b>${esc(e.role)}</b>, ${esc(e.org)}</div>`).join("")}
+      ${(F.skills || []).length ? `<div class="chips" style="margin-top:10px">${F.skills.slice(0, 8).map(x => `<span class="chip" style="cursor:default">${esc(x)}</span>`).join("")}</div>` : ""}
+      <div class="li" style="margin-top:16px"><a class="btn" href="${F.linkedin}" target="_blank" rel="noopener">Connect on LinkedIn</a><a class="btn o" href="#/team">Full profile</a></div></div>
+    <div class="card"><h3>Reach us</h3>
+      ${C.email ? `<p><b>Email:</b> <a class="lnk" href="mailto:${esc(C.email)}">${esc(C.email)}</a></p>` : ""}
+      ${C.phone ? `<p><b>Phone:</b> ${esc(C.phone)}</p>` : ""}
+      ${C.address ? `<p><b>Address:</b> ${esc(C.address)}</p>` : ""}
+      <p><b>LinkedIn:</b> <a class="lnk" href="${F.linkedin}" target="_blank" rel="noopener">${esc(F.name)}</a></p>
+      <p class="mut">Hiring or looking for your next role? Create a free account and we’ll take it from there.</p>
+      <button class="btn" onclick="authUI('signup','org')">Start hiring</button> <button class="btn o" onclick="authUI('signup','candidate')">Find a role</button></div>
+  </div></div>`;
+};
+V.blog = () => { setTimeout(() => renderNews("sap", $("#bgrid")), 0); return `<div class="page"><div class="sec-h"><p class="eyebrow">SAP Blog</p><h2>Latest SAP news &amp; insights</h2></div><p class="sec-sub">Fresh headlines on SAP S/4HANA, BTP and the wider SAP ecosystem.</p><div class="ngrid" id="bgrid"></div></div>`; };
+
 async function route() {
   redraw = () => {};
   let h = (location.hash.slice(2) || "home").split("?")[0];
-  if (!me) h = "home";
+  if (!me && !["team", "contact", "blog"].includes(h)) h = "home";
   else if (h == "home") { location.hash = homeHash(); return; }
   const v = V[h] || V.home;
+  if (!["team", "contact", "blog"].includes(h)) { /* landing & app views unchanged */ }
   const o = await v();
-  if (typeof o == "string") { $("#app").innerHTML = o; if (h == "home") { landingFx(); } }
+  if (typeof o == "string") { $("#app").innerHTML = o; if (h == "home") { landingFx(); renderNews("ai", $("#ngrid")); } }
   window.scrollTo(0, 0);
 }
 async function count() {
@@ -1282,9 +2088,9 @@ window.$ = $;
 
 /* ---------- email verification ---------- */
 const ver = () => { if (me && me.emailVerified) return true; toast("Please verify your email first"); return false; };
-const gateHtml = () => `<div class="page"><h2>Verify your email to continue</h2>
-  <p>We sent a verification link to <b>${esc(me?.email || "")}</b>. Open it, then press the button below. Check your spam folder if you cannot find it.</p>
-  <div class="srow"><button class="btn" onclick="checkVer()">I've verified</button><button class="btn o" onclick="resendVer()">Resend email</button></div></div>`;
+const gateHtml = () => `${pHero("Almost there", "Verify your email to continue", "One quick step keeps ConsultMesh safe for everyone.")}
+  <div class="page"><div class="card"><p style="margin-top:0">We sent a verification link to <b>${esc(me?.email || "")}</b>. Open it, then press the button below. Check your spam folder if you cannot find it.</p>
+  <div class="srow"><button class="btn" onclick="checkVer()">I've verified</button><button class="btn o" onclick="resendVer()">Resend email</button></div></div></div>`;
 function vbar() {
   const b = $("#vbar"); if (!b) return;
   if (me && !me.emailVerified) {
