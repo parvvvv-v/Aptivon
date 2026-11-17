@@ -30,14 +30,8 @@ service cloud.firestore {
       allow delete: if false;
     }
 
-    // Profile background photo (profile photo lives on the user doc)
-    match /photos/{u} {
-      allow read: if request.auth != null;
-      allow write: if verified()
-                   && request.auth.uid == u
-                   && request.resource.data.keys().hasOnly(['cover'])
-                   && request.resource.data.cover.size() < 600000;
-    }
+    // Profile background photos have been removed from the site (profile photo lives on the user doc),
+    // so the "photos" collection is no longer readable or writable.
 
     // Consultancy / group accounts: members share a shortlist and notes
     match /groups/{g} {
