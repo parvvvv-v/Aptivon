@@ -892,6 +892,11 @@ header{height:88px}
 @media(max-width:400px){.logo{height:54px}.logo img,.logo .lg-full{height:50px}}
 .flogo img{height:84px}
 @media(max-width:600px){.flogo img{height:68px}}
+
+.spin{width:34px;height:34px;border-radius:50%;border:3px solid rgba(120,60,80,.18);border-top-color:#a3304a;animation:spn .8s linear infinite;margin:4px auto 12px}
+.spin.sm{display:inline-block;width:14px;height:14px;border-width:2px;margin:0 6px -2px 0;vertical-align:baseline}
+@keyframes spn{to{transform:rotate(360deg)}}
+#res .pc{content-visibility:auto;contain-intrinsic-size:auto 170px}
 </style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
 </head>
@@ -1358,15 +1363,87 @@ const chkCard = (t, items) => `<div class="card tipc"><h4>${t}</h4><ul class="ch
 const fdate = x => x?.seconds ? new Date(x.seconds * 1000).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) : "";
 const firstName = n => esc(String(n || "").trim().split(/\s+/)[0] || "there");
 
+/* ----- LinkedIn & Naukri job feed -----
+   LinkedIn and Naukri have no public job-search API, so live postings come from the JSearch API (RapidAPI / OpenWeb Ninja),
+   which aggregates both. Paste your key below. For production, put the call behind your own proxy (set url to the proxy and key to "")
+   so the key is not visible in the browser. */
+const EXT_JOBS = { url: "https://jsearch.p.rapidapi.com/search-v2", key: "580b1b6e8cmsh589419474867fc3p1f431ajsn5c8157c0da64", host: "jsearch.p.rapidapi.com", alt: [], query: "", location: "India", pages: 3 };
+const EXT_SRC = [["LinkedIn", "linkedin"]];
+const EXT_HOST = /^https:\/\/([a-z0-9-]+\.)*(naukri|linkedin)\.com([\/?#].*)?$/i;
+const EXT_CACHE = {};
+try { Object.assign(EXT_CACHE, JSON.parse(sessionStorage.getItem("extjobs2") || "{}")); } catch {}
+const saveExt = () => { try { sessionStorage.setItem("extjobs2", JSON.stringify(EXT_CACHE)); } catch {} };
+const srcName = j => j.source || (/naukri\./i.test(j.applyUrl || "") ? "Naukri" : /linkedin\./i.test(j.applyUrl || "") ? "LinkedIn" : "");
+const hash36 = t => { let h = 5381; for (const c of String(t)) h = ((h << 5) + h + c.charCodeAt(0)) >>> 0; return h.toString(36); };
+const R_ROLE = { "Program Manager": /program manager/, "Project Manager": /project manager/, "Transformation Manager": /transformation/, "Solution Architect": /architect/, "Functional Consultant": /functional|consultant/, "Developer": /developer|programmer|software engineer|abap/, "Data Analyst": /data analyst|analytics|business analyst/, "Security Engineer": /security/ };
+const R_SKILL = { "SAP S/4HANA": /s\/?4\s?hana/, "SAP FICO": /\bfico\b|sap fi\b|sap co\b/, "SAP MM": /\bsap mm\b/, "SAP SD": /\bsap sd\b/, "SAP ABAP": /\babap\b/, "SAP BASIS": /sap basis/, "SAP BTP": /\bbtp\b/, "JavaScript": /javascript|\bjs\b/, "React": /\breact(\.?js)?\b/, "AWS": /\baws\b|amazon web services/, "Power BI": /power\s?bi/, "Stakeholder Management": /stakeholder/, "Change Management": /change management/ };
+const R_SOFT = { "Stakeholder Management": /stakeholder/, "Executive Communication": /executive communication|c-level/, "Negotiation": /negotiat/, "Mentoring": /mentor/, "Change Leadership": /change (leadership|management)/, "Cross-cultural Teams": /cross[- ]cultural/, "Problem Solving": /problem[- ]solving/, "Facilitation": /facilitat/ };
+const R_IND = { "Manufacturing": /manufactur/, "Retail & CPG": /retail|\bcpg\b/, "BFSI": /\bbank|insurance|bfsi/, "Life Sciences": /life science/, "Technology": /software|technology|it services/, "Public Sector": /government|public sector/, "Healthcare Services": /healthcare|hospital/, "Transportation & Logistics": /logistics|transport|supply chain/, "Education": /education|universit/, "Energy & Utilities": /energy|utilit|\boil\b/, "Pharma & Biotech": /pharma|biotech/, "Financial Services": /financial services|fintech/, "Travel & Hospitality": /travel|hospitality|hotel/, "Entertainment & Media": /entertainment|\bmedia\b/, "Consumer Goods": /consumer goods|fmcg/, "Agriculture": /agricultur/ };
+const hit = (map, t) => Object.keys(map).filter(k => map[k].test(t));
+const normExt = r => {
+  const opts = [...(r.apply_options || []), { publisher: r.job_publisher, apply_link: r.job_apply_link }];
+  const o = opts.find(x => x && EXT_HOST.test(String(x.apply_link || "")) && /linkedin\.com/i.test(x.apply_link));
+  if (!o) return null;
+  const source = /naukri/i.test(o.apply_link) ? "Naukri" : "LinkedIn";
+  const title = r.job_title || "", desc = r.job_description || "", low = (title + " " + (r.employer_name || "") + " " + desc).toLowerCase(), tl = title.toLowerCase();
+  let cc = r.job_country || ""; try { if (/^[A-Za-z]{2}$/.test(cc)) cc = new Intl.DisplayNames(["en"], { type: "region" }).of(cc.toUpperCase()); } catch {}
+  const location = [r.job_city, r.job_state, cc].filter(Boolean).join(", ") + (r.job_is_remote ? " (Remote)" : "");
+  const et = String(r.job_employment_type || "").toUpperCase();
+  const jt = /intern/.test(tl) || et == "INTERN" ? "Internship" : /freelance/.test(low) ? "Freelance" : et == "PARTTIME" ? "Part-time" : et == "CONTRACTOR" || /\bcontract\b/.test(tl) ? "Contract" : "Permanent";
+  const ts = r.job_posted_at_timestamp || (r.job_posted_at_datetime_utc ? Date.parse(r.job_posted_at_datetime_utc) / 1000 : 0);
+  return { id: "x_" + source[0].toLowerCase() + "_" + hash36(r.job_id || o.apply_link), ext: true, source, applyUrl: o.apply_link.trim(), title, orgId: "", orgName: r.employer_name || source,
+    location, desc, role: hit(R_ROLE, tl).join(", "), skills: SKILLS.filter(k => (R_SKILL[k] || new RegExp("\\b" + k.toLowerCase().replace(/[.*+?^${}()|[\]\\\/]/g, "\\$&") + "\\b")).test(low)),
+    softSkills: hit(R_SOFT, low), jobType: jt, industry: hit(R_IND, low).join(", "), created: ts ? { seconds: ts } : null };
+};
+async function fetchExt(queries, loc, part, more) {
+  /* one request at a time (free plans limit parallel calls); "more" continues each search from where it stopped */
+  const errs = []; let total = 0;
+  const kq = (q, via) => `${q ? q + " " : ""}jobs in ${loc} via ${via}`;
+  const gather = () => {
+    const seen = new Set(), jobs = []; let hasMore = false;
+    queries.forEach(q => EXT_SRC.forEach(([nm, via]) => { const e = EXT_CACHE[nm + "|" + kq(q, via)]; if (!e) return; if (e.cursor) hasMore = true; e.jobs.forEach(x => { if (!seen.has(x.id)) { seen.add(x.id); jobs.push(x); } }); }));
+    return { jobs, hasMore };
+  };
+  for (const q of queries) for (const [nm, via] of EXT_SRC) {
+    total++;
+    const query = kq(q, via), key = nm + "|" + query;
+    try {
+      let e = EXT_CACHE[key];
+      if (!e || (more && e.cursor)) {
+        const prm = { query, num_pages: String(EXT_JOBS.pages), country: "in", date_posted: "all" };
+        if (e && more) prm.cursor = e.cursor;
+        const r = await fetch(`${EXT_JOBS.url}?${new URLSearchParams(prm)}`, { headers: EXT_JOBS.key ? { "X-RapidAPI-Key": EXT_JOBS.key, "X-RapidAPI-Host": EXT_JOBS.host } : {} });
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        const j = await r.json(), d = j.data, arr = Array.isArray(d) ? d : (d && Object.values(d).find(Array.isArray)) || [];
+        const got = arr.map(x => { try { return normExt(x); } catch (er) { return null; } }).filter(Boolean);
+        const old = e ? e.jobs : [], ids = new Set(old.map(x => x.id));
+        e = EXT_CACHE[key] = { jobs: [...old, ...got.filter(x => !ids.has(x.id))], cursor: got.length ? ((d && !Array.isArray(d) && d.cursor) || j.cursor || "") : "" };
+        saveExt();
+        console.info(`JSearch "${query}"${more ? " (more)" : ""}: ${arr.length} results, ${got.length} with a ${nm} apply link, more available: ${!!e.cursor}`);
+      }
+      if (part) part(gather());
+    } catch (e) { errs.push(String(e.message || e)); console.error("Job fetch failed:", e); }
+  }
+  return { ...gather(), failed: errs.length, total, err: errs[0] || "" };
+}
+window.applyExt = id => {
+  const j = JOBS[id], u = String(j?.applyUrl || "").trim();
+  if (!EXT_HOST.test(u)) return toast("The apply link for this job is not available");
+  toast("Opening " + (srcName(j) || "the job site") + " to apply…");
+  window.open(u, "_blank", "noopener,noreferrer");
+};
+const okLink = d => !d.applyUrl || EXT_HOST.test(d.applyUrl);
+const extBtn = (j, cls = "btn s") => `<button class="${cls}" onclick="applyExt('${j.id}')">Apply on ${esc(srcName(j) || "site")} ↗</button>`;
+
 /* ----- jobs ----- */
 const jobCard = j => {
   const m = j.m, meta = [j.location, j.exp ? j.exp + "+ yrs experience" : "", fdate(j.created) ? "Posted " + fdate(j.created) : ""].filter(Boolean).map(esc).join(" · ");
   return `<div class="pc"><div class="ini sq">${esc(ini(j.orgName))}</div>
     <div><h3><a class="lnk" onclick="viewJob('${j.id}')" style="color:var(--navy)">${esc(j.title)}</a></h3>
-      <div class="meta"><a class="lnk" onclick="viewOrg('${j.orgId}')">${esc(j.orgName)}</a> · ${meta}</div>
-      <div class="tr">${tags({ ...j, location: "" })}</div>
+      <div class="meta">${j.orgId ? `<a class="lnk" onclick="viewOrg('${j.orgId}')">${esc(j.orgName)}</a>` : esc(j.orgName)} · ${meta}</div>
+      <div class="tr">${srcName(j) ? `<span class="tag" style="background:#e8f1fb;color:#0a66c2">via ${esc(srcName(j))}</span>` : ""}${tags({ ...j, location: "" })}</div>
       <p class="mut">${esc((j.desc || "").slice(0, 320))}${(j.desc || "").length > 320 ? "…" : ""}</p></div>
-    <div class="act">${m != null ? `<span class="match">${m}% match</span>` : ""}${!isCand() ? "" : `<button class="btn s" onclick="apply('${j.id}')">Apply</button>`}<button class="btn o s" onclick="viewJob('${j.id}')">View details</button></div></div>`;
+    <div class="act">${m != null ? `<span class="match">${m}% match</span>` : ""}${j.applyUrl ? extBtn(j) : !isCand() ? "" : `<button class="btn s" onclick="apply('${j.id}')">Apply</button>`}<button class="btn o s" onclick="viewJob('${j.id}')">View details</button></div></div>`;
 };
 
 V.jobs = async () => {
@@ -1375,8 +1452,8 @@ V.jobs = async () => {
     ? tipCard("Get better matches", ["Add at least 3 hard skills and a few soft skills to your profile", "Upload your resume to get an ATS score and detected skills", "Set your availability so employers know when you can start"], `<a class="btn s" href="#/profile">Update my profile</a>`)
     : tipCard("Hiring?", ["Post a role and receive applicants in a pipeline", "Search the talent pool by skill, role, industry and ATS score", "Shortlist candidates in one click"], `<a class="btn s" href="${isOrg() ? "#/dashboard?tab=post" : "#/talent"}">${isOrg() ? "Post a job" : "Search talent"}</a>`);
   $("#app").innerHTML = `<div class="band"><div class="wrap"><p class="eyebrow">Jobs</p><h2>Find jobs</h2><p>Search by role, hard skill, soft skill, location, job type and industry independently.</p>
-    ${filterBar({ k: p.get("q") || "", r: p.get("r") || "", s: p.get("s") || "" })}<div class="pstats" id="jst"></div></div></div>
-    <div class="page"><div class="lay"><div>${legend()}<div id="res" class="mut">Loading…</div></div>
+    ${filterBar({ k: p.get("q") || "", r: p.get("r") || "", s: p.get("s") || "" }, `<div class="ff"><label>Source</label><select id="src"><option value="">All sources</option><option value="own">Our platform</option><option value="linkedin">LinkedIn</option></select></div>`)}</div></div>
+    <div class="page"><div class="lay"><div>${legend()}<div id="extst" class="mut" style="margin:0 0 8px"></div><div id="res" class="mut">Loading…</div></div>
     <aside class="rail">${rail}
       <div class="card tipc"><h4>Browse by role</h4><div class="chips">${ROLES.map(r => `<a class="chip" href="#/jobs?r=${encodeURIComponent(r)}">${esc(r)}</a>`).join("")}</div></div>
       <div class="card tipc"><h4>Browse by technology</h4><div class="chips">${TECH.map(t => `<a class="chip" href="#/jobs?q=${encodeURIComponent(t)}">${esc(t)}</a>`).join("")}</div></div>
@@ -1388,10 +1465,11 @@ V.jobs = async () => {
   try { all = (await getDocs(query(collection(db, "jobs"), limit(300)))).docs.map(d => ({ id: d.id, ...d.data() })); }
   catch (e) { return $("#res").textContent = "Could not load jobs: " + e.message; }
   all.forEach(j => JOBS[j.id] = j);
-  const js = $("#jst");
-  if (js) js.innerHTML = [[all.length, "Open jobs"], [new Set(all.map(j => j.orgId)).size, "Employers hiring"], [new Set(all.map(j => (j.location || "").trim().toLowerCase()).filter(Boolean)).size, "Locations"], [new Set(all.flatMap(j => csv(j.role))).size, "Roles"]].map(([v, l]) => `<div><b>${v}</b><span>${l}</span></div>`).join("");
+  let ext = [], tok = 0, busy = !!EXT_JOBS.key, shown = 20, hasMore = false, lastLen = 0, io = null;
+  const srcOk = j => { const s = gv("src"); return !s || (s == "own" ? !j.ext : srcName(j).toLowerCase() == s); };
   const draw = () => {
-    let r = all.filter(j => (!gv("k") || JSON.stringify(j).toLowerCase().includes(gv("k")))
+    let r = [...all, ...ext].filter(j => (!gv("k") || JSON.stringify({ ...j, applyUrl: "", source: "" }).toLowerCase().includes(gv("k")))
+      && srcOk(j)
       && ma(j.role, "r")
       && ma(j.skills, "s")
       && ma(j.softSkills, "ss")
@@ -1399,23 +1477,49 @@ V.jobs = async () => {
       && ma(j.jobType, "t")
       && ma(j.industry, "i"));
     r = r.map(j => ({ ...j, m: match(j) })).sort((a, b) => (b.m || 0) - (a.m || 0) || (b.created?.seconds || 0) - (a.created?.seconds || 0));
-    $("#res").innerHTML = `<div class="count">${r.length} job${r.length == 1 ? "" : "s"}${me && isCand() && myText().size ? " — ranked by match to your CV" : ""}</div>`
-      + (r.map(jobCard).join("") || `<div class="card empty-big"><div class="em">🔎</div><h3>No jobs match these filters yet</h3><p class="mut">Try removing a filter or searching a broader keyword.</p><div class="srow"><button class="btn s" onclick="clearF()">Clear filters</button></div></div>`);
+    lastLen = r.length;
+    const more = r.length > shown || (hasMore && gv("src") != "own");
+    const spin = `<span class="spin sm"></span>`;
+    $("#res").innerHTML = `<div class="count">${busy && !r.length ? spin + "Loading…" : r.length + " job" + (r.length == 1 ? "" : "s")}${busy && r.length ? " " + spin : ""}${me && isCand() && myText().size && r.length ? " — ranked by match to your CV" : ""}</div>`
+      + (r.slice(0, shown).map(jobCard).join("") || (busy ? `<div class="card empty-big"><div class="spin"></div><h3>Loading jobs…</h3><p class="mut">Just a moment</p></div>` : `<div class="card empty-big"><div class="em">🔎</div><h3>No jobs match these filters yet</h3><p class="mut">Try removing a filter or searching a broader keyword.</p><div class="srow"><button class="btn s" onclick="clearF()">Clear filters</button></div></div>`))
+      + (more && r.length ? `<div id="moreb" style="text-align:center;margin:18px 0">${busy ? `<span class="spin"></span>` : `<button class="btn o" onclick="moreJobs()">Load more jobs</button>`}</div>` : "");
+    if (io) io.disconnect();
+    const mb = $("#moreb"); if (mb && io && r.length > shown) io.observe(mb);   /* auto-reveal the next batch while scrolling */
   };
-  $("#fg").oninput = draw;
+  window.moreJobs = () => {
+    if (shown < lastLen) { shown += 20; draw(); return; }
+    if (hasMore && !busy) { busy = true; draw(); refreshExt(true); }
+  };
+  io = "IntersectionObserver" in window ? new IntersectionObserver(es => { if (es.some(e => e.isIntersecting) && shown < lastLen) { shown += 20; draw(); } }, { rootMargin: "600px" }) : null;
+  /* pull live LinkedIn postings that match the keyword, skill/role and location filters */
+  const refreshExt = async (more = false) => {
+    if (!EXT_JOBS.key && EXT_JOBS.url.includes("rapidapi")) { busy = false; return; }
+    const kw = ($("#k")?.value || "").trim(), loc = ($("#l")?.value || "").trim() || EXT_JOBS.location;
+    const qs = kw ? [kw] : gm("s").length ? gm("s").slice(0, 3) : gm("r").length ? gm("r").slice(0, 2) : [EXT_JOBS.query];
+    const my = ++tok, note = $("#extst"); if (note) note.textContent = "";
+    const out = await fetchExt(qs, loc, list => { if (my != tok) return; ext = list.jobs; hasMore = list.hasMore; ext.forEach(j => JOBS[j.id] = j); draw(); }, more);
+    if (my != tok) return;
+    busy = false;
+    ext = out.jobs; hasMore = out.hasMore; ext.forEach(j => JOBS[j.id] = j);
+    if (note) note.textContent = out.failed == out.total ? "Some jobs could not be loaded right now (" + (out.err || "unknown error") + ")." : out.failed ? "Some jobs could not be loaded (" + out.err + ")." : "";
+    draw();
+  };
+  let tmr;
+  $("#fg").oninput = () => { busy = !!EXT_JOBS.key; shown = 20; draw(); clearTimeout(tmr); tmr = setTimeout(() => refreshExt(), 700); };
   draw();
+  refreshExt();
 };
 
 window.viewJob = id => {
   const j = JOBS[id]; if (!j) return;
   const m = isCand() ? match(j) : null;
-  const facts = [["Location", j.location], ["Experience", j.exp ? j.exp + "+ years" : ""], ["Job type", csv(j.jobType).join(", ")], ["Industry", csv(j.industry).join(", ")], ["Role", csv(j.role).join(", ")], ["Posted", fdate(j.created)]].filter(([, v]) => v);
-  modal(`<h2>${esc(j.title)}</h2><div class="mut"><a class="lnk" onclick="viewOrg('${j.orgId}')">${esc(j.orgName)}</a>${m != null ? ` · <span class="match">${m}% match</span>` : ""}</div>
+  const facts = [["Location", j.location], ["Experience", j.exp ? j.exp + "+ years" : ""], ["Job type", csv(j.jobType).join(", ")], ["Industry", csv(j.industry).join(", ")], ["Role", csv(j.role).join(", ")], ["Posted", fdate(j.created)], ["Listed on", srcName(j)]].filter(([, v]) => v);
+  modal(`<h2>${esc(j.title)}</h2><div class="mut">${j.orgId ? `<a class="lnk" onclick="viewOrg('${j.orgId}')">${esc(j.orgName)}</a>` : esc(j.orgName)}${m != null ? ` · <span class="match">${m}% match</span>` : ""}</div>
     <div class="tiles">${facts.map(([l, v]) => `<div class="tile" style="min-width:120px"><div class="l">${l}</div><div class="v" style="font-size:17px">${esc(v)}</div></div>`).join("")}</div>
     <div class="sec-label">About the role</div><p style="white-space:pre-line;margin:0">${esc(j.desc)}</p>
     ${(j.skills || []).length ? `<div class="sec-label">Required hard skills</div><div class="tr" style="margin-top:0">${j.skills.map(x => tg("hard", x)).join("")}</div>` : ""}
     ${(j.softSkills || []).length ? `<div class="sec-label">Soft skills</div><div class="tr" style="margin-top:0">${j.softSkills.map(x => tg("soft", x)).join("")}</div>` : ""}
-    <div class="srow" style="margin-top:18px">${!isCand() ? "" : `<button class="btn" onclick="apply('${id}')">Apply now</button>`}<button class="btn o" onclick="closeM()">Close</button></div>`, 1);
+    <div class="srow" style="margin-top:18px">${j.applyUrl ? extBtn(j, "btn") : !isCand() ? "" : `<button class="btn" onclick="apply('${id}')">Apply now</button>`}<button class="btn o" onclick="closeM()">Close</button></div>`, 1);
 };
 
 window.apply = async id => {
@@ -1630,13 +1734,15 @@ const OF = [
 ];
 const JF = [
   ["title", "Job title"], ["role", "Role", "role"], ["location", "Location"], ["jobType", "Job type", "type"],
-  ["industry", "Industry", "ind"], ["exp", "Minimum years of experience"]
+  ["industry", "Industry", "ind"], ["exp", "Minimum years of experience"],
+  ["applyUrl", "Naukri / LinkedIn apply link (optional, candidates are redirected there to apply)"]
 ];
 const jobForm = d => `<div class="form">${fields(JF, d)}
   <div class="full"><label>Required hard skills</label>${chips("c_h", SKILLS, d.skills)}</div>
   <div class="full"><label>Soft skills</label>${chips("c_s", SOFT, d.softSkills)}</div>
   <div class="full"><label>Description</label><textarea id="f_desc" rows="5">${esc(d.desc)}</textarea></div></div>`;
-const readJob = () => ({ ...read(JF), skills: picked("c_h"), softSkills: picked("c_s"), desc: $("#f_desc").value });
+const readJob = () => { const d = { ...read(JF), skills: picked("c_h"), softSkills: picked("c_s"), desc: $("#f_desc").value }; d.applyUrl = (d.applyUrl || "").trim(); d.source = srcName(d); return d; };
+const LINK_MSG = "The apply link must be an https link on naukri.com or linkedin.com";
 
 const podCard = (p, org, ed, i) => `<div class="podc"><div><h3>${esc(p.name)} <span class="pod">POD · ${esc(p.size || "?")} members</span></h3>
   <div class="mut">${[org, p.avail ? "Available: " + p.avail : ""].filter(Boolean).map(esc).join(" · ")}</div>
@@ -1692,12 +1798,13 @@ window.saveOrg = async () => { await upd({ ...read(OF), focus: picked("c_f") });
 window.post = async () => {
   const d = readJob();
   if (!d.title) return toast("Add a job title");
+  if (!okLink(d)) return toast(LINK_MSG);
   await addDoc(collection(db, "jobs"), { ...d, orgId: me.uid, orgName: P.name, created: serverTimestamp() });
   toast("Job published");
   location.hash = "#/dashboard?tab=jobs";
 };
 window.editJob = id => modal(`<h2>Edit job</h2>${jobForm(MJ[id])}<div class="srow"><button class="btn" onclick="saveJob('${id}')">Save changes</button><button class="btn o" onclick="closeM()">Cancel</button></div>`, 1);
-window.saveJob = async id => { await updateDoc(doc(db, "jobs", id), readJob()); closeM(); toast("Job updated"); route(); };
+window.saveJob = async id => { const d = readJob(); if (!okLink(d)) return toast(LINK_MSG); await updateDoc(doc(db, "jobs", id), d); closeM(); toast("Job updated"); route(); };
 window.delJob = async id => { if (confirm("Delete this job?")) { await deleteDoc(doc(db, "jobs", id)); route(); } };
 window.setSt = (id, s) => updateDoc(doc(db, "applications", id), { status: s }).then(() => { toast("Status updated"); route(); });
 
@@ -2151,7 +2258,7 @@ window.goSec = id => {
   const f = () => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   if ((location.hash.slice(2) || "home").split("?")[0] == "home") f(); else { location.hash = "#/"; setTimeout(f, 450); }
 };
-window.sapGo = k => { if (me) location.hash = k == "jobs" ? "#/jobs" : "#/talent"; else authUI("login"); };
+window.sapGo = k => { if (me) location.hash = k == "jobs" ? "#/jobs?q=SAP" : "#/talent"; else authUI("login"); };
 const NEWS_IMG = {
   ai: ["photo-1677442136019-21780ecad995", "photo-1620712943543-bcc4688e7485", "photo-1555255707-c07966088b7b", "photo-1485827404703-89b55fcc595e"],
   gcc: ["photo-1486406146926-c627a92ad1ab", "photo-1497366216548-37526070297c", "photo-1556761175-5973dc0f32e7", "photo-1522071820081-009f0129c71c"],
