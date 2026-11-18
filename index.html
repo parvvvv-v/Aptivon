@@ -877,6 +877,21 @@ header.open .burger span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
   .hero.rg{min-height:0;padding:44px 24px}
   .scrollhint{display:none}
 }
+
+/* ===== Fixes: readable dark-section text, bigger logo, white footer logo ===== */
+section.b.t-dark h2,section.b.t-dark h3,section.b.t-dark .st h3{color:#fff}
+section.b.t-dark .st p,section.b.t-dark .st .mut{color:#f1e6ea}
+header{height:88px}
+.logo{height:80px}
+.logo img,.logo .lg-full{height:76px}
+.logo .lg-small{display:none}
+#hire,#services,#news{scroll-margin-top:96px}
+@media(max-width:1360px){.logo .lg-full{display:block}.logo .lg-small{display:none}}
+@media(max-width:1240px){header{height:auto;min-height:72px}.logo{height:64px}.logo img,.logo .lg-full{height:60px}}
+@media(max-width:600px){.logo{height:58px}.logo img,.logo .lg-full{height:54px;max-width:calc(100vw - 96px);object-fit:contain;object-position:left center}}
+@media(max-width:400px){.logo{height:54px}.logo img,.logo .lg-full{height:50px}}
+.flogo img{height:84px}
+@media(max-width:600px){.flogo img{height:68px}}
 </style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
 </head>
@@ -1008,7 +1023,7 @@ const SU = {
   group: [["designation", "Your designation / title"], ["website", "Firm website"], ["location", "Firm location"], ["industry", "Primary industry (select one or more)", "mind"]]
 };
 /* Aptivon logo with tagline: light version for dark backgrounds (footer), dark version for light pages (Our Team) */
-const LOGO_FT = "https://i.ibb.co/nMXZV7M2/Whats-App-Image-2026-11-18-at-10-16-44-AM-removebg-preview.png";
+const LOGO_FT = "https://i.ibb.co/k6Mn5RvF/Aptivon-Futuristic-Network-Logo.png";
 const LOGO_TEAM = "https://i.ibb.co/nMXZV7M2/Whats-App-Image-2026-11-18-at-10-16-44-AM-removebg-preview.png";
 { const fl = document.getElementById("flogo"); if (fl) fl.src = LOGO_FT; }
 
