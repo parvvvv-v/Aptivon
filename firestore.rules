@@ -55,6 +55,7 @@ service cloud.firestore {
                         || (!(request.auth.token.email.lower() in resource.data.memberEmails)
                             && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberEmails'])
                             && request.resource.data.memberEmails == resource.data.memberEmails.concat([request.auth.token.email.lower()])
+                            && get(/databases/$(db)/documents/users/$(request.auth.uid)).data.type != 'org'
                             && get(/databases/$(db)/documents/invites/$(g + '_' + request.auth.token.email.lower())).data.status == 'pending'));
 
       allow delete: if verified() && resource.data.ownerId == request.auth.uid;
@@ -79,7 +80,8 @@ service cloud.firestore {
                          && request.resource.data.inviteeEmail == resource.data.inviteeEmail)
                         || (resource.data.inviteeEmail == request.auth.token.email.lower()
                             && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
-                            && request.resource.data.status in ['accepted', 'declined']));
+                            && request.resource.data.status in ['accepted', 'declined']
+                            && get(/databases/$(db)/documents/users/$(request.auth.uid)).data.type != 'org'));
 
       allow delete: if verified() && resource.data.invitedBy == request.auth.uid;
     }
@@ -116,7 +118,7 @@ service cloud.firestore {
       return !('applyUrl' in d)
              || d.applyUrl == ''
              || (d.applyUrl is string
-                 && d.applyUrl.matches('(?i)^https://([a-z0-9-]+\.)*(linkedin\.com|indeed\.com|naukri\.com|iimjobs\.com|eursap\.com|flexjobs\.com|glassdoor\.com|foundit\.in|shine\.com|hirist\.tech)([/?#].*)?$'));
+                 && d.applyUrl.matches('(?i)^https://([a-z0-9-]+[.])*(linkedin[.]com|indeed[.]com|naukri[.]com|iimjobs[.]com|eursap[.]com|flexjobs[.]com|glassdoor[.]com|foundit[.]in|shine[.]com|hirist[.]tech)([/?#].*)?$'));
     }
 
     // Job posts: public to read, only the owning (verified) employer can write
