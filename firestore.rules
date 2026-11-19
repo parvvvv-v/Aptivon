@@ -95,16 +95,42 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // CV files: owner writes; employers, groups and the person's group mates can read
+    function myType() { return get(/databases/$(db)/documents/users/$(request.auth.uid)).data.type; }
+    function mateAt(r, i) {
+      return r.data.groupIds.size() > i
+             && request.auth.token.email.lower() in get(/databases/$(db)/documents/groups/$(r.data.groupIds[i])).data.memberEmails;
+    }
+    match /resumes/{u} {
+      allow read: if verified()
+                  && (request.auth.uid == u
+                      || myType() in ['org', 'group']
+                      || (resource.data.groupIds is list
+                          && (mateAt(resource, 0) || mateAt(resource, 1) || mateAt(resource, 2) || mateAt(resource, 3) || mateAt(resource, 4))));
+      allow create, update: if verified() && request.auth.uid == u;
+      allow delete: if false;
+    }
+
+    // Optional apply link on a job: must be an https link on a supported job site
+    function validApplyLink(d) {
+      return !('applyUrl' in d)
+             || d.applyUrl == ''
+             || (d.applyUrl is string
+                 && d.applyUrl.matches('(?i)^https://([a-z0-9-]+\.)*(linkedin\.com|indeed\.com|naukri\.com|iimjobs\.com|eursap\.com|flexjobs\.com|glassdoor\.com|foundit\.in|shine\.com|hirist\.tech)([/?#].*)?$'));
+    }
+
     // Job posts: public to read, only the owning (verified) employer can write
     match /jobs/{j} {
       allow read: if true;
 
       allow create: if verified()
-                    && request.resource.data.orgId == request.auth.uid;
+                    && request.resource.data.orgId == request.auth.uid
+                    && validApplyLink(request.resource.data);
 
       allow update: if verified()
                     && resource.data.orgId == request.auth.uid
-                    && request.resource.data.orgId == resource.data.orgId;
+                    && request.resource.data.orgId == resource.data.orgId
+                    && validApplyLink(request.resource.data);
 
       allow delete: if verified() && resource.data.orgId == request.auth.uid;
     }
