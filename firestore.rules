@@ -113,26 +113,16 @@ service cloud.firestore {
       allow delete: if false;
     }
 
-    // Optional apply link on a job: must be an https link on a supported job site
-    function validApplyLink(d) {
-      return !('applyUrl' in d)
-             || d.applyUrl == ''
-             || (d.applyUrl is string
-                 && d.applyUrl.matches('(?i)^https://([a-z0-9-]+[.])*(linkedin[.]com|indeed[.]com|naukri[.]com|iimjobs[.]com|eursap[.]com|flexjobs[.]com|glassdoor[.]com|foundit[.]in|shine[.]com|hirist[.]tech)([/?#].*)?$'));
-    }
-
     // Job posts: public to read, only the owning (verified) employer can write
     match /jobs/{j} {
       allow read: if true;
 
       allow create: if verified()
-                    && request.resource.data.orgId == request.auth.uid
-                    && validApplyLink(request.resource.data);
+                    && request.resource.data.orgId == request.auth.uid;
 
       allow update: if verified()
                     && resource.data.orgId == request.auth.uid
-                    && request.resource.data.orgId == resource.data.orgId
-                    && validApplyLink(request.resource.data);
+                    && request.resource.data.orgId == resource.data.orgId;
 
       allow delete: if verified() && resource.data.orgId == request.auth.uid;
     }
