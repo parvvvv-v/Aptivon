@@ -897,6 +897,11 @@ header{height:88px}
 .spin.sm{display:inline-block;width:14px;height:14px;border-width:2px;margin:0 6px -2px 0;vertical-align:baseline}
 @keyframes spn{to{transform:rotate(360deg)}}
 #res .pc{content-visibility:auto;contain-intrinsic-size:auto 170px}
+/* profile photo: perfect circle, photo fills it edge to edge, white ring like Our Team */
+.hd .avw{display:inline-block;width:112px;height:112px;line-height:0;border-radius:50%;flex:none;position:relative}
+.hd .avw .ini.lg,.hd .avw img.ini{display:block;width:112px!important;height:112px!important;min-width:112px;max-width:none!important;aspect-ratio:1/1!important;border-radius:50%!important;object-fit:cover!important;object-position:center!important;box-sizing:border-box}
+.hd .avw img.ini{border:4px solid #fff!important;background:#fff!important;box-shadow:0 0 0 1px rgba(20,36,58,.14),0 8px 22px rgba(20,36,58,.2)!important}
+@media(max-width:700px){.hd .avw{width:92px;height:92px}.hd .avw .ini.lg,.hd .avw img.ini{width:92px!important;height:92px!important;min-width:92px}}
 </style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
 </head>
