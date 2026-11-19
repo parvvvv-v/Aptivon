@@ -12,6 +12,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <style>
 /* ============ Tokens ============ */
@@ -903,6 +905,227 @@ header{height:88px}
 .hd .avw img.ini{border:4px solid #fff!important;background:#fff!important;box-shadow:0 0 0 1px rgba(20,36,58,.14),0 8px 22px rgba(20,36,58,.2)!important}
 @media(max-width:700px){.hd .avw{width:92px;height:92px}.hd .avw .ini.lg,.hd .avw img.ini{width:92px!important;height:92px!important;min-width:92px}}
 </style>
+<style id="ta-style">
+/* ============ Team analysis (group owners) ============ */
+.ta { --tac: #2a78d6; }
+@keyframes taUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes taPop { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: none; } }
+@keyframes taSpin { to { transform: rotate(360deg); } }
+@keyframes taStripe { from { background-position: 0 0; } to { background-position: 28px 0; } }
+@keyframes taGrowX { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes taRow { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: none; } }
+.ta-in { animation: taUp .6s cubic-bezier(.2, .7, .2, 1) both; animation-delay: calc(var(--i, 0) * 55ms); }
+
+/* toolbar + tabs */
+.ta-bar { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 20px; }
+.ta-tabs { display: inline-flex; background: #fff; border: 1px solid rgba(20, 22, 31, .08); border-radius: 999px; padding: 4px; box-shadow: 0 2px 10px rgba(20, 22, 31, .05); flex-wrap: wrap; }
+.ta-tabs button { border: 0; background: transparent; padding: 9px 18px; border-radius: 999px; font-weight: 700; font-size: 13.5px; color: var(--ink2); cursor: pointer; transition: background .25s, color .25s, transform .2s; }
+.ta-tabs button:hover { color: var(--wine); }
+.ta-tabs button.on { background: linear-gradient(135deg, var(--wine), #7a2038); color: #fff; box-shadow: 0 4px 12px rgba(74, 18, 34, .3); }
+.ta-meta { display: flex; align-items: center; gap: 12px; }
+.ta-meta select { width: auto; min-width: 180px; padding: 8px 12px; }
+.ta-note { margin-top: 26px; max-width: 760px; }
+
+/* loading */
+.ta-load { max-width: 720px; margin: 20px auto; }
+.ta-ld-h { display: flex; gap: 16px; align-items: center; margin-bottom: 14px; }
+.ta-ld-h h3 { margin: 0; }
+.ta-spin { width: 34px; height: 34px; border-radius: 50%; border: 4px solid #eadfe2; border-top-color: var(--hot); animation: taSpin .8s linear infinite; flex: none; }
+.ta-pbar { height: 10px; background: #eee8dd; border-radius: 99px; overflow: hidden; }
+.ta-pbar div { height: 100%; width: 4%; border-radius: 99px; transition: width .5s cubic-bezier(.2, .7, .2, 1); background: repeating-linear-gradient(115deg, var(--hot) 0 14px, #ff7a45 14px 28px); background-size: 28px 100%; animation: taStripe .7s linear infinite; }
+.ta-plist { margin-top: 16px; display: grid; gap: 6px; }
+.ta-pi { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px; background: var(--cream); font-size: 13.5px; transition: background .3s; }
+.ta-pi .d { width: 9px; height: 9px; border-radius: 50%; background: #cfc7b5; flex: none; }
+.ta-pi .n { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+.ta-pi .s { color: var(--mut); font-size: 12px; }
+.ta-pi.done { background: #f1f8f1; animation: taPop .35s both; }
+.ta-pi.done .d { background: var(--good); }
+
+/* KPI tiles */
+.ta-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 18px; }
+.ta-kpis.sm { grid-template-columns: repeat(7, 1fr); gap: 10px; }
+.ta-kpi { display: flex; gap: 12px; align-items: center; background: var(--paper); border-radius: 14px; padding: 16px; box-shadow: 0 1px 2px rgba(20, 22, 31, .05), 0 6px 22px rgba(20, 22, 31, .05); position: relative; overflow: hidden; transition: transform .3s, box-shadow .3s; }
+.ta-kpi:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(20, 22, 31, .12); }
+.ta-kpi:before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: linear-gradient(var(--hot), var(--gold)); }
+.ta-kpi .ic { width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(135deg, #fde9e3, #f3e3d9); display: flex; align-items: center; justify-content: center; font-size: 20px; flex: none; }
+.ta-kpi b { display: block; font-family: 'Newsreader', Georgia, serif; font-weight: 500; font-size: 32px; line-height: 1.05; color: #15121a; }
+.ta-kpi span { display: block; font-family: 'DM Mono', ui-monospace, monospace; font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--mut); margin-top: 2px; }
+.ta-kpi em { display: block; font-style: normal; font-size: 12px; color: var(--ink2); margin-top: 3px; }
+.ta-kpis.sm .ta-kpi { flex-direction: column; align-items: flex-start; padding: 12px; gap: 6px; }
+.ta-kpis.sm .ta-kpi .ic { width: 32px; height: 32px; font-size: 16px; border-radius: 9px; }
+.ta-kpis.sm .ta-kpi b { font-size: 24px; }
+.ta-kpis.sm .ta-kpi span { font-size: 9.5px; letter-spacing: .06em; }
+
+/* cards + chart grid */
+.ta-card { transition: box-shadow .3s, transform .3s; }
+.ta-card:hover { box-shadow: 0 14px 36px rgba(20, 22, 31, .1); }
+.ta-ch { margin-bottom: 12px; }
+.ta-ch h3 { margin: 0; }
+.ta-ch p { margin: 2px 0 0; }
+.ta-tb { display: flex; justify-content: space-between; gap: 14px; align-items: flex-start; flex-wrap: wrap; }
+.ta-tools { display: flex; gap: 8px; align-items: center; }
+.ta-tools input, .ta-tools select { width: 220px; padding: 8px 12px; }
+.ta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 18px; }
+.ta-grid .card, .ta-two .card, .ta-people .card { margin-top: 0 !important; }
+.ta-grid .w2 { grid-column: 1 / -1; }
+.ta-cv { position: relative; width: 100%; }
+.ta-two { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 18px; }
+.ta-db2 > .card { margin-top: 18px; }
+
+/* insights */
+.ta-inl { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 8px; }
+.ta-ins { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-radius: 10px; font-size: 13.5px; line-height: 1.45; background: #f3f6fb; }
+.ta-ins b { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; flex: none; color: #fff; background: var(--brand); margin-top: 1px; }
+.ta-ins.good { background: #eef8ee; } .ta-ins.good b { background: var(--good); }
+.ta-ins.warn { background: #fdf4e3; } .ta-ins.warn b { background: var(--warn); }
+.ta-load + .ta-inl { margin: 0; }
+
+/* badges */
+.ta-bd { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
+.ta-bd.ok { background: var(--goodbg); color: #0a7a0a; }
+.ta-bd.no { background: #ece9e1; color: var(--ink2); }
+.ta-bd.warn { background: #fdf0d3; color: #8a5a00; }
+.ta-bd.bad { background: #fbe4e4; color: #b02a2a; }
+.ta-bd.info { background: #e7edf9; color: var(--navy); }
+
+/* spreadsheet-style tables */
+.ta-xl { overflow: auto; max-height: 72vh; border: 1px solid #e3dfd3; border-radius: 12px; background: #fff; }
+.ta-xl table { border-collapse: separate; border-spacing: 0; width: 100%; font-size: 13px; }
+.ta-xl th, .ta-xl td { padding: 9px 12px; border-bottom: 1px solid #eeeadf; border-right: 1px solid #f2efe6; text-align: left; vertical-align: middle; white-space: nowrap; }
+.ta-xl th { position: sticky; top: 0; z-index: 2; background: #f1ede2; font-family: 'DM Mono', ui-monospace, monospace; font-weight: 500; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: #5a4f3f; cursor: pointer; user-select: none; border-bottom: 2px solid #d9d2bf; }
+.ta-xl th:hover { background: #e9e3d3; }
+.ta-xl th .ar { color: var(--hot); margin-left: 5px; font-size: 9px; }
+.ta-xl .num { text-align: right; font-family: 'DM Mono', ui-monospace, monospace; }
+.ta-xl .mono { font-family: 'DM Mono', ui-monospace, monospace; font-size: 12px; }
+.ta-xl .g { position: sticky; left: 0; z-index: 1; background: #f1ede2; color: #8b8372; text-align: center; font-family: 'DM Mono', monospace; font-size: 11px; width: 40px; min-width: 40px; cursor: default; }
+.ta-xl th.g { z-index: 4; }
+.ta-xl .s1 { position: sticky; left: 40px; z-index: 1; background: #fff; box-shadow: 1px 0 0 #e3dfd3; }
+.ta-xl th.s1 { z-index: 4; background: #f1ede2; left: 40px; }
+.ta-xl tbody tr:nth-child(even) td { background: #fbfaf6; }
+.ta-xl tbody tr:nth-child(even) td.s1 { background: #fbfaf6; }
+.ta-xl tbody tr:nth-child(even) td.g { background: #f1ede2; }
+.ta-row { cursor: pointer; animation: taRow .45s cubic-bezier(.2, .7, .2, 1) both; animation-delay: calc(var(--i, 0) * 35ms); }
+.ta-xl tbody tr:hover td { background: #fff4ef !important; }
+.ta-nm { display: flex; align-items: center; gap: 10px; }
+.ta-nm .mut { font-size: 11.5px; max-width: 220px; overflow: hidden; text-overflow: ellipsis; }
+.ini.sm { width: 34px !important; height: 34px !important; font-size: 12px; flex: none; }
+.ini.lg2 { width: 58px !important; height: 58px !important; font-size: 19px; flex: none; }
+.ta-db { position: relative; min-width: 96px; height: 22px; background: #f1ede2; border-radius: 6px; overflow: hidden; }
+.ta-db i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: 6px; opacity: .85; transition: width 1s cubic-bezier(.2, .7, .2, 1); }
+.ta-db span { position: relative; z-index: 1; font-family: 'DM Mono', monospace; font-size: 11.5px; font-weight: 500; line-height: 22px; padding: 0 8px; color: #15121a; }
+
+/* skill matrix */
+.ta-mx td.h { text-align: center; font-family: 'DM Mono', monospace; font-size: 12px; min-width: 38px; padding: 8px 4px; animation: taPop .5s both; animation-delay: calc(var(--i, 0) * 40ms); }
+.h0 { background: #f6f4ee; color: transparent; }
+.h1 { background: #e1edfb; color: #1d5fb3; } .h2 { background: #b9d6f6; color: #14477f; } .h3 { background: #7db3f0; color: #0d2f57; } .h4 { background: #3f8be0; color: #fff; } .h5 { background: #1d5fb3; color: #fff; }
+.ta-mx thead th.cg { text-align: center; color: #fff; background: var(--c); border-right: 2px solid #fff; cursor: default; font-size: 10.5px; }
+.ta-mx thead th.rot { height: 150px; vertical-align: bottom; padding: 8px 4px; text-align: center; cursor: default; top: 34px; }
+.ta-mx thead th.rot span { writing-mode: vertical-rl; transform: rotate(180deg); display: inline-block; text-transform: none; letter-spacing: 0; font-size: 12px; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; color: var(--ink); }
+.ta-mx tfoot td { position: sticky; bottom: 0; background: #f1ede2; font-family: 'DM Mono', monospace; text-align: center; border-top: 2px solid #d9d2bf; z-index: 2; }
+.ta-mx tfoot td.s1 { text-align: left; z-index: 3; left: 0; }
+.ta-mx td.s1, .ta-mx th.s1 { left: 0; }
+.ta-mx td.cov.one { color: var(--hot); font-weight: 700; }
+.ta-leg { display: flex; align-items: center; gap: 6px; margin-top: 12px; flex-wrap: wrap; font-size: 12.5px; }
+.ta-leg i.h { width: 24px; height: 24px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; font-style: normal; font-family: 'DM Mono', monospace; font-size: 11px; border: 1px solid rgba(0, 0, 0, .06); color: inherit; }
+.ta-leg i.h0 { color: #9a937f; }
+.ta-rq .tag { margin: 2px 4px 2px 0; }
+.ta-dots { display: inline-flex; gap: 2px; margin-left: 4px; vertical-align: middle; }
+.ta-dots i { width: 5px; height: 5px; border-radius: 50%; background: rgba(29, 95, 179, .25); }
+.ta-dots i.on { background: var(--brand); }
+
+/* individual cards */
+.ta-people { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 18px; }
+.ta-pcard { transition: transform .3s, box-shadow .3s; }
+.ta-pcard:hover { transform: translateY(-5px); box-shadow: 0 18px 40px rgba(20, 22, 31, .13); }
+.ta-ph { display: flex; gap: 14px; align-items: center; margin-bottom: 14px; }
+.ta-ph h3 { margin: 0 0 2px; font-size: 19px; }
+.ta-ph .mut { margin-bottom: 6px; }
+.ta-mini { display: grid; grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)); gap: 8px; margin-bottom: 12px; }
+.ta-mini > div { background: var(--cream); border-radius: 10px; padding: 8px 6px; text-align: center; }
+.ta-mini b { display: block; font-family: 'Newsreader', serif; font-weight: 500; font-size: 22px; line-height: 1.1; color: #15121a; }
+.ta-mini span { font-family: 'DM Mono', monospace; font-size: 9.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--mut); }
+.ta-ms { display: grid; grid-template-columns: 130px 1fr 28px; gap: 8px; align-items: center; font-size: 12px; margin: 5px 0; }
+.ta-ms span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink2); }
+.ta-ms em { font-style: normal; font-family: 'DM Mono', monospace; text-align: right; }
+.ta-ms .meter div, .ta-skr .meter div { transition: width 1s cubic-bezier(.2, .7, .2, 1); background-image: none !important; }
+
+/* drawer */
+.ta-dr { position: fixed; inset: 0; z-index: 45; pointer-events: none; }
+.ta-dr.on { pointer-events: auto; }
+.ta-dbg { position: absolute; inset: 0; background: rgba(20, 10, 18, .55); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); opacity: 0; transition: opacity .35s; }
+.ta-dr.on .ta-dbg { opacity: 1; }
+.ta-dp { position: absolute; top: 0; right: 0; bottom: 0; width: min(1000px, 100vw); background: var(--cream); overflow: auto; overscroll-behavior: contain; transform: translateX(104%); transition: transform .5s cubic-bezier(.2, .8, .2, 1); box-shadow: -20px 0 60px rgba(0, 0, 0, .3); }
+.ta-dr.on .ta-dp { transform: none; }
+html.ta-lock { overflow: hidden; }
+.ta-dh { position: relative; color: #fff; padding: 30px 32px 24px; background: radial-gradient(60% 120% at 100% 0%, rgba(255, 75, 43, .4), transparent 65%), radial-gradient(50% 100% at 0% 100%, rgba(42, 120, 214, .4), transparent 70%), var(--wine); overflow: hidden; }
+.ta-dh .eyebrow { color: #ff9d7a; margin-bottom: 4px; }
+.ta-dh h2 { font-family: 'Newsreader', Georgia, serif; font-weight: 400; font-size: 34px; line-height: 1.1; color: #fff; margin: 0 0 4px; letter-spacing: -.5px; }
+.ta-dh .sub { color: #e6d3d8; font-size: 15px; }
+.ta-dht { display: flex; gap: 20px; align-items: center; animation: taUp .6s both; }
+.ta-dht .ini.lg { width: 92px !important; height: 92px !important; border: 3px solid rgba(255, 255, 255, .5); flex: none; }
+.ta-dh .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+.ta-dl { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 16px 0 4px; font-size: 13px; color: #f0dde2; animation: taUp .6s .1s both; }
+.ta-dl a { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
+.ta-dh .srow { animation: taUp .6s .18s both; flex-wrap: wrap; }
+.ta-dh .btn.o { background: transparent !important; color: #fff !important; border-color: rgba(255, 255, 255, .55) !important; }
+.ta-dh .btn.o:hover { background: #fff !important; color: var(--wine) !important; }
+.ta-x { position: absolute; top: 14px; right: 16px; width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .4); background: rgba(255, 255, 255, .1); color: #fff; font-size: 16px; cursor: pointer; transition: transform .25s, background .25s; z-index: 2; }
+.ta-x:hover { background: rgba(255, 255, 255, .25); transform: rotate(90deg); }
+.ta-db2 { padding: 22px 28px 50px; }
+.ta-sk { display: grid; gap: 7px; }
+.ta-skr { display: grid; grid-template-columns: 150px 1fr 50px; gap: 10px; align-items: center; font-size: 12.5px; }
+.ta-skr .n { display: flex; align-items: center; gap: 7px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-weight: 600; }
+.ta-skr .n i { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.ta-skr .m { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--mut); text-align: right; }
+.ta-sm th { cursor: default; }
+.ta-sm th:hover { background: #f1ede2; }
+.ta-sm td { white-space: normal; }
+.ta-cert { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.ta-cert li { background: var(--cream); padding: 8px 12px; border-radius: 9px; font-size: 13px; }
+.ta-chk { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; }
+.ta-chk li { font-size: 13px; padding-left: 24px; position: relative; color: var(--mut); }
+.ta-chk li:before { content: "✕"; position: absolute; left: 0; top: 0; width: 17px; height: 17px; border-radius: 50%; background: #fbe4e4; color: #b02a2a; font-size: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; }
+.ta-chk li.ok { color: var(--ink); }
+.ta-chk li.ok:before { content: "✓"; background: var(--goodbg); color: #0a7a0a; }
+
+/* timeline */
+.ta-tl { font-size: 12.5px; }
+.ta-tl-ax, .ta-tl-r { display: grid; grid-template-columns: 210px 1fr; gap: 12px; align-items: center; }
+.ta-tl-ax { margin-bottom: 4px; }
+.tr2 { position: relative; height: 100%; }
+.ta-tl-ax .tr2 { height: 18px; }
+.ta-tl-ax .tr2 span { position: absolute; transform: translateX(-50%); font-family: 'DM Mono', monospace; font-size: 10.5px; color: var(--mut); }
+.ta-tl-r { padding: 7px 0; border-top: 1px dashed #e6e1d4; }
+.ta-tl-r .lb { min-width: 0; }
+.ta-tl-r .lb b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ta-tl-r .lb span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+.ta-tl-r .tr2 { height: 26px; }
+.ta-tl .gl { position: absolute; top: -7px; bottom: -7px; width: 1px; background: #e6e1d4; }
+.ta-tl .bar { position: absolute; top: 3px; height: 20px; border-radius: 6px; background: linear-gradient(90deg, var(--brand), #6fa8ea); transform-origin: left; animation: taGrowX .9s cubic-bezier(.2, .7, .2, 1) both; display: flex; align-items: center; justify-content: flex-end; padding: 0 7px; color: #fff; font-family: 'DM Mono', monospace; font-size: 10.5px; min-width: 24px; box-shadow: 0 3px 8px rgba(42, 120, 214, .3); }
+.ta-tl .bar.now { background: linear-gradient(90deg, var(--hot), #ff9a6b); box-shadow: 0 3px 8px rgba(255, 75, 43, .35); }
+
+/* responsive */
+@media (max-width: 1100px) { .ta-kpis { grid-template-columns: repeat(2, 1fr); } .ta-kpis.sm { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 860px) {
+  .ta-grid, .ta-two { grid-template-columns: 1fr; }
+  .ta-tools input, .ta-tools select { width: 100%; }
+  .ta-tl-ax, .ta-tl-r { grid-template-columns: 120px 1fr; }
+  .ta-dh { padding: 24px 18px 18px; } .ta-dh h2 { font-size: 26px; } .ta-dht { gap: 14px; } .ta-dht .ini.lg { width: 66px !important; height: 66px !important; }
+  .ta-db2 { padding: 16px 14px 40px; } .ta-chk { grid-template-columns: 1fr; } .ta-skr { grid-template-columns: 110px 1fr 44px; }
+  .ta-tabs { width: 100%; } .ta-tabs button { flex: 1; padding: 9px 8px; font-size: 12.5px; }
+}
+@media (max-width: 560px) { .ta-kpis, .ta-kpis.sm { grid-template-columns: 1fr 1fr; } .ta-kpi b { font-size: 26px; } .ta-people { grid-template-columns: 1fr; } .ta-ms { grid-template-columns: 100px 1fr 26px; } }
+@media (prefers-reduced-motion: reduce) {
+  .ta-in, .ta-row, .ta-mx td.h, .ta-pi.done, .ta-dht, .ta-dl, .ta-dh .srow, .ta-tl .bar, .ta-pbar div, .ta-spin { animation: none !important; }
+  .ta-dp, .ta-dbg, .ta-db i, .ta-ms .meter div, .ta-skr .meter div { transition: none !important; }
+}
+@media print {
+  .ta-bar, .pact, .ta-dr, .ta-tools, .ta-note { display: none !important; }
+  .ta-in, .ta-row { animation: none !important; opacity: 1 !important; }
+  .ta-xl { max-height: none; overflow: visible; }
+  .ta-card, .ta-kpi { break-inside: avoid; box-shadow: none; }
+}
+</style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
 </head>
 
@@ -1010,7 +1233,7 @@ function nav() {
       <a href="#/talent">Search talent</a><a href="#/dashboard">Employer dashboard</a><a href="#/dashboard?tab=post">Post a job</a>
       <a href="#/dashboard?tab=co">Company details</a></div></div>` : "")
     + (grp ? `<div class="dd"><a href="#/talent" tabindex="0">Consultancy / Group</a><div>
-      <a href="#/talent">Search talent &amp; companies</a><a href="#/groups">My groups</a></div></div>` : "")
+      <a href="#/talent">Search talent &amp; companies</a><a href="#/groups">My groups</a><a href="#/analysis">Team analysis</a></div></div>` : "")
     + `<div class="dd"><a href="#/jobs" tabindex="0">Technologies</a><div>${TECH.map(t => `<a href="#/jobs?q=${encodeURIComponent(t)}">${t}</a>`).join("")}</div></div>`
     + `<a class="nv" href="#/services">Services</a><a class="nv" href="#/team">Our Team</a><a class="nv" href="#/contact">Contact</a>
       <div class="dd"><a class="nv" href="#/blog" tabindex="0">SAP</a><div><a href="#" onclick="sapGo('jobs');return false">SAP Jobs</a><a href="#" onclick="sapGo('talent');return false">SAP Talent Pool</a><a href="#/blog">SAP Blog</a></div></div>`;
@@ -1737,7 +1960,7 @@ window.resume = async f => {
         try { await loadG(); } catch {}
         await setDoc(doc(db, "resumes", me.uid), { name: f.name, data: b64, groupIds: Object.keys(G), updated: serverTimestamp() }, { merge: true });
         stored = true;
-      } catch (x) { toast("CV file could not be saved: " + (x.message || x)); }
+      } catch (x) { toast(x && x.code == "permission-denied" ? "CV file could not be saved: Firestore is blocking the \"resumes\" collection. Publish the latest firestore.rules in Firebase Console → Firestore → Rules, then upload again." : "CV file could not be saved: " + (x.message || x)); }
     } else toast("Score saved, but the CV file is over 700 KB so it could not be shared. Please upload a smaller PDF.");
     P = { ...P, atsScore: r.score, resumeSkills: r.skills, atsTips: r.tips, ...(stored ? { resumeName: f.name } : {}) };
     await setDoc(doc(db, "users", me.uid), { atsScore: r.score, resumeSkills: r.skills, atsTips: r.tips, ...(stored ? { resumeName: f.name } : {}) }, { merge: true });
@@ -2071,7 +2294,7 @@ window.openCV = async id => {
     const b = atob(d.data), a = new Uint8Array(b.length);
     for (let i = 0; i < b.length; i++) a[i] = b.charCodeAt(i);
     window.open(URL.createObjectURL(new Blob([a], { type: "application/pdf" })), "_blank");
-  } catch (x) { toast("Could not open CV: " + (x.message || x)); }
+  } catch (x) { toast(x && x.code == "permission-denied" ? "You don't have permission to open this CV (employers, groups and this person's group mates can). If you should have access, publish the latest firestore.rules." : "Could not open CV: " + (x.message || x)); }
 };
 window.viewMember = async e => {
   const u = await memberUser(e);
@@ -2112,6 +2335,7 @@ window.addMember = async gid => {
   let acct = null;
   try { acct = await memberUser(e); } catch (x) { return toast("Could not check this email: " + x.message); }
   if (!acct) return toast("No account exists with this email id.");
+  if (acct.type == "org") return toast("This email is registered as an employer / company account, so it can't be invited to a group.");
   const my = me.email.toLowerCase(), link = location.origin + location.pathname + "#/groups";
   try {
     await setDoc(doc(db, "invites", gid + "_" + e), { groupId: gid, groupName: g.name, inviteeEmail: e, invitedBy: me.uid, invitedByName: P.name, invitedByEmail: my, status: "pending", created: serverTimestamp() });
@@ -2196,7 +2420,7 @@ V.groups = async () => {
     ${inv.length ? `<div class="card"><h3>Invitations for you</h3>${inv.map(i => `<div class="pc" style="grid-template-columns:1fr auto"><div><b>${esc(i.groupName)}</b><div class="mut">Invited by ${esc(i.invitedByName)} (${esc(i.invitedByEmail)})</div></div>
       <div class="act"><button class="btn s" onclick="acceptInv('${esc(i.id)}','${esc(i.groupId)}')">Accept</button><button class="btn o s" onclick="declineInv('${esc(i.id)}')">Decline</button></div></div>`).join("")}</div>` : ""}
     <div class="card"><div class="addc" style="margin:0"><input id="gn" placeholder="New group name (e.g. SAP hiring panel)"><button class="btn" onclick="mkGroup()">Create group</button></div></div>
-    ${gs.map(g => { const own = g.ownerId == me.uid, pend = sent.filter(i => i.groupId == g.id && i.status != "accepted"); return `<div class="card"><div class="sh"><h3>${esc(g.name)}${own ? ' <span class="pod">OWNER</span>' : ""}</h3><div class="srow" style="margin:0">${own ? `<button class="btn o s" onclick="editGroup('${g.id}')">✎ Edit group</button>` : ""}<button class="btn s" onclick="useGroup('${g.id}')">Search as this group</button></div></div>
+    ${gs.map(g => { const own = g.ownerId == me.uid, pend = sent.filter(i => i.groupId == g.id && i.status != "accepted"); return `<div class="card"><div class="sh"><h3>${esc(g.name)}${own ? ' <span class="pod">OWNER</span>' : ""}</h3><div class="srow" style="margin:0">${own ? `<button class="btn o s" onclick="location.hash='#/analysis?g=${g.id}'">📊 Team analysis</button><button class="btn o s" onclick="editGroup('${g.id}')">✎ Edit group</button>` : ""}<button class="btn s" onclick="useGroup('${g.id}')">Search as this group</button></div></div>
       ${g.desc ? `<p class="mut" style="white-space:pre-line">${esc(g.desc)}</p>` : ""}
       <div class="sec-label" style="margin-top:0">Members (${(g.memberEmails || []).length})</div>
       <div id="mb_${g.id}" class="mut">Loading…</div>
@@ -2206,6 +2430,695 @@ V.groups = async () => {
     ${pCta("Build your shared shortlist", "Search individuals and companies, then star the best fits for your group.", `<a class="btn" href="#/talent">Search talent</a>`)}`;
     gs.forEach(g => { shortlistFill(g); membersFill(g); });
 };
+
+/* ======================================================================
+   TEAM ANALYSIS · CV scanner
+   Reads a stored CV (PDF) in the browser and turns it into structured data:
+   contact details, sections, roles + dates, education, certifications, skills
+   (with evidence strength), industries and quality metrics.
+   Nothing here touches the DOM or the database.
+   ====================================================================== */
+const TA_DICT = {
+  "SAP & ERP": [["SAP S/4HANA", "S/4HANA", "S4HANA", "S/4 HANA"], ["SAP FICO", "FICO", "SAP FI/CO", "SAP FI"], ["SAP MM", "SAP Materials Management"], ["SAP SD", "SAP Sales and Distribution"], ["SAP PP"], ["SAP WM", "SAP EWM"], ["SAP ABAP", "ABAP"], ["SAP BASIS"], ["SAP BTP", "SAP Business Technology Platform"], ["SAP Fiori", "Fiori"], ["SAP HANA"], ["SAP BW", "SAP BW/4HANA"], ["SuccessFactors", "SAP SuccessFactors"], ["SAP Ariba", "Ariba"], ["SAP HCM"], ["SAP GRC"], ["SAP CPI", "SAP Integration Suite"], ["Workday"], ["Oracle"], ["Salesforce"], ["ServiceNow"], ["Microsoft Dynamics", "Dynamics 365"], ["NetSuite"], ["ERP"]],
+  "Cloud & DevOps": [["AWS", "Amazon Web Services"], ["Azure", "Microsoft Azure"], ["GCP", "Google Cloud"], ["Kubernetes", "K8s"], ["Docker"], ["Terraform"], ["Jenkins"], ["CI/CD", "CI-CD"], ["Ansible"], ["Linux"], ["DevOps"], ["Git", "GitHub", "GitLab"], ["Cloud Migration"], ["VMware"]],
+  "Data & Analytics": [["SQL", "T-SQL", "PL/SQL"], ["Python"], ["Power BI", "PowerBI"], ["Tableau"], ["Excel", "MS Excel", "Microsoft Excel"], ["Apache Spark", "Spark", "PySpark"], ["Hadoop"], ["Snowflake"], ["Databricks"], ["ETL"], ["Data Warehouse", "Data Warehousing"], ["Machine Learning", "ML"], ["Pandas"], ["Data Modeling", "Data Modelling"], ["Statistics", "Statistical Analysis"], ["NLP"], ["TensorFlow"], ["Looker"], ["BigQuery"], ["Data Analysis", "Data Analytics"], ["Data Visualization", "Data Visualisation"], ["Deep Learning"], ["Artificial Intelligence", "AI"]],
+  "Software Development": [["Java"], ["JavaScript"], ["TypeScript"], ["React", "React.js", "ReactJS"], ["Angular"], ["Vue", "Vue.js"], ["Node.js", "NodeJS"], ["C#"], [".NET", "ASP.NET"], ["C++"], ["PHP"], ["Spring Boot"], ["REST API", "REST APIs", "RESTful"], ["Microservices"], ["HTML", "HTML5"], ["CSS", "CSS3"], ["Kotlin"], ["Flutter"], ["MongoDB"], ["PostgreSQL", "Postgres"], ["MySQL"], ["Django"], ["Flask"], ["GraphQL"], ["Selenium"], ["Test Automation"]],
+  "Security": [["Cyber Security", "Cybersecurity", "Information Security", "InfoSec"], ["SIEM"], ["Penetration Testing", "Pen Testing", "Pentest"], ["ISO 27001"], ["IAM", "Identity and Access Management"], ["Splunk"], ["NIST"], ["OWASP"], ["Vulnerability Management", "Vulnerability Assessment"], ["Firewall"], ["Risk Assessment"], ["GDPR"], ["SOX"]],
+  "Project & Delivery": [["Agile"], ["Scrum"], ["Kanban"], ["Waterfall"], ["PMO"], ["Jira"], ["Confluence"], ["MS Project", "Microsoft Project"], ["Risk Management"], ["Budgeting", "Budget Management"], ["Program Management", "Programme Management"], ["Project Management"], ["SAFe"], ["PRINCE2"], ["Change Management"], ["Stakeholder Management"], ["Vendor Management"], ["Roadmap", "Roadmapping"], ["ITIL"], ["Digital Transformation"], ["Release Management"], ["Resource Planning"], ["Six Sigma"]],
+  "Functional & Business": [["Business Analysis", "Business Analyst"], ["Requirements Gathering", "Requirement Gathering", "Requirements Analysis"], ["UAT", "User Acceptance Testing"], ["Process Mapping", "Process Improvement", "Process Optimization", "Process Optimisation"], ["Financial Reporting", "Accounting"], ["Procurement"], ["Supply Chain"], ["Human Resources", "HR"], ["Sales"], ["CRM"], ["Compliance"], ["Testing", "QA"], ["Gap Analysis"], ["Solution Design", "Solution Architecture"], ["BPMN"], ["Data Migration"]],
+  "Leadership & Soft": [["Leadership"], ["Communication", "Communication Skills"], ["Negotiation"], ["Mentoring", "Mentorship"], ["Coaching"], ["Problem Solving", "Problem-Solving"], ["Team Management", "People Management", "Team Leadership"], ["Presentation Skills", "Presentations"], ["Facilitation", "Workshop Facilitation"], ["Collaboration"], ["Strategic Planning", "Strategy"], ["Decision Making", "Decision-Making"], ["Executive Communication"], ["Cross-cultural", "Cross cultural"], ["Time Management"], ["Critical Thinking"], ["Adaptability"], ["Analytical Skills"], ["Client Management", "Client Relationship"]]
+};
+const TA_CATS = [...Object.keys(TA_DICT), "Other"];
+/* short or ambiguous words are matched case-sensitively so "excel in…" or "ai" in a word do not count */
+const TA_CS = new Set(["Excel", "Spark", "AI", "ML", "ETL", "SQL", "AWS", "GCP", "HR", "QA", "ERP", "UAT", "IAM", "NIST", "SOX", "PMO", "CRM", "NLP", "Oracle", "Sales", "Git", "Vue", "React", "Java", "Strategy", "SAFe", "BPMN", "SIEM", "PHP", "CSS", "HTML", "OWASP", "GDPR"]);
+let TA_SK = null;
+const taEsc = s => s.replace(/[.*+?^${}()|[\]\\\/]/g, "\\$&").replace(/\s+/g, "\\s+");
+function taSkillIndex() {
+  if (TA_SK) return TA_SK;
+  const known = new Set(), out = [];
+  Object.entries(TA_DICT).forEach(([cat, arr]) => arr.forEach(al => {
+    known.add(al[0].toLowerCase());
+    const cs = al.some(a => TA_CS.has(a));
+    out.push({ name: al[0], cat, cs, re: new RegExp("(^|[^A-Za-z0-9])(?:" + al.map(taEsc).join("|") + ")(?![A-Za-z0-9])", cs ? "g" : "gi") });
+  }));
+  /* skills the site itself offers but the dictionary lacks */
+  [[typeof SOFT !== "undefined" ? SOFT : [], "Leadership & Soft"], [typeof SKILLS !== "undefined" ? SKILLS : [], "Other"]].forEach(([a, cat]) => a.forEach(s => {
+    if (known.has(s.toLowerCase())) return; known.add(s.toLowerCase());
+    out.push({ name: s, cat, cs: false, re: new RegExp("(^|[^A-Za-z0-9])" + taEsc(s) + "(?![A-Za-z0-9])", "gi") });
+  }));
+  return (TA_SK = out);
+}
+const taCatOf = n => (taSkillIndex().find(s => s.name.toLowerCase() == String(n).toLowerCase()) || {}).cat || "Other";
+const taCount = (t, sk) => { sk.re.lastIndex = 0; return (t.match(sk.re) || []).length; };
+
+/* ---------- dates ---------- */
+const TA_MON = "(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)";
+const TA_T = "(?:" + TA_MON + "\\.?,?\\s*(?:19|20)\\d{2}|\\d{1,2}\\s*[\\/.-]\\s*(?:19|20)\\d{2}|(?:19|20)\\d{2})";
+const TA_NOW = "present|current|currently|till date|till now|to date|now|ongoing|today";
+const TA_RANGE = new RegExp("(" + TA_T + ")\\s*(?:-|–|—|to|until|till|through)\\s*(" + TA_T + "|" + TA_NOW + ")", "i");
+const TA_MI = { jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11 };
+function taTok(s) {
+  const t = String(s || "").trim().toLowerCase();
+  if (!t) return null;
+  if (new RegExp("^(?:" + TA_NOW + ")$").test(t)) return "now";
+  const y = +((t.match(/(?:19|20)\d{2}/) || [])[0]); if (!y) return null;
+  const mn = t.match(/[a-z]{3}/); let m = mn && TA_MI[mn[0]] != null ? TA_MI[mn[0]] : null, hasM = m != null;
+  if (m == null) { const nm = t.match(/^(\d{1,2})\s*[\/.-]/); if (nm && +nm[1] >= 1 && +nm[1] <= 12) { m = +nm[1] - 1; hasM = true; } }
+  return { y, m: m == null ? 6 : m, hasM };
+}
+function taRange(line) {
+  const m = TA_RANGE.exec(line); if (!m) return null;
+  const from = taTok(m[1]), to = taTok(m[2]); if (!from || !to || from === "now") return null;
+  return { from, to, idx: m.index, len: m[0].length };
+}
+const taNowIdx = () => { const d = new Date(); return d.getFullYear() * 12 + d.getMonth(); };
+const taIdx = t => t.y * 12 + t.m;
+const taMonthName = t => ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][t.m] + " " + t.y;
+
+/* ---------- section detection ---------- */
+const TA_SEC = [
+  ["summary", /^(professional |career |executive |personal )?(summary|profile|objective|about me|about|overview|profile summary)$/],
+  ["experience", /^((professional|work|relevant|employment|career|industry) )?(experience|history|background)( history)?$|^employment( history)?$|^work history$/],
+  ["education", /^(education|academic background|academic qualifications?|academics|qualifications?|education (&|and) (training|qualifications?)|educational (background|qualifications?))$/],
+  ["skills", /^((technical|key|core|professional|it|functional|relevant|soft|hard) )?(skills|competencies|expertise|proficiencies)( (&|and) (tools|technologies|competencies|expertise))?$|^(tools (&|and) technologies|technologies|technical proficiency|areas of expertise|skills summary|skills (&|and) tools)$/],
+  ["certs", /^(certifications?|licen[cs]es( (&|and) certifications?)?|certificates?|(courses|training)( (&|and) certifications?)?|certifications? (&|and) (training|courses|licen[cs]es)|professional (development|certifications?)|trainings?)$/],
+  ["projects", /^((key|selected|notable|personal|major) )?projects$/],
+  ["awards", /^(awards?|achievements?|honou?rs|accomplishments)( (&|and) (honou?rs|awards?|achievements?))?$/],
+  ["languages", /^languages?( known)?$/],
+  ["interests", /^(interests|hobbies|hobbies (&|and) interests|extra ?curricular( activities)?)$/],
+  ["contact", /^(contact( details| information| me)?|personal (details|information|info))$/],
+  ["other", /^(publications|references|declaration)$/]
+];
+function taHead(l) {
+  const n = l.toLowerCase().replace(/[^a-z& ]/g, " ").replace(/\s+/g, " ").trim();
+  if (!n || n.length > 40 || n.split(" ").length > 5) return null;
+  for (const [k, re] of TA_SEC) if (re.test(n)) return k;
+  return null;
+}
+function taSections(lines) {
+  const sec = { top: [] }; let cur = "top";
+  lines.forEach(l => { const k = taHead(l); if (k) { cur = k; sec[cur] = sec[cur] || []; } else sec[cur].push(l); });
+  return sec;
+}
+
+/* ---------- roles ---------- */
+const TA_TITLE = /\b(manager|consultant|developer|engineer|analyst|architect|lead|director|intern|trainee|specialist|head|associate|officer|administrator|executive|designer|tester|scientist|programmer|coordinator|supervisor|partner|principal|president|vp|founder|owner|advisor|adviser|strategist|technician|assistant|expert|controller|auditor|accountant|recruiter|freelancer?)\b/i;
+const TA_ORG = /\b(ltd|limited|inc|llc|llp|pvt|corp|corporation|gmbh|company|technologies|technology|solutions|services|systems|consulting|consultancy|bank|group|university|labs|software|global|partners|industries|enterprises|infotech)\b/i;
+const taBul = s => /^[^\w(“"']/.test(s);
+const taClean = s => String(s || "").replace(/^[^\w(]+/, "").replace(/\s+/g, " ").trim();
+const taQuant = s => /\d+\s?%|[$€£₹]\s?\d|\b\d{2,}\b|\b\d+\s?(?:k|m|mn|cr|lakh|million|billion)\b/i.test(s);
+function taRoles(L) {
+  const idx = []; L.forEach((l, i) => { const r = taRange(l); if (r) idx.push({ i, r }); });
+  const used = new Set(), heads = [];
+  idx.forEach((x, k) => {
+    const line = L[x.i];
+    const rem = (line.slice(0, x.r.idx) + " " + line.slice(x.r.idx + x.r.len)).replace(/[()\[\]]/g, " ").replace(/\s+/g, " ").replace(/^[\s|,–—\-·•:]+|[\s|,–—\-·•:]+$/g, "").trim();
+    const cand = []; let hs = x.i, he = x.i;
+    if (rem.length >= 3) { cand.push({ t: rem, j: x.i }); used.add(x.i); }
+    const ok = j => j >= 0 && j < L.length && !used.has(j) && L[j].length <= 100 && L[j].split(" ").length <= 14 && !taBul(L[j]) && !taRange(L[j]) && !/[.;]$/.test(L[j]) && !taHead(L[j]);
+    const pLimit = k ? idx[k - 1].i + 1 : 0;
+    /* look back up to two lines: layouts often put title and company on separate lines above the dates */
+    for (let back = 1; back <= 2 && cand.length < 2; back++) {
+      const p = x.i - back; if (p < pLimit || !ok(p)) break;
+      const w = L[p].split(" ").length;
+      if (cand.length == 0 ? (back == 1 || TA_TITLE.test(L[p]) || TA_ORG.test(L[p])) : (w <= 8 && (TA_TITLE.test(L[p]) || TA_ORG.test(L[p])))) { cand.unshift({ t: L[p], j: p }); used.add(p); hs = p; } else break;
+    }
+    const n = x.i + 1, nLimit = k + 1 < idx.length ? idx[k + 1].i : L.length;
+    if (cand.length < 2 && n < nLimit && ok(n) && L[n].split(" ").length <= 9 && (TA_TITLE.test(L[n]) || TA_ORG.test(L[n]))) { cand.push({ t: L[n], j: n }); used.add(n); he = n; }
+    heads.push({ x, cand, hs, he });
+  });
+  const now = taNowIdx(), roles = [];
+  heads.forEach((h, k) => {
+    const bodyFrom = h.he + 1, bodyTo = k + 1 < heads.length ? heads[k + 1].hs : L.length;
+    const body = L.slice(bodyFrom, Math.max(bodyFrom, bodyTo)), f = h.x.r.from, t = h.x.r.to;
+    const parts = h.cand.map(c => c.t).join(" | ").split(/\s*(?:\||·|•|\s[-–—]\s|,|\s@\s|\bat\b)\s*/i).map(s => s.trim()).filter(s => s && !/^(present|current)$/i.test(s));
+    let title = parts.find(p => TA_TITLE.test(p)) || parts[0] || "";
+    let company = parts.find(p => p !== title && !TA_TITLE.test(p) && p.length > 1) || parts.find(p => p !== title) || "";
+    if (company === title) company = "";
+    const start = taIdx(f), end = t === "now" ? now : Math.min(taIdx(t), now), present = t === "now";
+    if (f.y < 1970 || f.y > new Date().getFullYear() + 1 || end < start || end - start > 600) return;
+    let months = end - start; if (!f.hasM && !(t !== "now" && t.hasM) && months <= 0) months = 6; if (months < 1) months = 1;
+    const bl = body.filter(taBul).map(taClean);
+    roles.push({ title: taClean(title).slice(0, 80), company: taClean(company).slice(0, 60), from: taMonthName(f), to: present ? "Present" : taMonthName(t), start, end: start + months, months, present,
+      bullets: bl.length, quant: body.filter(taQuant).length, verbs: bl.filter(b => TA_VERB.has((b.split(" ")[0] || "").toLowerCase())).length, text: body.join("\n") });
+  });
+  return roles;
+}
+const TA_VERB = new Set("led managed delivered implemented designed developed built created improved reduced increased drove launched optimized optimised automated migrated configured coordinated analysed analyzed owned established streamlined negotiated mentored collaborated executed resolved deployed integrated spearheaded architected supported trained achieved generated planned maintained conducted headed oversaw transformed handled enhanced initiated introduced facilitated provided prepared performed ensured organised organized responsible".split(" "));
+
+/* ---------- education ---------- */
+const TA_EDU = [
+  ["Doctorate", 5, /\b(ph\.?\s?d\.?|doctorate|doctoral|dphil)\b/i],
+  ["Master's", 4, /\b(master'?s?(?!\s+data)|m\.?\s?tech|mtech|m\.?\s?sc\.?|msc|mba|m\.?\s?com\.?|mca|pgdm|post[- ]?graduate|pg diploma|m\.?s\.?(?=\s+(?:in|of)\b)|m\.?a\.?(?=\s+(?:in|of)\b)|m\.?e\.(?=\s)|m\.?eng)\b/i, /\b(?:ME|MS|MA)(?=\s+[A-Z(])/],
+  ["Bachelor's", 3, /\b(bachelor'?s?|b\.?\s?tech|btech|b\.\s?e\.|b\.?\s?sc\.?|bsc|b\.?\s?com\.?|bcom|bca|bba|b\.?a\.?(?=\s+(?:in|of)\b)|b\.?s\.?(?=\s+(?:in|of)\b)|undergraduate|b\.?arch|b\.?eng)\b/i, /\b(?:BE|BA|BS)(?=\s+[A-Z(])/],
+  ["Diploma", 2, /\b(diploma|associate degree|polytechnic)\b/i],
+  ["School", 1, /\b(high school|higher secondary|secondary school|hsc|ssc|12th|10th|a[- ]levels?|class (?:x|xii))\b/i]
+];
+const TA_SCH = /university|college|institute|school|academy|\biit\b|\biim\b|\bnit\b|polytechnic|campus/i;
+const taDeg = l => { let best = null; for (const [lab, rk, re, cs] of TA_EDU) if (re.test(l) || (cs && cs.test(l))) { if (!best || rk > best.rank) best = { level: lab, rank: rk }; } return best; };
+function taEducation(sec, all) {
+  const src = sec.education && sec.education.length ? sec.education : all, strict = src === all, out = [], used = new Set();
+  src.forEach((l, i) => {
+    if (used.has(i)) return;
+    const best = taDeg(l); if (!best) return;
+    const own = l.replace(TA_RANGE, " ").replace(/\b(?:19|20)\d{2}\b/g, " "), parts = own.split(/\s+[-–—|]\s+|,\s*|\s+from\s+|\s+at\s+/i).map(p => taClean(p)).filter(Boolean);
+    let school = parts.find(p => TA_SCH.test(p)) || "", degree = parts.filter(p => p !== school).join(", ") || taClean(own);
+    let yrs = (l.match(/(?:19|20)\d{2}/g) || []).map(Number);
+    /* the next two lines may hold the institution and the years, unless they start another entry */
+    for (let j = 1; j <= 2; j++) {
+      const nx = src[i + j]; if (nx == null || taDeg(nx) || taHead(nx)) break;
+      used.add(i + j);
+      if (!school && TA_SCH.test(nx)) school = taClean(nx.replace(TA_RANGE, " ").replace(/\b(?:19|20)\d{2}\b/g, " "));
+      if (!yrs.length) yrs = (nx.match(/(?:19|20)\d{2}/g) || []).map(Number);
+    }
+    const pv = src[i - 1]; if (!school && pv && !taDeg(pv) && !used.has(i - 1) && TA_SCH.test(pv) && !out.some(o => o.school && pv.includes(o.school))) school = taClean(pv.replace(/\b(?:19|20)\d{2}\b/g, " "));
+    if (strict && (best.rank < 2 || !school)) return;
+    degree = degree.replace(/[|,–—\-\s]+$/g, "").slice(0, 110);
+    if (!out.some(o => o.degree.toLowerCase() == degree.toLowerCase())) out.push({ degree, level: best.level, rank: best.rank, year: yrs.length ? Math.max(...yrs) : "", school: school.replace(/[|,–—\-\s]+$/g, "").slice(0, 90) });
+  });
+  return out.slice(0, 8);
+}
+
+/* ---------- certifications ---------- */
+const TA_CERT = [/\bPMP\b/g, /\bPRINCE2(?:\s*(?:Practitioner|Foundation))?/gi, /\bCertified\s+Scrum\s*Master\b/gi, /\bPSM\s?(?:I{1,3})?\b/g, /\bCSPO\b/g, /\bSAFe\s+[A-Za-z ]{3,25}/g, /\bITIL\s?(?:v?\d|Foundation)?[A-Za-z0-9 ]{0,12}/g, /\bCISSP\b/g, /\bCISM\b/g, /\bCISA\b/g, /\bCEH\b/g, /\bSecurity\+/g, /\bCCNA\b/g, /\bCKAD?\b/g,
+  /\bAWS\s+Certified[A-Za-z\- ]{3,40}/g, /\b(?:AZ|DP|AI|SC|MS|PL)-\d{3}\b/g, /\bMicrosoft\s+Certified[A-Za-z:\- ]{3,40}/g, /\bGoogle\s+Cloud\s+(?:Certified|Professional)[A-Za-z\- ]{3,40}/g,
+  /\bSAP\s+Certified[A-Za-z0-9\- ]{3,50}/g, /\bC_[A-Z0-9]{3,8}_\d{2,4}\b/g, /\bSix\s+Sigma\s+(?:Green|Black|Yellow)\s+Belt\b/gi, /\bTOGAF\b/g, /\bCBAP\b/g, /\bPMI-ACP\b/g, /\bCAPM\b/g, /\bOracle\s+Certified[A-Za-z0-9\- ]{3,40}/g, /\bSalesforce\s+Certified[A-Za-z\- ]{3,40}/g, /\bDatabricks\s+Certified[A-Za-z\- ]{3,40}/g, /\bTerraform\s+Associate\b/g, /\bCompTIA\s+[A-Za-z+]{2,12}/g];
+function taCerts(sec, all) {
+  const out = [], add = s => { s = taClean(s).replace(/\b(?:19|20)\d{2}\b/g, "").replace(/\(\s*\)/g, "").replace(/[|,–—\-\s]+$/g, "").trim().slice(0, 80); if (s.length >= 3 && !out.some(o => o.toLowerCase() == s.toLowerCase() || o.toLowerCase().includes(s.toLowerCase()) || s.toLowerCase().includes(o.toLowerCase()))) out.push(s); };
+  const secL = (sec.certs || []).filter(l => l.length >= 3 && l.length <= 120 && !/^(19|20)\d{2}$/.test(l) && !taRange(l));
+  secL.forEach(add);
+  const scan = [...secL, ...all.filter(l => /certif|licen[cs]e|accredit|credential/i.test(l))].join("\n");
+  TA_CERT.forEach(re => { re.lastIndex = 0; (scan.match(re) || []).forEach(m => add(m)); });
+  return out.slice(0, 15);
+}
+
+/* ---------- industries ---------- */
+const TA_IND = {
+  "BFSI": /\b(bank(?:ing)?|insurance|fintech|capital markets?|financial services|wealth|lending|mortgage)\b/i,
+  "Manufacturing": /\b(manufactur\w*|automotive|plant operations|industrial|discrete|process industry)\b/i,
+  "Retail & CPG": /\b(retail|consumer goods|cpg|fmcg|e-?commerce|merchandis\w*)\b/i,
+  "Life Sciences": /\b(pharma\w*|biotech\w*|life sciences?|clinical|medical devices?)\b/i,
+  "Technology": /\b(software|saas|it services|technology|telecom\w*|cloud provider)\b/i,
+  "Public Sector": /\b(government|public sector|ministry|defen[cs]e|municipal)\b/i,
+  "Healthcare Services": /\b(hospitals?|healthcare|health care|patient)\b/i,
+  "Transportation & Logistics": /\b(logistics|transport\w*|shipping|freight|airline|aviation)\b/i,
+  "Education": /\b(universit\w*|edtech|e-learning|higher education)\b/i,
+  "Energy & Utilities": /\b(oil (?:and|&) gas|energy|utilit(?:y|ies)|power (?:plant|generation|sector|grid)|renewables?|mining)\b/i,
+  "Consulting": /\b(consulting|consultancy|advisory)\b/i
+};
+
+const TA_LEVELS = [[0, "Entry"], [2, "Junior"], [5, "Mid-level"], [8, "Senior"], [12, "Lead"], [16, "Principal+"]];
+const taLevel = y => { let l = TA_LEVELS[0][1]; TA_LEVELS.forEach(([a, n]) => { if (y >= a) l = n; }); return l; };
+const taCsv = s => String(s || "").split(",").map(x => x.trim()).filter(Boolean);
+const taNum = x => { const m = String(x ?? "").match(/\d+(\.\d+)?/); return m ? +m[0] : 0; };
+
+/* ---------- the analysis ---------- */
+function taAnalyze(parsed, u, fileName) {
+  const prof = u || {}, lines = parsed && parsed.lines ? parsed.lines.map(l => l.t) : [];
+  const links = parsed && parsed.links ? parsed.links : [];
+  const text = lines.join("\n"), full = text + (links.length ? "\n" + links.join("\n") : "");
+  const words = text.split(/\s+/).filter(Boolean).length;
+  const status = !parsed ? "none" : (!lines.length || words < 40 ? "unreadable" : "ok");
+  const sec = status == "ok" ? taSections(lines) : { top: [] };
+  const a = { id: prof.id, uid: prof.id, email: prof.email || "", name: prof.name || prof.email || "Member", status, file: fileName || prof.resumeName || "", pages: parsed ? parsed.pages : 0, words, photo: prof.photo || "", prof };
+
+  /* contact */
+  const em = (full.match(/[\w.+-]+@[\w-]+(?:\.[\w-]+)+/) || [])[0] || "";
+  let phone = ""; for (const l of lines.slice(0, 25)) { const m = l.match(/\+?\d[\d\s().-]{8,16}\d/); if (m) { const d = m[0].replace(/\D/g, ""); if (d.length >= 10 && d.length <= 13 && !TA_RANGE.test(m[0])) { phone = m[0].trim(); break; } } }
+  const li = (full.match(/linkedin\.com\/[^\s,;)\]]+/i) || [])[0] || "", gh = (full.match(/github\.com\/[^\s,;)\]]+/i) || [])[0] || "";
+  const web = links.find(x => /^https?:/i.test(x) && !/linkedin|github|mailto/i.test(x)) || "";
+  a.cvEmail = em; a.phone = phone; a.linkedin = li; a.github = gh; a.web = web;
+
+  /* roles: from the CV, else from the structured profile */
+  const expL = sec.experience && sec.experience.length ? sec.experience : lines.filter(l => !["education", "certs", "skills", "summary", "languages", "interests", "contact"].some(k => (sec[k] || []).includes(l)));
+  let roles = status == "ok" ? taRoles(expL) : [], src = "cv";
+  if (!roles.length) {
+    const pe = Array.isArray(prof.experience) ? prof.experience : [], now = taNowIdx();
+    roles = pe.map(x => {
+      const f = taTok(x.from), t = x.to ? taTok(x.to) : "now"; if (!f || f === "now") return null;
+      const start = taIdx(f), end = t === "now" || !t ? now : Math.min(taIdx(t), now), months = Math.max(end - start, 1);
+      return { title: x.title || "", company: x.company || "", from: taMonthName(f), to: t === "now" || !t ? "Present" : taMonthName(t), start, end: start + months, months, present: t === "now" || !t, bullets: 0, quant: 0, verbs: 0, text: x.desc || "" };
+    }).filter(Boolean);
+    src = roles.length ? "profile" : "none";
+  }
+  roles.sort((p, q) => q.end - p.end || q.start - p.start);
+  a.roles = roles; a.expSource = src;
+  const iv = roles.map(r => [r.start, r.end]).sort((p, q) => p[0] - q[0]), merged = [];
+  iv.forEach(([s, e]) => { const l = merged[merged.length - 1]; if (l && s <= l[1] + 1) l[1] = Math.max(l[1], e); else merged.push([s, e]); });
+  const totalM = merged.reduce((n, [s, e]) => n + (e - s), 0);
+  a.cvYears = +(totalM / 12).toFixed(1);
+  a.declared = taNum(prof.years);
+  a.yrs = a.cvYears > 0 ? a.cvYears : a.declared;
+  a.yrsSrc = a.cvYears > 0 ? (src == "cv" ? "CV" : "Profile") : "Declared";
+  a.avgTenure = roles.length ? +(roles.reduce((n, r) => n + r.months, 0) / roles.length / 12).toFixed(1) : 0;
+  a.longest = roles.length ? roles.reduce((m, r) => r.months > m.months ? r : m, roles[0]) : null;
+  let gaps = 0, gapM = 0; for (let i = 1; i < merged.length; i++) { const g = merged[i][0] - merged[i - 1][1]; if (g > 6) { gaps++; gapM += g; } }
+  a.gaps = gaps; a.gapMonths = gapM;
+  a.shortStints = roles.filter(r => r.months < 12 && !r.present).length;
+  a.firstYear = roles.length ? Math.floor(Math.min(...roles.map(r => r.start)) / 12) : null;
+  a.latest = roles[0] ? { title: roles[0].title, company: roles[0].company } : { title: "", company: "" };
+  a.leader = /\b(director|head of|vp|vice president|chief|cxo|partner|general manager|principal)\b/i.test(a.latest.title);
+  a.seniority = a.yrs ? taLevel(a.yrs) : "Not enough data";
+
+  /* education + certs + languages */
+  a.edu = status == "ok" ? taEducation(sec, lines) : (Array.isArray(prof.education) ? prof.education.map(e => {
+    let best = null; for (const [lab, rk, re] of TA_EDU) if (re.test(e.degree || "")) { if (!best || rk > best.rank) best = { level: lab, rank: rk }; }
+    return { degree: e.degree || "", level: best ? best.level : "Other", rank: best ? best.rank : 0, year: e.year || "", school: e.school || "" };
+  }) : []);
+  a.eduTop = a.edu.length ? a.edu.reduce((m, e) => e.rank > m.rank ? e : m, a.edu[0]) : null;
+  a.certs = status == "ok" ? taCerts(sec, lines) : [];
+  (Array.isArray(prof.certs) ? prof.certs : []).forEach(c => { const n = (c.name || "").trim(); if (n && !a.certs.some(x => x.toLowerCase().includes(n.toLowerCase()) || n.toLowerCase().includes(x.toLowerCase()))) a.certs.push(n + (c.issuer ? " · " + c.issuer : "")); });
+  a.langs = (sec.languages || []).join(",").split(/[,•|;·]/).map(s => s.replace(/\(.*?\)/g, "").replace(/[–-].*$/, "").trim()).filter(s => /^[A-Za-z ]{3,20}$/.test(s)).slice(0, 8);
+
+  /* skills with evidence strength */
+  const skillTxt = (sec.skills || []).join("\n"), recent = roles[0] ? roles[0].text : "";
+  const decl = new Set([...(prof.skills || []), ...(prof.softSkills || []), ...(prof.resumeSkills || [])].map(s => String(s).toLowerCase()));
+  const sk = [], seen = new Set();
+  taSkillIndex().forEach(s => {
+    const n = status == "ok" ? taCount(text, s) : 0, inSec = status == "ok" && skillTxt ? taCount(skillTxt, s) > 0 : false, rec = recent ? taCount(recent, s) > 0 : false, d = decl.has(s.name.toLowerCase());
+    if (!n && !d) return;
+    const pts = n + (rec ? 2 : 0) + (d ? 1 : 0), st = pts <= 1 ? 1 : pts <= 3 ? 2 : pts <= 6 ? 3 : pts <= 10 ? 4 : 5;
+    seen.add(s.name.toLowerCase());
+    sk.push({ name: s.name, cat: s.cat, mentions: n, inSkills: inSec, recent: rec, declared: d, strength: st });
+  });
+  decl.forEach(n => { if (!seen.has(n) && n) { const nm = [...(prof.skills || []), ...(prof.softSkills || []), ...(prof.resumeSkills || [])].find(x => String(x).toLowerCase() == n); sk.push({ name: nm, cat: "Other", mentions: 0, inSkills: false, recent: false, declared: true, strength: 1 }); } });
+  sk.sort((p, q) => q.strength - p.strength || q.mentions - p.mentions || p.name.localeCompare(q.name));
+  a.skills = sk;
+  a.catScore = {}; TA_CATS.forEach(c => { const sum = sk.filter(s => s.cat == c).reduce((n, s) => n + s.strength, 0); a.catScore[c] = Math.min(100, Math.round(sum / 12 * 100)); });
+  const topCat = TA_CATS.filter(c => c != "Other").sort((p, q) => a.catScore[q] - a.catScore[p])[0];
+  a.topCat = a.catScore[topCat] > 0 ? topCat : "";
+
+  /* industries + roles */
+  const inds = new Set(taCsv(prof.industry)); if (status == "ok") { const it = [...(sec.summary || []), ...expL].join("\n"); Object.entries(TA_IND).forEach(([k, re]) => { if (re.test(it)) inds.add(k); }); }
+  a.inds = [...inds];
+  a.role = taCsv(prof.role).join(", "); a.headline = prof.headline || ""; a.location = prof.location || ""; a.availability = prof.availability || ""; a.jobType = prof.jobType || "";
+  a.ats = prof.atsScore != null ? prof.atsScore : null; a.atsTips = prof.atsTips || [];
+
+  /* CV quality (completeness) */
+  const has = k => !!(sec[k] && sec[k].length), bl = roles.reduce((n, r) => n + r.bullets, 0), qn = roles.reduce((n, r) => n + r.quant, 0), vb = roles.reduce((n, r) => n + r.verbs, 0);
+  a.checks = [["Professional summary", has("summary")], ["Work experience", roles.length > 0], ["Education", has("education") || a.edu.length > 0], ["Skills section", has("skills")], ["Certifications", a.certs.length > 0], ["Projects / achievements", has("projects") || has("awards")], ["Email address", !!em], ["Phone number", !!phone], ["LinkedIn / portfolio link", !!(li || gh || web)], ["Dated roles", roles.length > 0 && src == "cv"], ["Quantified achievements", qn >= 3], ["Action-verb bullets", bl > 0 && vb / bl >= .4]];
+  const ratioQ = bl ? Math.min(1, (qn / bl) / .3) : 0, ratioV = bl ? Math.min(1, (vb / bl) / .5) : 0;
+  a.quant = qn; a.bullets = bl; a.verbRatio = bl ? Math.round(vb / bl * 100) : 0;
+  a.qual = status != "ok" ? null : Math.round(
+    (has("summary") ? 8 : 0) + (roles.length ? 14 : 0) + (has("education") || a.edu.length ? 10 : 0) + (has("skills") ? 10 : 0) + (a.certs.length ? 4 : 0) + (has("projects") || has("awards") ? 2 : 0)
+    + (em ? 6 : 0) + (phone ? 5 : 0) + (li || gh || web ? 3 : 0) + Math.min(roles.length, 3) / 3 * 10 + ratioQ * 10 + ratioV * 8 + (words >= 300 && words <= 1000 ? 10 : words >= 150 && words <= 1500 ? 6 : 2));
+  a.textL = text.toLowerCase();
+
+  /* plain-language findings */
+  const ins = [], n1 = a.name.split(" ")[0];
+  if (status == "none") ins.push(["warn", `${n1} has not uploaded a CV yet. Figures below come from the profile only.`]);
+  if (status == "unreadable") ins.push(["warn", "The CV file contains almost no readable text (it may be a scanned image). Ask for a text-based PDF."]);
+  if (a.yrs) ins.push(["info", `${a.yrs} years of experience (${a.yrsSrc == "CV" ? "from CV dates" : a.yrsSrc == "Profile" ? "from profile entries" : "as declared"})${roles.length ? ` across ${roles.length} role${roles.length == 1 ? "" : "s"}` : ""}${a.avgTenure ? `, average tenure ${a.avgTenure} yrs` : ""}.`]);
+  if (a.declared && a.cvYears && Math.abs(a.declared - a.cvYears) >= 2) ins.push(["warn", `Declared ${a.declared} yrs on the profile but CV dates add up to about ${a.cvYears} yrs.`]);
+  if (a.topCat) ins.push(["good", `Strongest area: ${a.topCat} (${a.catScore[a.topCat]}/100 evidence index).`]);
+  if (a.leader) ins.push(["good", "Current or recent title indicates leadership responsibility."]);
+  if (a.eduTop) ins.push(["info", `Highest qualification found: ${a.eduTop.level}${a.eduTop.school ? " · " + a.eduTop.school : ""}.`]);
+  if (a.certs.length) ins.push(["good", `${a.certs.length} certification${a.certs.length == 1 ? "" : "s"} listed.`]); else if (status == "ok") ins.push(["warn", "No certifications detected."]);
+  if (gaps) ins.push(["warn", `${gaps} employment gap${gaps == 1 ? "" : "s"} longer than 6 months (about ${Math.round(gapM / 12 * 10) / 10} yrs in total).`]);
+  if (a.shortStints >= 3) ins.push(["warn", `${a.shortStints} roles lasted under 12 months.`]);
+  if (status == "ok" && bl && qn < 3) ins.push(["warn", "Few quantified achievements (numbers, %, budgets) in the CV."]);
+  if (status == "ok" && !phone && !em) ins.push(["warn", "No contact details found inside the CV."]);
+  if (status == "ok" && a.qual != null && a.qual >= 75) ins.push(["good", `Well-structured CV (completeness ${a.qual}/100).`]);
+  a.insights = ins;
+  return a;
+}
+
+/* ---------- PDF reading (layout-aware) ---------- */
+async function taPdfRead(bytes) {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  const d = await pdfjsLib.getDocument({ data: bytes }).promise, lines = [], links = [];
+  for (let p = 1; p <= d.numPages; p++) {
+    const pg = await d.getPage(p), tc = await pg.getTextContent(), W = pg.view[2] - pg.view[0];
+    /* 1) group text items into rows by baseline, 2) merge nearby items into segments */
+    const rows = [];
+    for (const it of tc.items) {
+      if (!it.str || !it.str.trim()) continue;
+      const y = it.transform[5], x = it.transform[4], h = Math.abs(it.transform[3]) || it.height || 10;
+      let r = rows.find(r => Math.abs(r.y - y) <= Math.max(2, h * .35)); if (!r) { r = { y, items: [], size: 0 }; rows.push(r); }
+      r.items.push({ x, w: it.width || 0, s: it.str }); r.size = Math.max(r.size, h);
+    }
+    const segs = [];
+    rows.forEach(r => {
+      r.items.sort((a, b) => a.x - b.x); let cur = null;
+      r.items.forEach(it => {
+        if (cur && it.x - cur.x1 <= Math.max(14, r.size * 1.4)) { cur.s += (it.x - cur.x1 > 1.2 && !cur.s.endsWith(" ") ? " " : "") + it.s; cur.x1 = it.x + it.w; }
+        else { cur = { y: r.y, x0: it.x, x1: it.x + it.w, s: it.s, size: r.size }; segs.push(cur); }
+      });
+    });
+    /* detect a two-column layout: a vertical gutter that (almost) no segment crosses */
+    let gut = null;
+    if (segs.length > 14) {
+      for (let g = W * .22; g <= W * .78; g += 4) {
+        const cross = segs.filter(s => s.x0 < g - 2 && s.x1 > g + 2).length, L = segs.filter(s => s.x1 <= g + 2).length, R = segs.filter(s => s.x0 >= g - 2).length;
+        if (cross <= segs.length * .06 && L >= segs.length * .2 && R >= segs.length * .2) { gut = g; break; }
+      }
+    }
+    const emit = arr => { arr.sort((a, b) => Math.abs(a.y - b.y) > 2 ? b.y - a.y : a.x0 - b.x0); let last = null; arr.forEach(s => { const t = s.s.replace(/\s+/g, " ").trim(); if (!t) return; if (last && Math.abs(last.y - s.y) <= 2 && gut == null) last.t += "  " + t; else { last = { t, size: s.size, page: p, y: s.y }; lines.push(last); } }); };
+    if (gut != null) { emit(segs.filter(s => s.x0 < gut)); emit(segs.filter(s => s.x0 >= gut)); } else emit(segs);
+    try { for (const an of await pg.getAnnotations()) if (an.url) links.push(an.url); } catch { }
+  }
+  return { lines: lines.map(l => ({ t: l.t, size: l.size, page: l.page })), links, pages: d.numPages };
+}
+
+/* ======================================================================
+   TEAM ANALYSIS · page (group owners only)
+   Route: #/analysis  (optional ?g=<groupId>)
+   Reads every member's profile and stored CV, scans the CV in the browser
+   and shows spreadsheet-style tables, charts and a full report per member.
+   Read-only: nothing is written to the database.
+   ====================================================================== */
+const TA = { gid: "", rows: [], tab: "overview", sort: { k: "name", d: 1 }, q: "", mcat: "", ch: [], dch: [], run: 0, cache: {}, g: null, team: null, scanned: "" };
+const TA_COL = ["#2a78d6", "#ff4b2b", "#B8860B", "#4a1222", "#0ca30c", "#6a4aa7", "#12a3a3", "#c98500", "#8a8f9c"];
+const TA_CATCOL = Object.fromEntries(TA_CATS.map((c, i) => [c, TA_COL[i % TA_COL.length]]));
+const taShort = (n, l = 20) => String(n || "").length > l ? String(n).slice(0, l - 1) + "…" : String(n || "");
+const f1 = n => Math.round((+n || 0) * 10) / 10;
+const taAvg = a => a.length ? a.reduce((n, x) => n + x, 0) / a.length : 0;
+const taStatus = r => ({ ok: ["Scanned", "ok"], none: ["No CV", "no"], unreadable: ["Unreadable", "warn"], notreg: ["Not registered", "bad"] }[r.status] || ["–", "no"]);
+const taBadge = r => { const [t, c] = taStatus(r); return `<span class="ta-bd ${c}">${t}</span>`; };
+const taAva = (r, c = "") => av({ photo: r.photo, name: r.name }, c);
+
+function taBlank(e) {
+  return { id: null, email: e, name: e, status: "notreg", file: "", pages: 0, words: 0, photo: "", roles: [], expSource: "none", cvYears: 0, declared: 0, yrs: 0, yrsSrc: "", avgTenure: 0, longest: null, gaps: 0, gapMonths: 0, shortStints: 0, firstYear: null,
+    latest: { title: "", company: "" }, leader: false, seniority: "–", edu: [], eduTop: null, certs: [], langs: [], skills: [], catScore: Object.fromEntries(TA_CATS.map(c => [c, 0])), topCat: "", inds: [], role: "", headline: "", location: "", availability: "", jobType: "",
+    ats: null, atsTips: [], checks: [], quant: 0, bullets: 0, verbRatio: 0, qual: null, phone: "", cvEmail: "", linkedin: "", github: "", web: "", textL: "", insights: [["warn", "This person has not created an account on the platform yet, so there is no profile or CV to analyse."]] };
+}
+function taB64(b) { const s = atob(b), a = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) a[i] = s.charCodeAt(i); return a; }
+
+/* load + analyse one member (profile doc + CV file) */
+async function taMember(e, g) {
+  let u = null; try { u = await memberUser(e); } catch { }
+  if (!u) return taBlank(e);
+  let rs = null; try { const s = await getDoc(doc(db, "resumes", u.id)); rs = s.exists() ? s.data() : null; } catch { }
+  let parsed = null, name = u.resumeName || "";
+  if (rs && rs.data) {
+    name = rs.name || name;
+    const key = (rs.updated?.seconds || 0) + ":" + (rs.name || "") + ":" + rs.data.length, c = TA.cache[u.id];
+    if (c && c.key == key) parsed = c.parsed;
+    else {
+      try { parsed = await taPdfRead(taB64(rs.data)); TA.cache[u.id] = { key, parsed }; }
+      catch (x) { parsed = { lines: [], links: [], pages: 0 }; }
+    }
+  }
+  const r = taAnalyze(parsed, u, name);
+  r.isOwner = u.id == g.ownerId; r.type = u.type;
+  if (r.isOwner && r.status == "none") r.insights = [["info", "Group owner. Consultancy accounts do not upload a CV, so only profile details are shown."], ...r.insights.filter(i => !/has not uploaded a CV/.test(i[1]))];
+  return r;
+}
+async function taScan(g, prog) {
+  const em = g.memberEmails || [], out = new Array(em.length); let next = 0, done = 0;
+  await Promise.all([0, 1, 2].map(async () => { while (next < em.length) { const i = next++; try { out[i] = await taMember(em[i], g); } catch (x) { out[i] = taBlank(em[i]); } prog(i, ++done, em.length, out[i]); } }));
+  out.forEach((r, i) => r._i = i);
+  return out;
+}
+
+/* ---------- team-level numbers ---------- */
+function taTeam(rows) {
+  const ok = rows.filter(r => r.status != "notreg"), cv = rows.filter(r => r.status == "ok"), N = ok.length || 1;
+  const sk = new Map();
+  ok.forEach(r => r.skills.forEach(s => { let e = sk.get(s.name); if (!e) { e = { name: s.name, cat: s.cat, m: [] }; sk.set(s.name, e); } e.m.push({ r, st: s.strength }); }));
+  const skills = [...sk.values()].sort((a, b) => b.m.length - a.m.length || b.m.reduce((n, x) => n + x.st, 0) - a.m.reduce((n, x) => n + x.st, 0) || a.name.localeCompare(b.name));
+  const cats = TA_CATS.filter(c => c != "Other").map(c => ({ c, cov: Math.round(100 * ok.filter(r => r.catScore[c] > 0).length / N), depth: Math.round(taAvg(ok.map(r => r.catScore[c]))) }));
+  const tally = (arr, f) => { const m = {}; arr.forEach(x => { const k = f(x); (Array.isArray(k) ? k : [k]).forEach(v => { if (v) m[v] = (m[v] || 0) + 1; }); }); return m; };
+  const sen = tally(ok, r => r.seniority), eduM = tally(ok, r => r.eduTop ? r.eduTop.level : "Not found"), av2 = tally(ok, r => r.availability || "Not specified"), ind = tally(ok, r => r.inds);
+  const certs = tally(ok, r => r.certs.map(c => c.replace(/\s*[-·].*$/, "")));
+  const yrs = ok.map(r => r.yrs).filter(Boolean), atsA = ok.map(r => r.ats).filter(x => x != null), qA = cv.map(r => r.qual).filter(x => x != null);
+  const top = [...ok].sort((a, b) => b.yrs - a.yrs)[0];
+  const T = { rows, ok, cv, skills, cats, sen, edu: eduM, avail: av2, ind, certs, top,
+    avgYrs: f1(taAvg(yrs)), totYrs: f1(yrs.reduce((n, x) => n + x, 0)), avgAts: atsA.length ? Math.round(taAvg(atsA)) : null, avgQ: qA.length ? Math.round(taAvg(qA)) : null, nCerts: ok.reduce((n, r) => n + r.certs.length, 0) };
+  const I = [], names = a => a.slice(0, 3).map(r => r.name.split(" ")[0]).join(", ") + (a.length > 3 ? ` +${a.length - 3}` : "");
+  const miss = rows.filter(r => r.status != "ok");
+  I.push(miss.length ? ["warn", `${cv.length} of ${rows.length} members have a readable CV. Missing or unreadable: ${names(miss)}.`] : ["good", `All ${rows.length} members have a readable CV on file.`]);
+  if (top && top.yrs) I.push(["info", `Average experience is ${T.avgYrs} years; most experienced is ${top.name} (${f1(top.yrs)} yrs).`]);
+  const sc = [...cats].sort((a, b) => b.depth - a.depth);
+  if (sc[0] && sc[0].depth > 0) I.push(["good", `Strongest capability: ${sc[0].c} (${sc[0].cov}% of members, depth ${sc[0].depth}/100).`]);
+  const weak = sc.filter(x => x.cov < 50).slice(-1)[0]; if (weak && ok.length > 1) I.push(["warn", `Thinnest area: ${weak.c}. Only ${weak.cov}% of members show evidence of it.`]);
+  const spof = skills.filter(s => s.m.length == 1 && s.m[0].st >= 3).slice(0, 4);
+  if (ok.length >= 3 && spof.length) I.push(["warn", `Single-person dependencies: ${spof.map(s => `${s.name} (${s.m[0].r.name.split(" ")[0]})`).join(", ")}.`]);
+  const ct = Object.entries(certs).sort((a, b) => b[1] - a[1])[0]; if (T.nCerts) I.push(["info", `${T.nCerts} certifications across the team${ct ? `; most common: ${ct[0]} (${ct[1]})` : ""}.`]);
+  const now = ok.filter(r => ["Immediately", "Within 2 weeks"].includes(r.availability)); if (now.length) I.push(["good", `${now.length} member${now.length == 1 ? " is" : "s are"} available within 2 weeks.`]);
+  const mm = cv.filter(r => r.declared && r.cvYears && Math.abs(r.declared - r.cvYears) >= 2); if (mm.length) I.push(["warn", `${mm.length} profile${mm.length == 1 ? "" : "s"} declare experience that differs by 2+ years from CV dates.`]);
+  T.insights = I; return T;
+}
+
+/* ---------- small renderers ---------- */
+const taIc = { good: "✓", warn: "!", info: "i" };
+const taIns = a => a.map(([k, t], i) => `<li class="ta-ins ${k} ta-in" style="--i:${i}"><b>${taIc[k]}</b><span>${esc(t)}</span></li>`).join("");
+const taKpi = (ic, v, l, sub = "", i = 0) => `<div class="ta-kpi ta-in" style="--i:${i}"><div class="ic">${ic}</div><div><b class="ta-num" data-v="${v}">${v}</b><span>${l}</span>${sub ? `<em>${sub}</em>` : ""}</div></div>`;
+const taCard = (t, sub, inner, cls = "", i = 0) => `<div class="card ta-card ta-in ${cls}" style="--i:${i}"><div class="ta-ch"><h3>${t}</h3>${sub ? `<p class="mut">${sub}</p>` : ""}</div>${inner}</div>`;
+const taCv = (id, h = 280) => `<div class="ta-cv" style="height:${h}px"><canvas id="${id}"></canvas></div>`;
+const taNoChart = () => `<p class="empty">Charts could not be loaded (check your internet connection). Tables below still work.</p>`;
+const taDots = n => `<span class="ta-dots" title="${n}/5">${[1, 2, 3, 4, 5].map(i => `<i class="${i <= n ? "on" : ""}"></i>`).join("")}</span>`;
+
+function taGrow(root) {
+  requestAnimationFrame(() => requestAnimationFrame(() => root.querySelectorAll("[data-w]").forEach(e => e.style.width = e.dataset.w)));
+  root.querySelectorAll(".ta-num").forEach(el => {
+    const v = parseFloat(el.dataset.v); if (isNaN(v) || matchMedia("(prefers-reduced-motion:reduce)").matches) return;
+    const dec = String(el.dataset.v).includes(".") ? 1 : 0, t0 = performance.now(), d = 900;
+    const step = t => { const p = Math.min(1, (t - t0) / d), e = 1 - Math.pow(1 - p, 3); el.textContent = (v * e).toFixed(dec); if (p < 1) requestAnimationFrame(step); else el.textContent = el.dataset.v; };
+    requestAnimationFrame(step);
+  });
+}
+function taKill(list) { list.forEach(c => { try { c.destroy(); } catch { } }); list.length = 0; }
+function taChartBase() {
+  if (!window.Chart || Chart.__ta) return; Chart.__ta = 1;
+  Chart.defaults.font.family = "'Plus Jakarta Sans',system-ui,sans-serif"; Chart.defaults.font.size = 12; Chart.defaults.color = "#52514e";
+  Chart.defaults.animation = { duration: 1100, easing: "easeOutQuart" };
+  Chart.defaults.plugins.legend.labels.usePointStyle = true; Chart.defaults.plugins.legend.labels.boxWidth = 8;
+  Chart.defaults.plugins.tooltip.backgroundColor = "#15121a"; Chart.defaults.plugins.tooltip.padding = 10; Chart.defaults.plugins.tooltip.cornerRadius = 8;
+}
+function taMk(list, id, cfg) {
+  const c = document.getElementById(id); if (!c || !window.Chart) return null;
+  taChartBase(); cfg.options = Object.assign({ responsive: true, maintainAspectRatio: false }, cfg.options || {});
+  const ch = new Chart(c, cfg); list.push(ch); return ch;
+}
+const taGrid = { color: "rgba(20,22,31,.07)" };
+
+/* ---------- page ---------- */
+V.analysis = async () => {
+  if (!need("group")) return;
+  if (!me.emailVerified) return $("#app").innerHTML = gateHtml();
+  try { await loadG(); } catch (e) { return $("#app").innerHTML = `<div class="page"><p>Could not load groups: ${esc(e.message)}</p></div>`; }
+  const mine = Object.values(G).filter(g => g.ownerId == me.uid);
+  if (!mine.length) return $("#app").innerHTML = `${pHero("Team analysis", "Know your team in depth", "Create a group and invite colleagues to see a full analysis of every member's CV.", [], `<a class="btn" href="#/groups">Create a group</a>`)}<div class="page"><div class="card empty-big"><div class="em">📊</div><h3>No group to analyse yet</h3><p class="mut">Only the owner of a group can open its team analysis. Create a group and invite members first.</p></div></div>`;
+  const q = new URLSearchParams((location.hash.split("?")[1] || "")).get("g");
+  TA.gid = (mine.find(g => g.id == q) || mine.find(g => g.id == TA.gid) || mine[0]).id;
+  const g = G[TA.gid], run = ++TA.run, live = () => run == TA.run && location.hash.startsWith("#/analysis");
+  TA.g = g; taCloseDr(true); taKill(TA.ch);
+  const em = g.memberEmails || [];
+  $("#app").innerHTML = `${pHero("Team analysis", esc(g.name), "Every member's profile and CV, scanned and arranged as tables, charts and a one-page report per person.", [[em.length, "Members"], ["…", "CVs scanned"], ["…", "Avg. years"], ["…", "Unique skills"]])}
+    <div class="page ta"><div class="card ta-load ta-in"><div class="ta-ld-h"><div class="ta-spin"></div><div><h3>Scanning CVs…</h3><p class="mut" id="ta_pt">Starting</p></div></div>
+      <div class="ta-pbar"><div id="ta_pb"></div></div>
+      <div class="ta-plist">${em.map((e, i) => `<div class="ta-pi" id="ta_p${i}"><span class="d"></span><span class="n">${esc(e)}</span><span class="s">Waiting</span></div>`).join("")}</div></div></div>`;
+  const rows = await taScan(g, (i, d, n, r) => {
+    if (!live()) return;
+    const row = document.getElementById("ta_p" + i); if (row) { row.className = "ta-pi done"; row.querySelector(".n").textContent = r.name; row.querySelector(".s").innerHTML = taBadge(r); }
+    const pb = document.getElementById("ta_pb"); if (pb) pb.style.width = Math.round(d / n * 100) + "%";
+    const pt = document.getElementById("ta_pt"); if (pt) pt.textContent = `${d} of ${n} members processed`;
+  });
+  if (!live()) return;
+  TA.rows = rows; TA.team = taTeam(rows); TA.scanned = new Date().toLocaleString();
+  taRender(mine);
+};
+
+function taRender(mine) {
+  const g = TA.g, T = TA.team, rows = TA.rows;
+  $("#app").innerHTML = `${pHero("Team analysis", esc(g.name), "Every member's profile and CV, scanned and arranged as tables, charts and a one-page report per person.",
+    [[rows.length, "Members"], [T.cv.length, "CVs scanned"], [T.avgYrs, "Avg. years"], [T.skills.length, "Unique skills"]],
+    `<button class="btn" onclick="taExport()">⬇ Download Excel</button><button class="btn o" onclick="taRescan()">↻ Rescan CVs</button><button class="btn o" onclick="window.print()">🖨 Print</button>`)}
+    <div class="page ta">
+      <div class="ta-bar ta-in"><div class="ta-tabs" id="ta_tabs">${[["overview", "Overview"], ["table", "Member sheet"], ["matrix", "Skill matrix"], ["people", "Individual reports"]].map(([k, l]) => `<button data-k="${k}" class="${TA.tab == k ? "on" : ""}" onclick="taTab('${k}')">${l}</button>`).join("")}</div>
+        <div class="ta-meta">${mine.length > 1 ? `<select onchange="taGroup(this.value)" aria-label="Group">${mine.map(x => `<option value="${x.id}" ${x.id == g.id ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select>` : ""}<span class="mut">Scanned ${esc(TA.scanned)}</span></div></div>
+      <div id="ta_panel"></div>
+      <p class="mut ta-note">CVs are read in your browser and nothing is saved. Fields such as roles, dates, education and certifications are detected automatically from each PDF layout, so spot-check anything important against the original CV (use “View CV”).</p>
+    </div>`;
+  document.querySelectorAll(".phero .pstats b").forEach(b => { b.classList.add("ta-num"); b.dataset.v = b.textContent; });
+  taPanel(); taGrow($("#app"));
+}
+window.taGroup = id => { TA.gid = id; location.hash = "#/analysis?g=" + id; };
+window.taRescan = () => { TA.cache = {}; Object.keys(MU).forEach(k => delete MU[k]); route(); };
+window.taTab = k => { TA.tab = k; document.querySelectorAll("#ta_tabs button").forEach(b => b.classList.toggle("on", b.dataset.k == k)); taPanel(); };
+window.taMcat = v => { TA.mcat = v; taPanel(); };
+function taPanel() {
+  const el = $("#ta_panel"); if (!el) return; taKill(TA.ch);
+  const f = { overview: taOverview, table: taTable, matrix: taMatrix, people: taPeople }[TA.tab];
+  el.innerHTML = f(); taGrow(el); if (TA.tab == "overview") taCharts();
+}
+
+/* ---------- tab: overview ---------- */
+function taOverview() {
+  const T = TA.team, n = TA.rows.length, ch = window.Chart;
+  const hs = Math.max(240, 34 * n + 90);
+  return `<div class="ta-kpis">${[["👥", n, "Members", `${T.ok.length} with accounts`], ["📄", T.cv.length, "CVs scanned", `${n - T.cv.length} missing / unreadable`], ["⏳", T.avgYrs, "Avg. years of experience", `${T.totYrs} yrs combined`], ["🧠", T.skills.length, "Unique skills", `${T.skills.filter(s => s.m.length > 1).length} shared by 2+`],
+      ["🎓", T.ok.filter(r => r.eduTop && r.eduTop.rank >= 3).length, "Degree holders", "Bachelor's or higher"], ["🏅", T.nCerts, "Certifications", ""], ["🎯", T.avgAts == null ? "–" : T.avgAts, "Avg. ATS score", "from profiles"], ["📝", T.avgQ == null ? "–" : T.avgQ, "Avg. CV completeness", "structure & detail"]].map((k, i) => taKpi(...k, i)).join("")}</div>
+    ${taCard("Key findings", "Generated from the scanned CVs and profiles", `<ul class="ta-inl">${taIns(T.insights)}</ul>`, "", 2)}
+    <div class="ta-grid">
+      ${taCard("Experience by member", "Years of experience from CV dates vs. what the profile declares", ch ? taCv("c_exp", hs) : taNoChart(), "w2", 3)}
+      ${taCard("Team capability radar", "Share of members with evidence in each area, and average depth", ch ? taCv("c_rad", 320) : taNoChart(), "", 4)}
+      ${taCard("Most common skills", "Number of members showing each skill", ch ? taCv("c_top", 320) : taNoChart(), "", 5)}
+      ${taCard("Skill mix per member", "Evidence strength by capability area", ch ? taCv("c_mix", hs) : taNoChart(), "w2", 6)}
+      ${taCard("Seniority", "From total experience in CV dates", ch ? taCv("c_sen", 250) : taNoChart(), "", 7)}
+      ${taCard("Highest education", "Best qualification found per member", ch ? taCv("c_edu", 250) : taNoChart(), "", 8)}
+      ${taCard("Availability", "As set on member profiles", ch ? taCv("c_av", 250) : taNoChart(), "", 9)}
+      ${taCard("Industry exposure", "Industries on profiles and in CV experience", ch ? taCv("c_ind", 250) : taNoChart(), "", 10)}
+      ${taCard("ATS score vs. CV completeness", "ATS score is from the member's profile; completeness is measured from this scan", ch ? taCv("c_sc", hs) : taNoChart(), "w2", 11)}
+      ${taCard("Talent map", "Experience (x) against number of skills (y); bubble size = certifications", ch ? taCv("c_map", 320) : taNoChart(), "w2", 12)}
+    </div>`;
+}
+function taCharts() {
+  const T = TA.team, R = TA.rows.filter(r => r.status != "notreg"), L = TA.ch, nm = R.map(r => taShort(r.name));
+  if (!window.Chart) return;
+  taMk(L, "c_exp", { type: "bar", data: { labels: nm, datasets: [{ label: "From CV (yrs)", data: R.map(r => r.cvYears), backgroundColor: TA_COL[0], borderRadius: 6 }, { label: "Declared (yrs)", data: R.map(r => r.declared), backgroundColor: TA_COL[2], borderRadius: 6 }] },
+    options: { indexAxis: "y", scales: { x: { grid: taGrid, beginAtZero: true, title: { display: true, text: "Years" } }, y: { grid: { display: false } } }, plugins: { legend: { position: "bottom" } } } });
+  taMk(L, "c_rad", { type: "radar", data: { labels: T.cats.map(c => c.c), datasets: [{ label: "Members with evidence (%)", data: T.cats.map(c => c.cov), borderColor: TA_COL[0], backgroundColor: "rgba(42,120,214,.18)", pointBackgroundColor: TA_COL[0] }, { label: "Average depth (0–100)", data: T.cats.map(c => c.depth), borderColor: TA_COL[1], backgroundColor: "rgba(255,75,43,.15)", pointBackgroundColor: TA_COL[1] }] },
+    options: { scales: { r: { min: 0, max: 100, ticks: { stepSize: 25, backdropColor: "transparent" }, grid: taGrid, angleLines: taGrid, pointLabels: { font: { size: 11 } } } }, plugins: { legend: { position: "bottom" } } } });
+  const top = T.skills.slice(0, 12);
+  taMk(L, "c_top", { type: "bar", data: { labels: top.map(s => s.name), datasets: [{ label: "Members", data: top.map(s => s.m.length), backgroundColor: top.map(s => TA_CATCOL[s.cat]), borderRadius: 6 }] },
+    options: { indexAxis: "y", scales: { x: { grid: taGrid, beginAtZero: true, ticks: { precision: 0 } }, y: { grid: { display: false } } }, plugins: { legend: { display: false } } } });
+  const cats = TA_CATS.filter(c => R.some(r => r.catScore[c] > 0));
+  taMk(L, "c_mix", { type: "bar", data: { labels: nm, datasets: cats.map(c => ({ label: c, data: R.map(r => r.catScore[c]), backgroundColor: TA_CATCOL[c], borderRadius: 3 })) },
+    options: { indexAxis: "y", scales: { x: { stacked: true, grid: taGrid, title: { display: true, text: "Evidence index (sum across areas)" } }, y: { stacked: true, grid: { display: false } } }, plugins: { legend: { position: "bottom" } } } });
+  const donut = (id, o, order) => { const k = (order || Object.keys(o)).filter(x => o[x]); taMk(L, id, { type: "doughnut", data: { labels: k, datasets: [{ data: k.map(x => o[x]), backgroundColor: k.map((x, i) => TA_COL[i % TA_COL.length]), borderColor: "#fff", borderWidth: 3, hoverOffset: 8 }] }, options: { cutout: "62%", plugins: { legend: { position: "right", labels: { boxWidth: 10 } } } } }); };
+  donut("c_sen", T.sen, [...TA_LEVELS.map(x => x[1]), "Not enough data"]); donut("c_edu", T.edu, ["Doctorate", "Master's", "Bachelor's", "Diploma", "School", "Not found"]); donut("c_av", T.avail, [...AVAIL, "Not specified"]);
+  const ind = Object.entries(T.ind).sort((a, b) => b[1] - a[1]).slice(0, 8);
+  taMk(L, "c_ind", { type: "bar", data: { labels: ind.map(x => x[0]), datasets: [{ label: "Members", data: ind.map(x => x[1]), backgroundColor: TA_COL[4], borderRadius: 6 }] }, options: { indexAxis: "y", scales: { x: { grid: taGrid, beginAtZero: true, ticks: { precision: 0 } }, y: { grid: { display: false } } }, plugins: { legend: { display: false } } } });
+  taMk(L, "c_sc", { type: "bar", data: { labels: nm, datasets: [{ label: "ATS score", data: R.map(r => r.ats), backgroundColor: TA_COL[5], borderRadius: 6 }, { label: "CV completeness", data: R.map(r => r.qual), backgroundColor: TA_COL[6], borderRadius: 6 }] },
+    options: { indexAxis: "y", scales: { x: { grid: taGrid, min: 0, max: 100 }, y: { grid: { display: false } } }, plugins: { legend: { position: "bottom" } } } });
+  taMk(L, "c_map", { type: "bubble", data: { datasets: R.map((r, i) => ({ label: r.name, data: [{ x: r.yrs, y: r.skills.length, r: 7 + r.certs.length * 2.5 }], backgroundColor: TA_COL[i % TA_COL.length] + "bb", borderColor: TA_COL[i % TA_COL.length] })) },
+    options: { scales: { x: { grid: taGrid, beginAtZero: true, title: { display: true, text: "Years of experience" } }, y: { grid: taGrid, beginAtZero: true, title: { display: true, text: "Skills detected" } } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `${c.dataset.label}: ${f1(c.raw.x)} yrs · ${c.raw.y} skills · ${R[c.datasetIndex].certs.length} certs` } } } } });
+}
+
+/* ---------- tab: member sheet (spreadsheet style) ---------- */
+const TA_COLS = [
+  ["name", "Member", r => r.name], ["email", "Email", r => r.email], ["phone", "Phone", r => r.phone || ""], ["location", "Location", r => r.location || ""], ["role", "Primary role", r => r.role || ""],
+  ["seniority", "Seniority", r => r.seniority], ["declared", "Declared yrs", r => r.declared || 0, 1], ["cvYears", "CV yrs", r => r.cvYears || 0, 1], ["nroles", "Roles", r => r.roles.length, 1], ["tenure", "Avg tenure (yrs)", r => r.avgTenure || 0, 1],
+  ["latest", "Latest position", r => [r.latest.title, r.latest.company].filter(Boolean).join(" · ")], ["edu", "Highest education", r => r.eduTop ? r.eduTop.level : "", 0, r => r.eduTop ? r.eduTop.rank : 0], ["certN", "Certs", r => r.certs.length, 1],
+  ["skillN", "Skills", r => r.skills.length, 1], ["topSk", "Top skills", r => r.skills.slice(0, 5).map(s => s.name).join(", ")], ["ats", "ATS", r => r.ats, 1], ["qual", "CV score", r => r.qual, 1], ["avail", "Availability", r => r.availability || ""], ["status", "CV status", r => taStatus(r)[0]]
+];
+function taSorted() {
+  const c = TA_COLS.find(x => x[0] == TA.sort.k) || TA_COLS[0], q = TA.q.trim().toLowerCase();
+  let a = TA.rows.filter(r => !q || TA_COLS.some(x => String(x[2](r) ?? "").toLowerCase().includes(q)));
+  const val = r => c[4] ? c[4](r) : c[2](r), d = TA.sort.d;
+  return a.sort((p, q2) => { let x = val(p), y = val(q2); if (x == null || x === "") return 1; if (y == null || y === "") return -1; return (typeof x == "number" ? x - y : String(x).localeCompare(String(y))) * d; });
+}
+function taRowsHtml() {
+  const a = taSorted(), mx = Math.max(1, ...TA.rows.map(r => r.cvYears)), N = TA.rows.length;
+  if (!a.length) return `<tr><td colspan="${TA_COLS.length + 1}" class="empty">No member matches your search.</td></tr>`;
+  const bar = (v, max, c) => v == null ? `<span class="mut">–</span>` : `<div class="ta-db"><i data-w="${Math.min(100, v / max * 100)}%" style="background:${c}"></i><span>${v}</span></div>`;
+  return a.map((r, k) => `<tr class="ta-row" style="--i:${k}" onclick="taOpen(${r._i})"><td class="g">${r._i + 1}</td>
+    <td class="s1"><div class="ta-nm">${taAva(r, "sm")}<div><b>${esc(r.name)}</b>${r.isOwner ? ' <span class="pod">OWNER</span>' : ""}<div class="mut">${esc(r.headline || "")}</div></div></div></td>
+    <td>${esc(r.email)}</td><td class="mono">${esc(r.phone || "–")}</td><td>${esc(r.location || "–")}</td><td>${esc(r.role || "–")}</td>
+    <td>${r.seniority == "–" || r.seniority == "Not enough data" ? '<span class="mut">–</span>' : `<span class="tag role">${esc(r.seniority)}</span>`}</td>
+    <td class="num">${r.declared || "–"}</td><td>${r.status == "notreg" ? "–" : bar(r.cvYears, mx, "linear-gradient(90deg,#2a78d6,#7db3f0)")}</td><td class="num">${r.roles.length || "–"}</td><td class="num">${r.avgTenure || "–"}</td>
+    <td>${esc([r.latest.title, r.latest.company].filter(Boolean).join(" · ") || "–")}</td><td>${r.eduTop ? `<span class="tag industry">${esc(r.eduTop.level)}</span>` : "–"}</td><td class="num">${r.certs.length}</td><td class="num">${r.skills.length}</td>
+    <td>${r.skills.slice(0, 4).map(s => `<span class="tag hard">${esc(s.name)}</span>`).join(" ") || "–"}</td>
+    <td>${bar(r.ats, 100, "linear-gradient(90deg,#6a4aa7,#b79be6)")}</td><td>${bar(r.qual, 100, "linear-gradient(90deg,#12a3a3,#6fd6d6)")}</td><td>${esc(r.availability || "–")}</td><td>${taBadge(r)}</td></tr>`).join("");
+}
+function taTable() {
+  return `<div class="card ta-card ta-in"><div class="ta-ch ta-tb"><div><h3>Member sheet</h3><p class="mut">One row per member, built from the profile and the scanned CV. Click a column to sort, click a row for the full report.</p></div>
+    <div class="ta-tools"><input id="ta_q" type="search" placeholder="Search the sheet…" value="${esc(TA.q)}" oninput="taFilter(this.value)"><button class="btn o s" onclick="taExport()">⬇ Excel</button></div></div>
+    <div class="ta-xl"><table><thead><tr><th class="g">#</th>${TA_COLS.map(c => `<th class="${c[0] == "name" ? "s1" : ""} ${c[3] ? "num" : ""}" onclick="taSort('${c[0]}')">${c[1]}<span class="ar">${TA.sort.k == c[0] ? (TA.sort.d > 0 ? "▲" : "▼") : ""}</span></th>`).join("")}</tr></thead>
+    <tbody id="ta_tbody">${taRowsHtml()}</tbody></table></div></div>`;
+}
+window.taSort = k => { TA.sort = { k, d: TA.sort.k == k ? -TA.sort.d : 1 }; taPanel(); };
+window.taFilter = v => { TA.q = v; const b = $("#ta_tbody"); if (b) { b.innerHTML = taRowsHtml(); taGrow(b); } };
+
+/* ---------- tab: skill matrix (heat map) ---------- */
+function taMatrix() {
+  const T = TA.team, R = TA.rows, cats = TA_CATS.filter(c => T.skills.some(s => s.cat == c));
+  let sk = T.skills.filter(s => !TA.mcat || s.cat == TA.mcat);
+  sk = [...sk].slice(0, 28).sort((a, b) => TA_CATS.indexOf(a.cat) - TA_CATS.indexOf(b.cat) || b.m.length - a.m.length);
+  if (!sk.length) return `<div class="card empty-big ta-in"><div class="em">🧩</div><h3>No skills detected yet</h3><p class="mut">Skills appear once members add them to their profile or upload a CV.</p></div>`;
+  const groups = []; sk.forEach(s => { const l = groups[groups.length - 1]; if (l && l.c == s.cat) l.n++; else groups.push({ c: s.cat, n: 1 }); });
+  const cell = (r, s) => { const m = s.m.find(x => x.r == r); return m ? `<td class="h h${m.st}" title="${esc(r.name)} · ${esc(s.name)} · evidence ${m.st}/5">${m.st}</td>` : `<td class="h h0"></td>`; };
+  return `<div class="card ta-card ta-in"><div class="ta-ch ta-tb"><div><h3>Skill matrix</h3><p class="mut">Evidence strength per skill, from 1 (listed) to 5 (repeated across roles, including the latest). It is based on what each CV says, not on a test.</p></div>
+    <div class="ta-tools"><select onchange="taMcat(this.value)"><option value="">All areas</option>${cats.map(c => `<option ${TA.mcat == c ? "selected" : ""}>${esc(c)}</option>`).join("")}</select></div></div>
+    <div class="ta-xl"><table class="ta-mx"><thead><tr><th class="s1" rowspan="2">Member</th>${groups.map(g => `<th colspan="${g.n}" class="cg" style="--c:${TA_CATCOL[g.c]}">${esc(g.c)}</th>`).join("")}<th rowspan="2" class="num">Skills</th></tr>
+      <tr>${sk.map(s => `<th class="rot"><span>${esc(s.name)}</span></th>`).join("")}</tr></thead>
+    <tbody>${R.map((r, i) => `<tr class="ta-row" style="--i:${i}" onclick="taOpen(${r._i})"><td class="s1"><div class="ta-nm">${taAva(r, "sm")}<b>${esc(taShort(r.name, 22))}</b></div></td>${sk.map(s => cell(r, s)).join("")}<td class="num">${r.skills.length}</td></tr>`).join("")}</tbody>
+    <tfoot><tr><td class="s1"><b>Members with skill</b></td>${sk.map(s => `<td class="cov ${s.m.length == 1 ? "one" : ""}">${s.m.length}</td>`).join("")}<td></td></tr></tfoot></table></div>
+    <div class="ta-leg"><span>Evidence:</span>${[0, 1, 2, 3, 4, 5].map(i => `<i class="h h${i}">${i || ""}</i>`).join("")}<span class="mut">Orange count in the footer = only one member has that skill.</span></div></div>
+    <div class="card ta-card ta-in" style="--i:2"><div class="ta-ch"><h3>Required-skills check</h3><p class="mut">Type the skills a project needs, separated by commas, to see who in the group covers them (searches CV text and profile skills).</p></div>
+    <div class="addc"><input id="ta_req" placeholder="e.g. SAP FICO, S/4HANA, Stakeholder Management, Python" onkeydown="if(event.key=='Enter'){taReq();return false}"><button class="btn s" onclick="taReq()">Check coverage</button></div><div id="ta_reqo"></div></div>`;
+}
+window.taReq = () => {
+  const want = csv($("#ta_req").value), o = $("#ta_reqo"); if (!want.length) { o.innerHTML = ""; return; }
+  const R = TA.rows.filter(r => r.status != "notreg"), N = R.length || 1;
+  const res = want.map(w => { const re = new RegExp("(^|[^a-z0-9])" + taEsc(w.toLowerCase()) + "(?![a-z0-9])", "g"); const who = R.map(r => { const sk = r.skills.find(s => s.name.toLowerCase() == w.toLowerCase()), n = (r.textL.match(re) || []).length; return sk || n ? { r, n: n || sk.mentions, st: sk ? sk.strength : Math.min(5, 1 + n) } : null; }).filter(Boolean); return { w, who }; });
+  const done = res.filter(x => x.who.length).length;
+  o.innerHTML = `<p style="margin:14px 0 6px"><b>${done} of ${res.length}</b> required skills are covered by at least one member.</p><div class="ta-xl"><table class="ta-rq"><thead><tr><th>Skill</th><th>Coverage</th><th>Members</th></tr></thead><tbody>${res.map(x => `<tr><td><b>${esc(x.w)}</b></td><td><div class="ta-db"><i data-w="${Math.round(x.who.length / N * 100)}%" style="background:${x.who.length ? "linear-gradient(90deg,#0ca30c,#7bdc7b)" : "#d03b3b"}"></i><span>${x.who.length}/${N}</span></div></td>
+    <td>${x.who.length ? x.who.sort((a, b) => b.st - a.st).map(m => `<span class="tag hard" title="evidence ${m.st}/5">${esc(m.r.name)} ${taDots(m.st)}</span>`).join(" ") : '<span class="ta-bd bad">Gap</span>'}</td></tr>`).join("")}</tbody></table></div>`;
+  taGrow(o);
+};
+
+/* ---------- tab: individual reports ---------- */
+function taPeople() {
+  return `<div class="ta-people">${TA.rows.map((r, i) => {
+    const cs = TA_CATS.filter(c => c != "Other").map(c => [c, r.catScore[c]]).filter(x => x[1] > 0).sort((a, b) => b[1] - a[1]).slice(0, 3);
+    return `<div class="card ta-pcard ta-in" style="--i:${i}"><div class="ta-ph">${taAva(r, "lg2")}<div style="min-width:0"><h3>${esc(r.name)}${r.isOwner ? ' <span class="pod">OWNER</span>' : ""}</h3><div class="mut">${esc([r.headline || [r.latest.title, r.latest.company].filter(Boolean).join(" · "), r.location].filter(Boolean).join(" · ") || r.email)}</div>${taBadge(r)}</div></div>
+      <div class="ta-mini">${[[r.yrs ? f1(r.yrs) : "–", "Years"], [r.roles.length || "–", "Roles"], [r.skills.length, "Skills"], [r.certs.length, "Certs"], [r.qual == null ? "–" : r.qual, "CV score"]].map(([v, l]) => `<div><b>${v}</b><span>${l}</span></div>`).join("")}</div>
+      ${cs.length ? cs.map(([c, v]) => `<div class="ta-ms"><span>${esc(c)}</span><div class="meter"><div data-w="${v}%" style="width:0;background:${TA_CATCOL[c]}"></div></div><em>${v}</em></div>`).join("") : '<div class="empty">No skills detected yet.</div>'}
+      <div class="tr">${r.skills.slice(0, 6).map(s => `<span class="tag hard">${esc(s.name)}</span>`).join("")}</div>
+      <div class="srow"><button class="btn s" onclick="taOpen(${r._i})">Open full report</button>${r.id && r.status != "none" && r.status != "notreg" ? `<button class="btn o s" onclick="openCV('${esc(r.id)}')">📄 View CV</button>` : ""}</div></div>`;
+  }).join("")}</div>`;
+}
+
+/* ---------- per-member report (side drawer) ---------- */
+function taDrawer() { let d = document.getElementById("ta_dr"); if (!d) { d = document.createElement("div"); d.id = "ta_dr"; d.className = "ta-dr"; d.innerHTML = `<div class="ta-dbg" onclick="taCloseDr()"></div><aside class="ta-dp" id="ta_dp" role="dialog" aria-modal="true" aria-label="Member report"></aside>`; document.body.appendChild(d); } return d; }
+window.taCloseDr = quiet => { const d = document.getElementById("ta_dr"); if (!d) return; d.classList.remove("on"); document.documentElement.classList.remove("ta-lock"); taKill(TA.dch); if (quiet === true) d.remove(); };
+document.addEventListener("keydown", e => { if (e.key == "Escape" && document.getElementById("ta_dr")?.classList.contains("on") && !$("#modal").classList.contains("on")) taCloseDr(); });
+window.addEventListener("hashchange", () => { if (!location.hash.startsWith("#/analysis")) taCloseDr(true); });
+
+function taTimeline(r) {
+  if (!r.roles.length) return `<div class="empty">No dated roles were found${r.status == "ok" ? " in this CV" : ""}.</div>`;
+  const now = taNowIdx(), mn = Math.min(...r.roles.map(x => x.start)), mx = Math.max(now, ...r.roles.map(x => x.end)), span = Math.max(1, mx - mn);
+  const y0 = Math.ceil(mn / 12), y1 = Math.floor(mx / 12), step = Math.max(1, Math.ceil((y1 - y0 + 1) / 8)), ticks = []; for (let y = y0; y <= y1; y += step) ticks.push(y);
+  return `<div class="ta-tl"><div class="ta-tl-ax"><div></div><div class="tr2">${ticks.map(y => `<span style="left:${(y * 12 - mn) / span * 100}%">${y}</span>`).join("")}</div></div>
+    ${r.roles.map((x, i) => `<div class="ta-tl-r"><div class="lb"><b>${esc(x.title || "Role")}</b><span class="mut">${esc(x.company || "")}</span></div><div class="tr2">${ticks.map(y => `<i class="gl" style="left:${(y * 12 - mn) / span * 100}%"></i>`).join("")}<div class="bar ${x.present ? "now" : ""}" style="left:${(x.start - mn) / span * 100}%;width:${Math.max(1.5, (x.end - x.start) / span * 100)}%;animation-delay:${i * 90}ms" title="${esc(x.from)} → ${esc(x.to)}"><span>${f1(x.months / 12)}y</span></div></div></div>`).join("")}</div>`;
+}
+const taRoleSk = x => taSkillIndex().filter(s => taCount(x.text || "", s) > 0).slice(0, 5).map(s => s.name);
+window.taOpen = i => {
+  const r = TA.rows[i]; if (!r) return;
+  const d = taDrawer(), p = $("#ta_dp"); taKill(TA.dch);
+  const links = [r.email && `<a href="mailto:${esc(r.email)}">✉ ${esc(r.email)}</a>`, r.phone && `<span>☎ ${esc(r.phone)}</span>`, r.location && `<span>📍 ${esc(r.location)}</span>`, r.linkedin && `<a target="_blank" rel="noopener" href="${esc(url(r.linkedin))}">in LinkedIn</a>`, r.github && `<a target="_blank" rel="noopener" href="${esc(url(r.github))}">GitHub</a>`, r.web && `<a target="_blank" rel="noopener" href="${esc(r.web)}">Website</a>`].filter(Boolean).join("");
+  const sk = r.skills.slice(0, 14), cats = TA_CATS.filter(c => c != "Other");
+  const kp = [["⏳", r.yrs ? f1(r.yrs) : "–", r.yrsSrc ? "Years · " + r.yrsSrc : "Years"], ["💼", r.roles.length || "–", "Roles"], ["⏱", r.avgTenure || "–", "Avg tenure (yrs)"], ["🧠", r.skills.length, "Skills"], ["🏅", r.certs.length, "Certifications"], ["🎯", r.ats == null ? "–" : r.ats, "ATS score"], ["📝", r.qual == null ? "–" : r.qual, "CV completeness"]];
+  p.innerHTML = `<div class="ta-dh"><button class="ta-x" onclick="taCloseDr()" aria-label="Close">✕</button>
+      <div class="ta-dht">${taAva(r, "lg")}<div><p class="eyebrow">Member report</p><h2>${esc(r.name)}${r.isOwner ? ' <span class="pod">OWNER</span>' : ""}</h2><div class="sub">${esc(r.headline || [r.latest.title, r.latest.company].filter(Boolean).join(" · ") || r.role || "")}</div><div class="chips">${taBadge(r)}${r.seniority && r.seniority != "–" ? `<span class="ta-bd info">${esc(r.seniority)}</span>` : ""}${r.leader ? '<span class="ta-bd info">Leadership title</span>' : ""}${r.availability ? `<span class="ta-bd info">Available: ${esc(r.availability)}</span>` : ""}</div></div></div>
+      <div class="ta-dl">${links}</div><div class="srow">${r.id && r.status != "none" && r.status != "notreg" ? `<button class="btn" onclick="openCV('${esc(r.id)}')">📄 View CV</button>` : ""}${r.email && r.status != "notreg" ? `<button class="btn o" onclick="viewMember('${esc(r.email)}')">Open profile</button>` : ""}</div></div>
+    <div class="ta-db2"><div class="ta-kpis sm">${kp.map((k, j) => taKpi(k[0], k[1], k[2], "", j)).join("")}</div>
+      <div class="ta-two">${taCard("Capability profile", "Evidence index per area (0–100)", window.Chart ? taCv("d_rad", 300) : taNoChart(), "", 2)}
+        ${taCard("Skill evidence", "1 = listed · 5 = repeated across roles incl. the latest", sk.length ? `<div class="ta-sk">${sk.map(s => `<div class="ta-skr"><span class="n"><i style="background:${TA_CATCOL[s.cat]}"></i>${esc(s.name)}</span><div class="meter"><div data-w="${s.strength * 20}%" style="width:0;background:${TA_CATCOL[s.cat]}"></div></div><span class="m">${s.mentions ? s.mentions + "×" : "profile"}</span></div>`).join("")}</div>` : '<div class="empty">No skills detected.</div>', "", 3)}</div>
+      ${taCard("Career timeline", r.expSource == "profile" ? "Built from the profile because no dated roles were found in the CV" : "Roles and dates read from the CV", taTimeline(r), "", 4)}
+      ${taCard("Experience detail", "", r.roles.length ? `<div class="ta-xl"><table class="ta-sm"><thead><tr><th>Role</th><th>Company</th><th>From</th><th>To</th><th class="num">Years</th><th class="num">Bullets</th><th class="num">Quantified</th><th>Key skills</th></tr></thead><tbody>${r.roles.map(x => `<tr><td><b>${esc(x.title || "–")}</b></td><td>${esc(x.company || "–")}</td><td>${esc(x.from)}</td><td>${esc(x.to)}</td><td class="num">${f1(x.months / 12)}</td><td class="num">${x.bullets}</td><td class="num">${x.quant}</td><td>${taRoleSk(x).map(s => `<span class="tag hard">${esc(s)}</span>`).join(" ") || "–"}</td></tr>`).join("")}</tbody></table></div>` : '<div class="empty">No roles detected.</div>', "", 5)}
+      <div class="ta-two">${taCard("Education", "", r.edu.length ? `<div class="ta-xl"><table class="ta-sm"><thead><tr><th>Qualification</th><th>Institution</th><th>Level</th><th class="num">Year</th></tr></thead><tbody>${r.edu.map(e => `<tr><td><b>${esc(e.degree)}</b></td><td>${esc(e.school || "–")}</td><td><span class="tag industry">${esc(e.level)}</span></td><td class="num">${esc(e.year || "–")}</td></tr>`).join("")}</tbody></table></div>` : '<div class="empty">No education detected.</div>', "", 6)}
+        ${taCard("Certifications & languages", "", `<div class="sec-label" style="margin-top:0">Certifications (${r.certs.length})</div>${r.certs.length ? `<ul class="ta-cert">${r.certs.map(c => `<li>🏅 ${esc(c)}</li>`).join("")}</ul>` : '<div class="empty">None detected.</div>'}<div class="sec-label">Languages</div><div class="tr" style="margin-top:0">${r.langs.map(l => `<span class="tag jobtype">${esc(l)}</span>`).join("") || '<span class="empty">Not listed.</span>'}</div><div class="sec-label">Industries</div><div class="tr" style="margin-top:0">${r.inds.map(l => `<span class="tag industry">${esc(l)}</span>`).join("") || '<span class="empty">Not detected.</span>'}</div>`, "", 7)}</div>
+      <div class="ta-two">${taCard("CV quality check", r.status == "ok" ? `${esc(r.file)} · ${r.pages} page${r.pages == 1 ? "" : "s"} · ${r.words} words` : "No readable CV to check", r.checks.length ? `<ul class="ta-chk">${r.checks.map(([l, ok]) => `<li class="${ok ? "ok" : ""}">${esc(l)}</li>`).join("")}</ul><div class="ta-mini" style="margin-top:12px">${[[r.bullets, "Bullets"], [r.quant, "With numbers"], [r.verbRatio + "%", "Action verbs"]].map(([v, l]) => `<div><b>${v}</b><span>${l}</span></div>`).join("")}</div>` : '<div class="empty">Nothing to check.</div>', "", 8)}
+        ${taCard("Findings", "Generated from this person's CV and profile", `<ul class="ta-inl">${taIns(r.insights)}</ul>${r.atsTips.length ? `<div class="sec-label">ATS tips from their last check</div>${r.atsTips.map(t => `<div class="mut">• ${esc(t)}</div>`).join("")}` : ""}`, "", 9)}</div></div>`;
+  d.classList.add("on"); document.documentElement.classList.add("ta-lock"); p.scrollTop = 0; taGrow(p);
+  if (window.Chart) taMk(TA.dch, "d_rad", { type: "radar", data: { labels: cats, datasets: [{ label: r.name, data: cats.map(c => r.catScore[c]), borderColor: TA_COL[1], backgroundColor: "rgba(255,75,43,.2)", pointBackgroundColor: TA_COL[1], borderWidth: 2 }] }, options: { scales: { r: { min: 0, max: 100, ticks: { stepSize: 25, backdropColor: "transparent" }, grid: taGrid, angleLines: taGrid, pointLabels: { font: { size: 11 } } } }, plugins: { legend: { display: false } } } });
+};
+
+/* ---------- Excel export ---------- */
+window.taExport = () => {
+  const R = TA.rows, T = TA.team; if (!R.length) return toast("Nothing to export");
+  const stamp = new Date().toISOString().slice(0, 10), fn = (TA.g.name || "group").replace(/[^\w-]+/g, "_") + "_team_analysis_" + stamp;
+  const sum = [TA_COLS.map(c => c[1]), ...R.map(r => TA_COLS.map(c => { const v = c[2](r); return v == null ? "" : v; }))];
+  const skills = [["Member", "Skill", "Area", "Evidence (1-5)", "Mentions in CV", "In skills section", "In latest role", "On profile"], ...R.flatMap(r => r.skills.map(s => [r.name, s.name, s.cat, s.strength, s.mentions, s.inSkills ? "Yes" : "No", s.recent ? "Yes" : "No", s.declared ? "Yes" : "No"]))];
+  const cols = T.skills.slice(0, 60), mat = [["Member", ...cols.map(s => s.name), "Total skills"], ...R.map(r => [r.name, ...cols.map(s => { const m = s.m.find(x => x.r == r); return m ? m.st : ""; }), r.skills.length]), ["Members with skill", ...cols.map(s => s.m.length), ""]];
+  const exp = [["Member", "Title", "Company", "From", "To", "Years", "Bullets", "Quantified lines", "Source"], ...R.flatMap(r => r.roles.map(x => [r.name, x.title, x.company, x.from, x.to, f1(x.months / 12), x.bullets, x.quant, r.expSource == "cv" ? "CV" : "Profile"]))];
+  const edu = [["Member", "Qualification", "Institution", "Level", "Year"], ...R.flatMap(r => r.edu.map(e => [r.name, e.degree, e.school, e.level, e.year]))];
+  const cer = [["Member", "Certification"], ...R.flatMap(r => r.certs.map(c => [r.name, c]))];
+  const cat = [["Member", ...TA_CATS], ...R.map(r => [r.name, ...TA_CATS.map(c => r.catScore[c])]), ["Team average", ...TA_CATS.map(c => Math.round(taAvg(R.filter(r => r.status != "notreg").map(r => r.catScore[c]))))]];
+  const ins = [["Scope", "Type", "Finding"], ...T.insights.map(i => ["Team", i[0], i[1]]), ...R.flatMap(r => r.insights.map(i => [r.name, i[0], i[1]]))];
+  if (!window.XLSX) {
+    const q = v => '"' + String(v ?? "").replace(/"/g, '""') + '"', blob = new Blob(["\ufeff" + sum.map(a => a.map(q).join(",")).join("\n")], { type: "text/csv" }), a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = fn + ".csv"; a.click(); return toast("Excel library unavailable, downloaded as CSV instead");
+  }
+  const wb = XLSX.utils.book_new(), add = (n, aoa, w) => { const ws = XLSX.utils.aoa_to_sheet(aoa); ws["!cols"] = (w || aoa[0].map((h, i) => Math.min(48, Math.max(10, ...aoa.slice(0, 40).map(r => String(r[i] ?? "").length) , String(h).length) + 2))).map(x => ({ wch: x })); XLSX.utils.book_append_sheet(wb, ws, n); };
+  add("Team summary", sum); add("Skill matrix", mat); add("Skills (detail)", skills); add("Capability areas", cat); add("Experience", exp); add("Education", edu); add("Certifications", cer); add("Findings", ins);
+  XLSX.writeFile(wb, fn + ".xlsx"); toast("Excel report downloaded");
+};
+
 
 /* ---------- landing page (signed-out visitors) ---------- */
 const MEDIA = {
