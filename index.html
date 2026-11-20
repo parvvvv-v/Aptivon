@@ -904,6 +904,9 @@ header{height:88px}
 .hd .avw .ini.lg,.hd .avw img.ini{display:block;width:112px!important;height:112px!important;min-width:112px;max-width:none!important;aspect-ratio:1/1!important;border-radius:50%!important;object-fit:cover!important;object-position:center!important;box-sizing:border-box}
 .hd .avw img.ini{border:4px solid #fff!important;background:#fff!important;box-shadow:0 0 0 1px rgba(20,36,58,.14),0 8px 22px rgba(20,36,58,.2)!important}
 @media(max-width:700px){.hd .avw{width:92px;height:92px}.hd .avw .ini.lg,.hd .avw img.ini{width:92px!important;height:92px!important;min-width:92px}}
+.modal .card{position:relative}
+.mclose{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;border:0;background:var(--cream);color:var(--ink);font-size:16px;line-height:1;cursor:pointer;z-index:2;transition:background .2s,transform .2s}
+.mclose:hover{background:var(--brandl);transform:rotate(90deg)}
 </style>
 <style id="ta-style">
 /* ============ Team analysis (group owners) ============ */
@@ -1421,6 +1424,7 @@ const authMsg = x => ({
   "auth/network-request-failed": "Network problem. Check your connection and try again."
 }[x.code] || String(x.message || x).replace("Firebase: ", ""));
 
+const amodal = (h, w) => modal(`<button type="button" class="mclose" aria-label="Close" onclick="closeM()">\u2715</button>` + h, w);
 window.authUI = (mode = "login", t = "") => {
   const T = {
     candidate: ["Individual", "Candidate or student who wants to get hired", "Full name"],
@@ -1428,9 +1432,9 @@ window.authUI = (mode = "login", t = "") => {
     group: ["Consultancy / Group", "People from one firm who review talent and companies together", "Your full name"]
   };
   const sw = `<p class="mut" style="text-align:center"><a href="#" onclick="authUI('${mode == "login" ? "signup" : "login"}');return false" class="lnk">${mode == "login" ? "New here? Create an account" : "Have an account? Log in"}</a></p>`;
-  if (mode == "signup" && !T[t]) return modal(`<h2>Join Provynk</h2><p class="mut">Choose how you will use the platform.</p>
+  if (mode == "signup" && !T[t]) return amodal(`<h2>Join Provynk</h2><p class="mut">Choose how you will use the platform.</p>
     ${Object.entries(T).map(([k, v]) => `<div class="pc" style="grid-template-columns:1fr;cursor:pointer" onclick="authUI('signup','${k}')"><div><h3>${v[0]}</h3><div class="meta">${v[1]}</div></div></div>`).join("")}${sw}`);
-  if (mode == "login") return modal(`<h2>Welcome back</h2><p class="mut">Log in to continue.</p>
+  if (mode == "login") return amodal(`<h2>Welcome back</h2><p class="mut">Log in to continue.</p>
     <label>Email</label><input id="a_e" type="email">
     <label style="margin-top:10px">Password</label><input id="a_p" type="password" onkeydown="if(event.key=='Enter')doAuth('login')">
     <div style="text-align:right;margin-top:6px"><a href="#" class="lnk" onclick="forgotPw();return false">Forgot password?</a></div>
@@ -1438,7 +1442,7 @@ window.authUI = (mode = "login", t = "") => {
     <button class="btn" style="width:100%" onclick="doAuth('login')">Log in</button>
     <p class="mut" style="text-align:center;margin:10px 0 6px">or</p>
     <button class="btn o" style="width:100%" onclick="emailLink()">Email me a login link (no password)</button>${sw}`);
-  modal(`<h2>Sign up as ${T[t][0]}</h2>
+  amodal(`<h2>Sign up as ${T[t][0]}</h2>
     <p class="mut">${T[t][1]}. All fields are required except the firm website. We will email you a link to verify your address.</p>
     <input type="hidden" id="a_t" value="${t}">
     <div class="form">
