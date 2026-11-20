@@ -784,7 +784,7 @@ header.open .burger span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
 
 /* laptops, tablets and phones: the menu becomes a hamburger */
 @media(max-width:1360px){.logo .lg-full{display:none}.logo .lg-small{display:block}}
-@media(max-width:1300px){
+@media(max-width:1023px){
   header{flex-wrap:wrap;height:auto;min-height:66px;padding-top:6px;padding-bottom:6px;gap:0 12px}
   .burger{display:flex}
   html.menu-open,html.menu-open body{overflow:hidden}
@@ -1140,8 +1140,28 @@ header #auth .pill,header #auth .btn,header #auth .hl{white-space:nowrap;padding
 .flogo img{height:100px;width:auto}
 .tlogo{width:min(420px,90%)}
 #hire,#services,#news{scroll-margin-top:96px}
-@media(max-width:1300px){header{height:auto;min-height:84px}.logo{height:78px}.logo img,.logo .lg-full{height:74px}}
+@media(max-width:1023px){header{height:auto;min-height:84px}.logo{height:78px}.logo img,.logo .lg-full{height:74px}}
 @media(max-width:600px){.logo{height:68px}.logo img,.logo .lg-full{height:64px;max-width:calc(100vw - 96px)}.flogo img{height:80px;max-width:100%}.tlogo{width:min(320px,90%)}}
+
+/* ===== Full desktop menu on small laptops and phones in "desktop site" mode (1024-1300px): scale it to fit; hamburger on phones and tablets (1023px and below) ===== */
+@media(min-width:1024px) and (max-width:1300px){
+  header{--k:calc(100vw/1352);flex-wrap:nowrap;height:calc(var(--k)*88);min-height:0;padding-top:0;padding-bottom:0;padding-left:max(10px,calc(var(--k)*28));padding-right:max(10px,calc(var(--k)*28));gap:calc(var(--k)*20)}
+  header .logo{height:calc(var(--k)*80)}
+  header .logo img,header .logo .lg-full{height:calc(var(--k)*76);max-width:none}
+  header .logo .lg-full{display:block}header .logo .lg-small{display:none}
+  header nav{flex:1 1 auto;min-width:0;gap:0;justify-content:center}
+  header nav>a,header .dd>a{white-space:nowrap;padding:calc(var(--k)*22) calc(var(--k)*11);font-size:max(9px,calc(var(--k)*14))}
+  header nav>a:before,header .dd>a:before{left:calc(var(--k)*11);right:calc(var(--k)*11);bottom:calc(var(--k)*14)}
+  header .dd>a:after{white-space:nowrap}
+  header .dd div{top:100%}
+  header .dd div a{font-size:13px;padding:9px 12px}
+  header #auth{flex:none;flex-wrap:nowrap;gap:calc(var(--k)*8);white-space:nowrap}
+  header #auth .pill,header #auth .pill.ol{display:inline-flex!important;align-items:center;white-space:nowrap;padding:calc(var(--k)*9) calc(var(--k)*16);font-size:max(9px,calc(var(--k)*13.5))}
+  header #auth .btn{white-space:nowrap;padding:calc(var(--k)*8) calc(var(--k)*14);font-size:max(9px,calc(var(--k)*13.5))}
+  header #auth .hl{white-space:nowrap;padding:calc(var(--k)*6) calc(var(--k)*8);font-size:max(9px,calc(var(--k)*13.5))}
+  header #auth .me{font-size:max(9px,calc(var(--k)*13.5))}
+  header #auth .me span:not(.av){max-width:calc(var(--k)*140);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+}
 </style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
 </head>
@@ -1166,7 +1186,7 @@ header #auth .pill,header #auth .btn,header #auth .hl{white-space:nowrap;padding
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification, sendPasswordResetEmail, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, getAdditionalUserInfo, deleteUser } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, addDoc, deleteDoc, updateDoc, collection, getDocs, query, where, limit, serverTimestamp, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 /* 1) PASTE YOUR FIREBASE WEB CONFIG HERE (Console > Project settings > Your apps) */
@@ -1393,8 +1413,11 @@ window.authUI = (mode = "login", t = "") => {
   if (mode == "login") return modal(`<h2>Welcome back</h2><p class="mut">Log in to continue.</p>
     <label>Email</label><input id="a_e" type="email">
     <label style="margin-top:10px">Password</label><input id="a_p" type="password" onkeydown="if(event.key=='Enter')doAuth('login')">
+    <div style="text-align:right;margin-top:6px"><a href="#" class="lnk" onclick="forgotPw();return false">Forgot password?</a></div>
     <p id="a_err" class="mut" style="color:var(--red)"></p>
-    <button class="btn" style="width:100%" onclick="doAuth('login')">Log in</button>${sw}`);
+    <button class="btn" style="width:100%" onclick="doAuth('login')">Log in</button>
+    <p class="mut" style="text-align:center;margin:10px 0 6px">or</p>
+    <button class="btn o" style="width:100%" onclick="emailLink()">Email me a login link (no password)</button>${sw}`);
   modal(`<h2>Sign up as ${T[t][0]}</h2>
     <p class="mut">${T[t][1]}. All fields are required except the firm website. We will email you a link to verify your address.</p>
     <input type="hidden" id="a_t" value="${t}">
@@ -1410,11 +1433,26 @@ window.authUI = (mode = "login", t = "") => {
     <p class="mut" style="text-align:center"><a href="#" class="lnk" onclick="authUI('signup');return false">← Choose a different account type</a></p>${sw}`, 1);
 };
 
+/* ---- verification email helper (works for Gmail, Yahoo, Outlook, etc.) ---- */
+const ACS = () => ({ url: location.origin + location.pathname, handleCodeInApp: false });
+const isYahoo = e => /@(yahoo|ymail|rocketmail)\.[a-z.]+$/i.test(e || "");
+const mailTip = e => isYahoo(e) ? " Yahoo can take a few minutes and often puts it in <b>Spam</b> or <b>Bulk</b>: check there, and mark it \"Not spam\". Sender: noreply@" + (auth.app.options.authDomain || "") + "." : "";
+let LASTSEND = 0;
+async function sendVerif(u, quiet) {
+  const wait = 30000 - (Date.now() - LASTSEND);
+  if (wait > 0) { if (!quiet) toast("Please wait " + Math.ceil(wait / 1000) + "s before resending"); return false; }
+  try { await sendEmailVerification(u, ACS()); }
+  catch (x) {
+    if (x && x.code == "auth/unauthorized-continue-uri") { try { await sendEmailVerification(u); } catch (y) { if (!quiet) toast(authMsg(y)); return false; } }
+    else { if (!quiet) toast(authMsg(x)); return false; }
+  }
+  LASTSEND = Date.now(); return true;
+}
 let PEND = null, PTIMER = null;
 const stopPoll = () => { clearInterval(PTIMER); PTIMER = null; };
 function showVerify(email) {
   modal(`<h2>Verify your email</h2>
-    <p class="mut">We sent a verification link to <b>${esc(email)}</b>. Open it, then come back here. Your account is created only after your email is verified. Check your spam folder if you can't find it.</p>
+    <p class="mut">We sent a verification link to <b>${esc(email)}</b>. Open it, then come back here. Your account is created only after your email is verified. Check your spam folder if you can't find it.${mailTip(email)}</p>
     <p id="v_err" class="mut" style="color:var(--red)"></p>
     <button class="btn" style="width:100%" onclick="finishSignup()">I've verified my email</button>
     <div class="srow"><button class="btn o s" onclick="resendSignup()">Resend email</button><button class="btn o s" onclick="cancelSignup()">Cancel</button></div>`);
@@ -1438,7 +1476,7 @@ window.finishSignup = async silent => {
     toast("Email verified. Welcome to Provynk!");
   } catch (x) { if (ve) ve.textContent = authMsg(x); }
 };
-window.resendSignup = async () => { try { await sendEmailVerification(PEND.user); toast("Verification email sent"); } catch (x) { toast(authMsg(x)); } };
+window.resendSignup = async () => { if (await sendVerif(PEND.user)) toast("Verification email sent. Check Inbox and Spam."); };
 window.cancelSignup = async () => { stopPoll(); PEND = null; SIGNUP = false; closeM(); await signOut(auth); };
 
 window.doAuth = async mode => {
@@ -1452,7 +1490,7 @@ window.doAuth = async mode => {
       await signInWithEmailAndPassword(auth, e, p);
       const u = auth.currentUser; SIGNUP = false;
       if (!u.emailVerified) {
-        try { await sendEmailVerification(u); } catch {}
+        await sendVerif(u, true);
         await signOut(auth);
         throw { message: "Please verify your email first. We've sent you a new verification link." };
       }
@@ -1475,8 +1513,9 @@ window.doAuth = async mode => {
     const d = { type: t, name: n, email: e.toLowerCase(), ...extra, ...(t == "group" ? { firm: f } : {}) };
     try { localStorage.setItem("cm_pending_" + c.user.uid, JSON.stringify(d)); } catch {}
     PEND = { user: c.user, d };
-    try { await sendEmailVerification(c.user); } catch {}
+    const sent = await sendVerif(c.user, true);
     showVerify(e);
+    if (!sent) { const ve = $("#v_err"); if (ve) ve.textContent = "We could not send the email automatically. Press Resend email."; }
   } catch (x) {
     SIGNUP = false;
     err(authMsg(x));
@@ -1515,6 +1554,47 @@ onAuthStateChanged(auth, async u => {
   if (!u.emailVerified) { await signOut(auth); return; }
   await loadUser(u);
 });
+
+/* ---------- forgot password + passwordless email-link login ---------- */
+const authNote = (m, ok) => { const x = $("#a_err"); if (x) { x.textContent = m; x.style.color = ok ? "var(--green, #15803d)" : "var(--red)"; } };
+window.forgotPw = async () => {
+  const e = ($("#a_e")?.value || "").trim();
+  if (!/^\S+@\S+\.\S+$/.test(e)) return authNote("Enter your email above, then press Forgot password.");
+  try {
+    try { await sendPasswordResetEmail(auth, e, ACS()); }
+    catch (x) { if (x && x.code == "auth/unauthorized-continue-uri") await sendPasswordResetEmail(auth, e); else throw x; }
+    authNote("If an account exists for " + e + ", a password reset link has been sent. Check Inbox and Spam" + (isYahoo(e) ? " (Yahoo may take a few minutes)." : "."), true);
+  } catch (x) { authNote(authMsg(x)); }
+};
+window.emailLink = async () => {
+  const e = ($("#a_e")?.value || "").trim();
+  if (!/^\S+@\S+\.\S+$/.test(e)) return authNote("Enter your email address first.");
+  try {
+    await sendSignInLinkToEmail(auth, e, { url: location.origin + location.pathname, handleCodeInApp: true });
+    try { localStorage.setItem("cm_link_email", e); } catch {}
+    authNote("Login link sent to " + e + ". Open it on this device to sign in. Check Inbox and Spam" + (isYahoo(e) ? " (Yahoo may take a few minutes)." : "."), true);
+  } catch (x) { authNote(authMsg(x)); }
+};
+if (isSignInWithEmailLink(auth, location.href)) {
+  SIGNUP = true;
+  (async () => {
+    try {
+      let e = ""; try { e = localStorage.getItem("cm_link_email") || ""; } catch {}
+      if (!e) e = (prompt("Confirm your email address to finish signing in:") || "").trim();
+      const cred = await signInWithEmailLink(auth, e, location.href);
+      try { localStorage.removeItem("cm_link_email"); } catch {}
+      history.replaceState(null, "", location.pathname + "#/");
+      if (getAdditionalUserInfo(cred)?.isNewUser) {
+        try { await deleteUser(cred.user); } catch { await signOut(auth); }
+        SIGNUP = false; shell(); toast("No account exists with this email. Please sign up first.");
+        return;
+      }
+      SIGNUP = false;
+      await loadUser(cred.user);
+      toast("Signed in");
+    } catch (x) { SIGNUP = false; history.replaceState(null, "", location.pathname + "#/"); shell(); toast(authMsg(x)); }
+  })();
+}
 
 function shell() { nav(); authBox(); vbar(); route(); }
 
@@ -3301,7 +3381,7 @@ window.$ = $;
 /* ---------- email verification ---------- */
 const ver = () => { if (me && me.emailVerified) return true; toast("Please verify your email first"); return false; };
 const gateHtml = () => `${pHero("Almost there", "Verify your email to continue", "One quick step keeps Provynk safe for everyone.")}
-  <div class="page"><div class="card"><p style="margin-top:0">We sent a verification link to <b>${esc(me?.email || "")}</b>. Open it, then press the button below. Check your spam folder if you cannot find it.</p>
+  <div class="page"><div class="card"><p style="margin-top:0">We sent a verification link to <b>${esc(me?.email || "")}</b>. Open it, then press the button below. Check your spam folder if you cannot find it.${mailTip(me?.email)}</p>
   <div class="srow"><button class="btn" onclick="checkVer()">I've verified</button><button class="btn o" onclick="resendVer()">Resend email</button></div></div></div>`;
 function vbar() {
   const b = $("#vbar"); if (!b) return;
@@ -3311,8 +3391,7 @@ function vbar() {
   } else { b.className = ""; b.innerHTML = ""; }
 }
 window.resendVer = async () => {
-  try { await sendEmailVerification(me); toast("Verification email sent"); }
-  catch (e) { toast(authMsg(e)); }
+  if (await sendVerif(me)) toast("Verification email sent. Check Inbox and Spam.");
 };
 window.checkVer = async silent => {
   if (!me) return;
@@ -3336,10 +3415,10 @@ window.addEventListener("focus", () => { if (me && !me.emailVerified) checkVer(t
   b.onclick = () => set(!h.classList.contains("open"));
   h.addEventListener("click", e => { if (e.target.closest("nav a, #auth a, #auth button")) set(false); });
   window.addEventListener("hashchange", () => set(false));
-  window.addEventListener("resize", () => { if (innerWidth > 1240) set(false); });
+  window.addEventListener("resize", () => { if (innerWidth > 1023) set(false); });
   document.addEventListener("keydown", e => { if (e.key == "Escape") set(false); });
 })();
-nav();
+nav(); authBox();
 </script>
 </body>
 
