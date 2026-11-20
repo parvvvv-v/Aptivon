@@ -1162,6 +1162,26 @@ header #auth .pill,header #auth .btn,header #auth .hl{white-space:nowrap;padding
   header #auth .me{font-size:max(9px,calc(var(--k)*13.5))}
   header #auth .me span:not(.av){max-width:calc(var(--k)*140);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 }
+
+/* ===== Tablets and phones in "desktop site" mode (601-1023px): Log in, Find Solutions and the other 3 buttons stay in the bar; only the page links go into the hamburger. Real phones (600px and below) keep everything inside the hamburger. ===== */
+@media(min-width:601px) and (max-width:1023px){
+  header,header.open{flex-wrap:wrap;align-items:center;gap:6px 10px;padding-top:6px;padding-bottom:6px}
+  header .logo{order:1;height:60px}
+  header .logo img,header .logo .lg-full{height:56px;max-width:min(240px,50vw)}
+  header .burger{display:flex;order:2;margin-left:auto}
+  header #auth,header.open #auth{display:flex;order:3;flex:1 1 100%;width:100%;margin:0;padding:0 0 4px;border:0;flex-direction:row;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px}
+  header #auth .hl{flex:none;padding:6px 8px;font-size:12.5px}
+  header #auth .pill,header #auth .pill.ol{display:inline-flex!important;flex:0 1 auto;min-height:0;padding:7px 11px;font-size:12.5px;white-space:nowrap}
+  header #auth .me{flex:none;padding:0}
+  header #auth .btn{flex:none;min-height:0;white-space:nowrap}
+  header nav,header.open nav{order:4}
+  #hire,#services,#news{scroll-margin-top:140px}
+}
+@media(min-width:960px) and (max-width:1023px){
+  header #auth,header.open #auth{order:2;flex:0 1 auto;width:auto;margin-left:auto;padding:0;flex-wrap:nowrap;justify-content:flex-end}
+  header .burger{margin-left:0}
+  #hire,#services,#news{scroll-margin-top:100px}
+}
 </style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
 </head>
@@ -3420,6 +3440,7 @@ window.addEventListener("focus", () => { if (me && !me.emailVerified) checkVer(t
 })();
 nav(); authBox();
 </script>
+
 </body>
 
 </html>
